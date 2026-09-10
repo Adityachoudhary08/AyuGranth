@@ -1,0 +1,30 @@
+# Data (ingested corpus — large, not tracked)
+data/
+
+# Environment
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Model cache (sentence-transformers downloads)
+.cache/

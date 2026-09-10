@@ -1,0 +1,182 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [8 0 R 9 0 R 10 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Length 3580 >>
+stream
+BT
+/F2 22 Tf 54 760 Td (AyuGranth / IP-SAKTI Sahayak) Tj
+/F1 14 Tf 54 730 Td (Project Brief) Tj
+/F2 14 Tf 54 693 Td (Overview) Tj
+/F1 9 Tf 54 671 Td (AyuGranth, also called IP-SAKTI Sahayak, is an evidence-grounded legal and regulatory) Tj
+/F1 9 Tf 54 658 Td (decision-support platform for Ayurveda products. It helps AYUSH startups, practitioners,) Tj
+/F1 9 Tf 54 645 Td (researchers, cultivators, and IP professionals evaluate product classification,) Tj
+/F1 9 Tf 54 632 Td (patentability, traditional knowledge overlap, ABS obligations, Indian regulatory pathways,) Tj
+/F1 9 Tf 54 619 Td (and export readiness.) Tj
+/F1 9 Tf 54 606 Td (The system is designed as preliminary decision support, not a substitute for legal,) Tj
+/F1 9 Tf 54 593 Td (regulatory, or medical advice.) Tj
+/F2 14 Tf 54 580 Td (Technology Stack) Tj
+/F2 11 Tf 54 558 Td (Backend) Tj
+/F1 9 Tf 54 542 Td (- Python and FastAPI for the API layer) Tj
+/F1 9 Tf 54 529 Td (- MongoDB Atlas for products, users, legal chunks, ingredients, and audit logs) Tj
+/F1 9 Tf 54 516 Td (- Motor for asynchronous MongoDB access; PyMongo for Atlas Search index creation) Tj
+/F1 9 Tf 54 503 Td (- Pydantic and pydantic-settings for schemas and configuration) Tj
+/F1 9 Tf 54 490 Td (- JWT, python-jose, Passlib, and Bcrypt for authentication) Tj
+/F1 9 Tf 54 477 Td (- PyMuPDF and EasyOCR for PDF and scanned-document extraction) Tj
+/F1 9 Tf 54 464 Td (- Sentence Transformers with BAAI/bge-m3 and PyTorch for embeddings) Tj
+/F1 9 Tf 54 451 Td (- LangChain and LangGraph for retrieval-augmented generation) Tj
+/F1 9 Tf 54 438 Td (- Gemini, Anthropic, and Ollama provider support) Tj
+/F1 9 Tf 54 425 Td (- TQDM, Pandas, NetworkX, RapidFuzz, and HTTPX for supporting workflows) Tj
+/F2 11 Tf 54 412 Td (Frontend) Tj
+/F1 9 Tf 54 396 Td (- React 19 with Vite) Tj
+/F1 9 Tf 54 383 Td (- React Router for public tools and dashboard routes) Tj
+/F1 9 Tf 54 370 Td (- Tailwind CSS for styling) Tj
+/F1 9 Tf 54 357 Td (- Axios for API calls) Tj
+/F1 9 Tf 54 344 Td (- GSAP, ScrollTrigger, Lenis, and Framer Motion for animation) Tj
+/F1 9 Tf 54 331 Td (- Three.js for 3D visual experiences) Tj
+/F1 9 Tf 54 318 Td (- Lucide React for icons) Tj
+/F2 14 Tf 54 305 Td (Core Technical Flow) Tj
+/F1 9 Tf 54 283 Td (1. A user enters product details, ingredients, source region, formulation, manufacturing) Tj
+/F1 9 Tf 54 270 Td (process, and intended market.) Tj
+/F1 9 Tf 54 257 Td (2. The product is stored in MongoDB.) Tj
+/F1 9 Tf 54 244 Td (3. A deterministic formulation classifier assigns a product category.) Tj
+/F1 9 Tf 54 231 Td (4. IP, TK, ABS, regulatory, and export engines run as appropriate, with the passport) Tj
+/F1 9 Tf 54 218 Td (orchestrator running independent work concurrently.) Tj
+/F1 9 Tf 54 205 Td (5. Queries are embedded and matched against the curated legal_chunks corpus using MongoDB) Tj
+/F1 9 Tf 54 192 Td (Atlas Vector Search.) Tj
+/F1 9 Tf 54 179 Td (6. The LLM receives retrieved source context and produces a structured answer.) Tj
+/F1 9 Tf 54 166 Td (7. A Python citation verifier checks every source_chunk_id against the retrieved chunks.) Tj
+/F1 9 Tf 54 153 Td (8. The confidence engine decides whether to return the result or abstain/escalate.) Tj
+/F1 9 Tf 54 140 Td (9. The final result is shown as a structured Product Passport with sources, status) Tj
+/F1 9 Tf 54 127 Td (indicators, and disclaimers.) Tj
+/F2 14 Tf 54 114 Td (Implemented Features) Tj
+/F2 11 Tf 54 92 Td (1. Product Passport) Tj
+/F1 9 Tf 54 76 Td (Implemented in backend/routes/passport.py. It fetches a product, classifies it, runs IP, TK,) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Length 4479 >>
+stream
+BT
+/F1 9 Tf 54 760 Td (ABS, regulatory, GI, copyright/design, trade-secret, and plant-variety helpers, then) Tj
+/F1 9 Tf 54 747 Td (aggregates the results into sections with confidence and timing data. asyncio.gather is used) Tj
+/F1 9 Tf 54 734 Td (for parallel domain-engine execution.) Tj
+/F2 11 Tf 54 721 Td (2. Formulation Classifier) Tj
+/F1 9 Tf 54 705 Td (Implemented in backend/services/classifier_engine.py. Five boolean inputs determine whether) Tj
+/F1 9 Tf 54 692 Td (the product is classical, synthetic/new, nutritional, cosmetic, extract-based, or a) Tj
+/F1 9 Tf 54 679 Td (proprietary Ayurvedic medicine. The output category controls downstream regulatory and IP) Tj
+/F1 9 Tf 54 666 Td (reasoning.) Tj
+/F2 11 Tf 54 653 Td (3. Citation-First RAG) Tj
+/F1 9 Tf 54 637 Td (The query is converted into a BGE-M3 embedding, relevant legal_chunks are retrieved, and) Tj
+/F1 9 Tf 54 624 Td (only that context is sent to the LLM. The LLM must attach source_chunk_id values to claims.) Tj
+/F1 9 Tf 54 611 Td (The citation verifier removes claims whose IDs were not retrieved. Low evidence can trigger) Tj
+/F1 9 Tf 54 598 Td (abstention or human escalation.) Tj
+/F2 11 Tf 54 585 Td (4. Prior-Art and Patentability) Tj
+/F1 9 Tf 54 569 Td (backend/routes/ip_engine.py embeds the formulation description and searches similar legal) Tj
+/F1 9 Tf 54 556 Td (and traditional-knowledge chunks. Similarity is labelled High, Moderate, or Low prior-art) Tj
+/F1 9 Tf 54 543 Td (relevance. RAG reasoning then considers Indian Patent Act concepts such as Sections 3\(p\) and) Tj
+/F1 9 Tf 54 530 Td (3\(d\). The system also builds a protection map across patents, trademarks, GI, copyright,) Tj
+/F1 9 Tf 54 517 Td (designs, trade secrets, and plant variety rights.) Tj
+/F2 11 Tf 54 504 Td (5. Traditional Knowledge Overlap) Tj
+/F1 9 Tf 54 488 Td (The TK flow searches classical-text chunks using source_type filtering, calculates semantic) Tj
+/F1 9 Tf 54 475 Td (similarity, and returns overlap severity and supporting source documents. This helps) Tj
+/F1 9 Tf 54 462 Td (identify possible classical-text, TKDL, and prior-art risks.) Tj
+/F2 11 Tf 54 449 Td (6. ABS Screening and Obligations) Tj
+/F1 9 Tf 54 433 Td (Stage 1 uses rules to check whether ingredients are biological and whether the source region) Tj
+/F1 9 Tf 54 420 Td (is in the ABS trigger list. Stage 2 uses RAG to explain authority selection, approvals,) Tj
+/F1 9 Tf 54 407 Td (benefit sharing, patent disclosure, documentation, prior informed consent, and mutually) Tj
+/F1 9 Tf 54 394 Td (agreed terms.) Tj
+/F2 11 Tf 54 381 Td (7. Regulatory Pathway Navigator) Tj
+/F1 9 Tf 54 365 Td (The classified category selects a regulatory checklist for AYUSH medicines, proprietary) Tj
+/F1 9 Tf 54 352 Td (medicines, Ayurveda-Aahar, cosmetics, new drugs, or phytopharmaceuticals. The checklist) Tj
+/F1 9 Tf 54 339 Td (covers licensing, GMP, labelling, advertising, clinical evidence, and category-specific) Tj
+/F1 9 Tf 54 326 Td (approvals, enriched with retrieved legal reasoning.) Tj
+/F2 11 Tf 54 313 Td (8. Export Navigator) Tj
+/F1 9 Tf 54 297 Td (The export module currently focuses on the USA and Germany/EU. It checks product ingredients) Tj
+/F1 9 Tf 54 284 Td (for mineral or metallic Rasashastra materials, adds heavy-metal testing warnings, and) Tj
+/F1 9 Tf 54 271 Td (generates country-specific guidance for FDA/DSHEA, NDI, EU Novel Food, THMPD, labelling,) Tj
+/F1 9 Tf 54 258 Td (claims, registration, and import requirements.) Tj
+/F2 11 Tf 54 245 Td (9. Corpus Ingestion) Tj
+/F1 9 Tf 54 229 Td (The ingestion pipeline reads the corpus CSV, resolves PDFs, hashes files for resumability,) Tj
+/F1 9 Tf 54 216 Td (extracts native text with PyMuPDF, falls back to EasyOCR for scanned documents, chunks text) Tj
+/F1 9 Tf 54 203 Td (by legal sections and paragraphs, creates BGE-M3 embeddings, and inserts documents into) Tj
+/F1 9 Tf 54 190 Td (legal_chunks. A separate script creates the vector_index Atlas Vector Search index.) Tj
+/F2 11 Tf 54 177 Td (10. Supporting Features) Tj
+/F1 9 Tf 54 161 Td (The backend also contains authentication, product and document management, GI navigation,) Tj
+/F1 9 Tf 54 148 Td (trademark checks, advertising and label checks, copyright/design assessment, trade-secret) Tj
+/F1 9 Tf 54 135 Td (guidance, plant-variety rights, jurisdiction switching, legal-status tracking,) Tj
+/F1 9 Tf 54 122 Td (knowledge-graph data, multilingual processing, evaluation dashboards, and human escalation.) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Length 2079 >>
+stream
+BT
+/F2 14 Tf 54 760 Td (Frontend Experience) Tj
+/F1 9 Tf 54 738 Td (The React application provides public product pages such as Ask AyuGranth, Product Passport,) Tj
+/F1 9 Tf 54 725 Td (Patentability, Prior Art, Traditional Knowledge, ABS, International, Trademark, and GI Tag.) Tj
+/F1 9 Tf 54 712 Td (A separate dashboard shell provides assistant, documents, IP, compliance, knowledge, and) Tj
+/F1 9 Tf 54 699 Td (evaluation views. The landing experience uses GSAP, Lenis, and Three.js-oriented visual) Tj
+/F1 9 Tf 54 686 Td (components rather than a plain chat interface.) Tj
+/F2 14 Tf 54 673 Td (Important Implementation Notes) Tj
+/F1 9 Tf 54 651 Td (- The active Python environment previously lacked required backend packages, so ingestion) Tj
+/F1 9 Tf 54 638 Td (cannot run until backend/requirements.txt is installed.) Tj
+/F1 9 Tf 54 625 Td (- The confidence engine returns three values, while the RAG score node appears to unpack) Tj
+/F1 9 Tf 54 612 Td (two; this needs correction.) Tj
+/F1 9 Tf 54 599 Td (- The /ask response passes fields not declared by its AskResponse model, including) Tj
+/F1 9 Tf 54 586 Td (abstention and source fields.) Tj
+/F1 9 Tf 54 573 Td (- The /regulatory frontend route currently points to a placeholder page.) Tj
+/F1 9 Tf 54 560 Td (- Corpus ingestion is driven by the CSV rather than recursive PDF discovery.) Tj
+/F1 9 Tf 54 547 Td (- Six PDF paths listed in the CSV were previously missing from disk.) Tj
+/F1 9 Tf 54 534 Td (- OCR is configured with GPU mode enabled despite comments describing CPU-safe behavior.) Tj
+/F2 14 Tf 54 521 Td (Source Files) Tj
+/F1 9 Tf 54 499 Td (Backend entry point: backend/main.py) Tj
+/F1 9 Tf 54 486 Td (Frontend routing: frontend/src/Router.jsx) Tj
+/F1 9 Tf 54 473 Td (Project requirements: PRD.md and architecture.md) Tj
+/F1 9 Tf 54 460 Td (Ingestion: backend/ingestion/ingest_corpus.py) Tj
+/F1 9 Tf 54 447 Td (RAG orchestration: backend/services/rag_pipeline.py) Tj
+/F1 9 Tf 54 434 Td (Patentability: backend/routes/ip_engine.py) Tj
+/F1 9 Tf 54 421 Td (Product Passport: backend/routes/passport.py) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 5 0 R >>
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 6 0 R >>
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 7 0 R >>
+endobj
+xref
+0 11
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000134 00000 n 
+0000000204 00000 n 
+0000000279 00000 n 
+0000003911 00000 n 
+0000008442 00000 n 
+0000010573 00000 n 
+0000010709 00000 n 
+0000010845 00000 n 
+trailer
+<< /Size 11 /Root 1 0 R >>
+startxref
+10982
+%%EOF

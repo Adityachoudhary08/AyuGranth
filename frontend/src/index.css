@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-helvetica: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-serif: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-cormorant: 'Cormorant Garamond', Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-devanagari: 'Noto Serif Devanagari', 'Rozha One', serif;
+  --font-rozha: 'Rozha One', 'Noto Serif Devanagari', serif;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  html {
+    margin: 0;
+    padding: 0;
+    background-color: #0a0a0a;
+    color: #ffffff;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    letter-spacing: -0.015em;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #0a0a0a;
+    color: #ffffff;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    letter-spacing: -0.015em;
+    overflow-x: clip;
+    min-height: 100vh;
+  }
+
+  .font-sans {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .font-helvetica {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+  .font-serif {
+    font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+    font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+  }
+
+  .font-cormorant {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    font-feature-settings: "zero" 1;
+  }
+
+  .font-devanagari {
+    font-family: 'Noto Serif Devanagari', 'Rozha One', serif;
+  }
+
+  .font-rozha {
+    font-family: 'Rozha One', 'Noto Serif Devanagari', serif;
+  }
+
+  /* Single Custom Black Scrollbar */
+  ::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0a0a0a;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #242424;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #176B45;
+  }
+
+  /* Firefox dark scrollbar */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #242424 #0a0a0a;
+  }
+  /* Refined browser defaults */
+  *:focus-visible {
+    outline: 2px solid #176B45;
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: #176B45;
+    color: #ffffff;
+  }
+}

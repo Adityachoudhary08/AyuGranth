@@ -1,0 +1,225 @@
+"""
+Cosine-similarity engine for prior-art and TK-overlap scoring.
+
+Labeling rule (legal-accuracy requirement):
+  - Results are surfaced as "semantic_similarity" (float 0–1)
+    and "prior_art_relevance" ("High" / "Moderate" / "Low").
+  - NEVER label as "% patent overlap", "infringement", or
+    "patentability percentage".
+"""
+
+from __future__ import annotations
+
+import logging
+import math
+from typing import Any
+
+from core.database import get_db
+from services.embeddings import embed_text
+
+logger = logging.getLogger(__name__)
+
+
+# ── Pure-math helpers ─────────────────────────────────────────────────────
+
+
+def compute_similarity(
+    query_embedding: list[float],
+    candidate_embeddings: list[list[float]],
+) -> list[float]:
+    """
+    Compute cosine similarity between a query vector and each candidate.
+
+    Both query and candidates are assumed to be L2-normalised (bge-m3 does
+    this when ``normalize_embeddings=True``), so cosine similarity simplifies
+    to the dot product.
+    """
+    scores: list[float] = []
+    for candidate in candidate_embeddings:
+        dot = sum(a * b for a, b in zip(query_embedding, candidate))
+        mag_q = math.sqrt(sum(a * a for a in query_embedding))
+        mag_c = math.sqrt(sum(b * b for b in candidate))
+        denom = mag_q * mag_c
+        scores.append(dot / denom if denom > 0 else 0.0)
+    return scores
+
+
+def similarity_to_relevance(score: float) -> str:
+    """
+    Map a cosine-similarity score to a human-readable prior-art relevance
+    label.  Thresholds calibrated for bge-m3 on legal text.
+
+    Returns one of: "High", "Moderate", "Low".
+    """
+    if score >= 0.75:
+        return "High"
+    if score >= 0.50:
+        return "Moderate"
+    return "Low"
+
+
+# ── Vector-search wrapper ────────────────────────────────────────────────
+
+
+async def search_similar_chunks(
+    description: str,
+    *,
+    source_type_filter: str | None = None,
+    top_k: int = 10,
+) -> list[dict[str, Any]]:
+    """
+    Embed *description*, run ``$vectorSearch`` on ``legal_chunks``,
+    and return results with correct labeling.
+
+    Each result dict contains:
+      - chunk_id, chunk_text, source_document, law_type, section
+      - semantic_similarity  (float 0-1)
+      - prior_art_relevance  ("High" / "Moderate" / "Low")
+
+    Parameters
+    ----------
+    description : str
+        Free-text formulation / ingredient description to compare.
+    source_type_filter : str, optional
+        If provided, restricts results to this ``source_type``
+        (e.g. ``"classical_text"`` for TK checks).
+    top_k : int
+        Maximum number of results.
+    """
+    import asyncio, re
+    db = get_db()
+    
+    # 1. Generate embedding for query
+    try:
+        query_vector = await asyncio.wait_for(asyncio.to_thread(embed_text, description), timeout=6.0)
+    except Exception as e:
+        logger.warning("Embedding generation timed out or failed: %s", e)
+        query_vector = None
+
+    raw_chunks = []
+    
+    # Extract salient keywords from query (min length 3, excluding stopwords)
+    stopwords = {"what", "when", "where", "which", "with", "from", "that", "this", "these", "those", "have", "been", "about", "under", "does", "will", "would", "could", "should"}
+    words = [w for w in re.findall(r'[a-zA-Z0-9_-]+', description.lower()) if len(w) >= 3 and w not in stopwords]
+    
+    # 2. Try Atlas $vectorSearch if vector is available
+    if query_vector:
+        pipeline: list[dict[str, Any]] = [
+            {
+                "$vectorSearch": {
+                    "index": "vector_index",
+                    "path": "embedding",
+                    "queryVector": query_vector,
+                    "numCandidates": max(top_k * 10, 100),
+                    "limit": top_k,
+                }
+            },
+            {
+                "$project": {
+                    "_id": 1,
+                    "chunk_text": 1,
+                    "source_document": 1,
+                    "law_type": 1,
+                    "section": 1,
+                    "jurisdiction": 1,
+                    "source_type": 1,
+                    "score": {"$meta": "vectorSearchScore"},
+                }
+            },
+        ]
+
+        if source_type_filter:
+            pipeline[0]["$vectorSearch"]["filter"] = {
+                "source_type": source_type_filter,
+            }
+
+        try:
+            cursor = db.legal_chunks.aggregate(pipeline)
+            raw_chunks = await cursor.to_list(length=top_k)
+        except Exception as e:
+            logger.warning("$vectorSearch failed or not configured on Atlas: %s", e)
+            raw_chunks = []
+
+    # 3. Keyword-filtered candidate retrieval + in-memory cosine similarity
+    if not raw_chunks:
+        try:
+            query_conditions = []
+            if source_type_filter:
+                query_conditions.append({"source_type": source_type_filter})
+                
+            if words:
+                keyword_pattern = "|".join(words[:8])
+                query_conditions.append({
+                    "$or": [
+                        {"chunk_text": {"$regex": keyword_pattern, "$options": "i"}},
+                        {"source_document": {"$regex": keyword_pattern, "$options": "i"}},
+                        {"section": {"$regex": keyword_pattern, "$options": "i"}},
+                        {"law_type": {"$regex": keyword_pattern, "$options": "i"}},
+                        {"topic_folder": {"$regex": keyword_pattern, "$options": "i"}}
+                    ]
+                })
+                
+            filter_query = {"$and": query_conditions} if query_conditions else {}
+            
+            cand_cursor = db.legal_chunks.find(
+                filter_query,
+                {"chunk_text": 1, "source_document": 1, "law_type": 1, "section": 1, "jurisdiction": 1, "source_type": 1, "embedding": 1}
+            ).limit(120)
+            candidates = await cand_cursor.to_list(length=120)
+            
+            # If no keyword matches, fetch a diverse sample of statutory chunks for embedding comparison
+            if not candidates and query_vector:
+                cand_cursor = db.legal_chunks.find(
+                    {},
+                    {"chunk_text": 1, "source_document": 1, "law_type": 1, "section": 1, "jurisdiction": 1, "source_type": 1, "embedding": 1}
+                ).limit(100)
+                candidates = await cand_cursor.to_list(length=100)
+            
+            if candidates and query_vector:
+                valid_cands = [c for c in candidates if c.get("embedding") and len(c.get("embedding", [])) == len(query_vector)]
+                if valid_cands:
+                    cand_embeddings = [c["embedding"] for c in valid_cands]
+                    scores = compute_similarity(query_vector, cand_embeddings)
+                    sorted_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:top_k]
+                    raw_chunks = [
+                        {**valid_cands[i], "score": float(scores[i])}
+                        for i in sorted_indices
+                    ]
+        except Exception as e:
+            logger.warning("Candidate retrieval failed: %s", e)
+            raw_chunks = []
+
+    # Deduplicate and format results
+    seen_keys = set()
+    results: list[dict[str, Any]] = []
+    
+    for chunk in raw_chunks:
+        cid = str(chunk.get("_id", ""))
+        doc = chunk.get("source_document", "")
+        sec = chunk.get("section") or ""
+        txt = chunk.get("chunk_text", "")
+        dedup_key = f"{doc}::{sec}::{txt[:60]}"
+        
+        if dedup_key in seen_keys:
+            continue
+        seen_keys.add(dedup_key)
+        
+        # NEVER fabricate similarity scores - use true computed score
+        sim_score = float(chunk.get("score", 0.0))
+        results.append(
+            {
+                "chunk_id": cid,
+                "chunk_text": txt,
+                "source_document": doc,
+                "law_type": chunk.get("law_type", ""),
+                "section": sec if sec else None,
+                "jurisdiction": chunk.get("jurisdiction", "India"),
+                "source_type": chunk.get("source_type", "statute"),
+                # ── Genuine scores & labels ───────
+                "semantic_similarity": round(sim_score, 4),
+                "prior_art_relevance": similarity_to_relevance(sim_score),
+            }
+        )
+
+    return results
+

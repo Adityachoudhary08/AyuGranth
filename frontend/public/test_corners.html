@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Corner Calibrator</title>
+</head>
+<body style="margin:0; background:#111; color:#eee; font-family:sans-serif;">
+  <div style="display:flex; gap:20px; padding:10px; justify-content:center;">
+    <div>
+      <h4>Original with Quad</h4>
+      <canvas id="c" style="max-height:75vh; width:auto; border:1px solid #444;"></canvas>
+    </div>
+    <div>
+      <h4>Unwarped Front Cover Texture (1024x1440)</h4>
+      <canvas id="unwarped" style="max-height:75vh; width:auto; border:1px solid #00ffcc;"></canvas>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from '/node_modules/three/build/three.module.js';
+
+    const img = new Image();
+    img.src = '/ayyugranth-book.png';
+    img.onload = () => {
+      const c = document.getElementById('c');
+      c.width = img.width;
+      c.height = img.height;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      // Fine-tuned 4 corners of the front cover in ayyugranth-book.png (1142 x 1378):
+      const TL = { x: 204, y: 60 };
+      const TR = { x: 864, y: 54 };
+      const BR = { x: 946, y: 1146 };
+      const BL = { x: 280, y: 1240 };
+
+      const corners = [
+        { name: 'TL', ...TL },
+        { name: 'TR', ...TR },
+        { name: 'BR', ...BR },
+        { name: 'BL', ...BL },
+      ];
+
+      ctx.strokeStyle = '#00ffcc';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(TL.x, TL.y);
+      ctx.lineTo(TR.x, TR.y);
+      ctx.lineTo(BR.x, BR.y);
+      ctx.lineTo(BL.x, BL.y);
+      ctx.closePath();
+      ctx.stroke();
+
+      corners.forEach(pt => {
+        ctx.fillStyle = '#ff0055';
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.font = 'bold 20px sans-serif';
+        ctx.fillStyle = '#fff';
+        ctx.fillText(pt.name, pt.x + 10, pt.y + 10);
+      });
+
+      // Perspective unwarping using Three.js Mesh
+      const outW = 1024;
+      const outH = 1440;
+      const unwarpedCanvas = document.getElementById('unwarped');
+      unwarpedCanvas.width = outW;
+      unwarpedCanvas.height = outH;
+
+      const renderer = new THREE.WebGLRenderer({ canvas: unwarpedCanvas, antialias: true });
+      renderer.setSize(outW, outH);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 10);
+      camera.position.z = 1;
+
+      const texture = new THREE.Texture(img);
+      texture.needsUpdate = true;
+
+      // Subdivided plane for smooth bilinear/perspective UV mapping
+      const segs = 32;
+      const geom = new THREE.PlaneGeometry(2, 2, segs, segs);
+      const pos = geom.attributes.position;
+      const uvs = geom.attributes.uv;
+
+      for (let i = 0; i < pos.count; i++) {
+        const u = (pos.getX(i) + 1) / 2; // 0 (left) to 1 (right)
+        const v = (pos.getY(i) + 1) / 2; // 0 (bottom) to 1 (top)
+
+        // Bilinear interpolation between the 4 corners in pixel coords
+        // Top edge: TL -> TR
+        // Bottom edge: BL -> BR
+        const topX = TL.x + u * (TR.x - TL.x);
+        const topY = TL.y + u * (TR.y - TL.y);
+        const botX = BL.x + u * (BR.x - BL.x);
+        const botY = BL.y + u * (BR.y - BL.y);
+
+        const px = botX + v * (topX - botX);
+        const py = botY + v * (topY - botY);
+
+        // Convert to Three.js UV (where (0,0) is bottom-left, (1,1) is top-right)
+        const texU = px / img.width;
+        const texV = 1.0 - (py / img.height);
+
+        uvs.setXY(i, texU, texV);
+      }
+      uvs.needsUpdate = true;
+
+      const mat = new THREE.MeshBasicMaterial({ map: texture });
+      const mesh = new THREE.Mesh(geom, mat);
+      scene.add(mesh);
+
+      renderer.render(scene, camera);
+      document.getElementById('info').textContent = 'Perspective unwarping complete!';
+    };
+  </script>
+</body>
+</html>
