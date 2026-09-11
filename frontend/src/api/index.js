@@ -39,7 +39,9 @@ export const exportApi = {
 
 export const productsApi = {
   listProducts: async () => apiClient.get('/products/'),
+  listIngredientReferences: async (query = '') => apiClient.get(`/products/ingredients${query ? `?query=${encodeURIComponent(query)}` : ''}`),
   getProduct: async (id) => apiClient.get(`/products/${id}`),
+  checkDuplicate: async (data) => apiClient.post('/products/check-duplicate', data),
   createProduct: async (data) => apiClient.post('/products/', data),
 };
 

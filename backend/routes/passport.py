@@ -379,7 +379,10 @@ async def get_passport(
 
     # Derive classifier answers from product fields
     classifier_answers = {
-        "uses_only_classical_texts": product.get("intended_use", "").lower().find("classical") >= 0,
+        "uses_only_classical_texts": product.get(
+            "uses_only_classical_texts",
+            product.get("intended_use", "").lower().find("classical") >= 0,
+        ),
         "contains_synthetic_or_new_molecules": False,  # Default
         "intended_for_nutrition": product.get("intended_use", "").lower() in (
             "nutrition", "nutraceutical", "food", "health food", "supplement"

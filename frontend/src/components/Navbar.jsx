@@ -85,7 +85,7 @@ export default function Navbar() {
   }, [])
 
   const navLinks = [
-    { name: 'Product Passport', href: '/product-passport', isHash: false },
+    { name: 'My Passports', href: '/passports', isHash: false },
     { name: 'IP Intelligence', href: '/ip-intelligence', isHash: false },
     { name: 'ABS Duties', href: '/abs', isHash: false },
     { name: 'Regulatory Intelligence', href: '/regulatory', isHash: false },

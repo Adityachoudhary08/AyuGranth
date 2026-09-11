@@ -5,7 +5,7 @@ export default function WhatIsPatentSection() {
     <section
       id="why-it-matters"
       data-theme="light"
-      className="relative w-full bg-[#f9f6f0] text-[#1c1a17] pt-8 sm:pt-10 md:pt-12 pb-6 sm:pb-8 px-6 sm:px-12 md:px-16 lg:px-24 overflow-hidden border-t border-[#e8dfcf]"
+      className="relative w-full bg-[#f9f6f0] text-[#1c1a17] pt-8 sm:pt-10 md:pt-12 pb-6 sm:pb-8 px-6 sm:px-12 md:px-16 lg:px-24 overflow-hidden"
     >
       {/* Subtle Archival Texture & Watermark */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.035] bg-[radial-gradient(#2a2015_1px,transparent_1px)] [background-size:24px_24px]" />

@@ -190,12 +190,12 @@ export default function KnowledgeDNASection() {
       ref={containerRef}
       id="knowledge-dna"
       data-theme="light"
-      className="relative w-full h-[280vh] bg-white text-[#161412] select-none"
+      className="relative w-full h-[280vh] bg-[#f9f6f0] text-[#161412] select-none"
     >
       {/* Pinned 100vh Viewport */}
       <div
         ref={stickyRef}
-        className="sticky top-0 h-screen h-[100dvh] w-full overflow-hidden bg-white flex flex-col justify-between"
+        className="sticky top-0 h-screen h-[100dvh] w-full overflow-hidden bg-[#f9f6f0] flex flex-col justify-between"
       >
         {/* 1. Full-screen 3D Botanical Helix Canvas */}
         <div
@@ -204,7 +204,7 @@ export default function KnowledgeDNASection() {
         />
 
         {/* Subtle Ambient Vignette Framing */}
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(255,255,255,0.75)_100%)] z-1" />
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(249,246,240,0.75)_100%)] z-1" />
 
         {/* 2. THREE-ANCHOR EDITORIAL TYPOGRAPHY OVERLAY */}
 

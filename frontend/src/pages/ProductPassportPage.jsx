@@ -25,6 +25,7 @@ export default function ProductPassportPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [passportData, setPassportData] = useState(null);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
   const [whyModalData, setWhyModalData] = useState(null);
   const [printMode, setPrintMode] = useState('full'); // 'full' | 'card'
 
@@ -154,7 +155,7 @@ export default function ProductPassportPage() {
       classicalReferences: [
         'Charaka Samhita — Chikitsa Sthana (Rasayana Vidhi)',
         'Ayurvedic Pharmacopoeia of India (API) Monograph Index',
-        'Traditional Knowledge Digital Library (TKDL) Prior-Art Database'
+        'TKDL-related public research papers and case studies (not direct database access)'
       ],
       evidence: {
         source: 'National Biodiversity Authority / Biological Diversity Act, 2002',
@@ -238,13 +239,31 @@ export default function ProductPassportPage() {
     setError(null);
 
     try {
-      // 1. If passportId was passed in route (e.g. a MongoDB ObjectId from /products/ or an AYG/IPS ID)
       if (passportId) {
-        // Try to fetch via passportApi.getPassport if it's a valid ID
+        // Render the product shell immediately while the full evidence pipeline runs.
+        try {
+          const product = await productsApi.getProduct(passportId);
+          setPassportData({
+            ...DEFAULT_INITIAL_DATA,
+            passportId: `IPS-2026-${String(product._id).slice(-6).toUpperCase()}`,
+            product: {
+              ...DEFAULT_INITIAL_DATA.product,
+              name: product.name || DEFAULT_INITIAL_DATA.product.name,
+              ingredients: product.ingredients || DEFAULT_INITIAL_DATA.product.ingredients,
+              ingredientOrigin: product.source_region || DEFAULT_INITIAL_DATA.product.ingredientOrigin,
+              manufacturingMethod: product.manufacturing_process || 'Not specified',
+              targetCountry: product.target_market || DEFAULT_INITIAL_DATA.product.targetCountry,
+            },
+          });
+          setLoading(false);
+          setAnalysisLoading(true);
+        } catch (productError) {
+          console.warn('Unable to load product shell:', productError);
+        }
+
         try {
           const apiRes = await passportApi.getPassport(passportId);
           if (apiRes) {
-            // Map the ProductPassportResponse into our view structure
             setPassportData({
               ...DEFAULT_INITIAL_DATA,
               passportId: apiRes.product_id ? `IPS-2026-${apiRes.product_id.slice(-6).toUpperCase()}` : passportId,
@@ -255,12 +274,15 @@ export default function ProductPassportPage() {
               },
               status: apiRes.confidence === 'high' ? 'EVIDENCE REVIEWED' : 'NEEDS REVIEW',
             });
-            setLoading(false);
             return;
           }
         } catch (apiErr) {
           console.warn("Direct passport ID fetch fallback:", apiErr);
+          setError("Product details loaded, but the full analysis is still unavailable. You can retry from this page.");
+        } finally {
+          setAnalysisLoading(false);
         }
+        return;
       }
 
       // 2. Default state with verified baseline intelligence
@@ -339,7 +361,7 @@ export default function ProductPassportPage() {
   // ─────────────────────────────────────────────────────────────
   // ERROR STATE
   // ─────────────────────────────────────────────────────────────
-  if (error) {
+  if (error && !passportData) {
     return (
       <div className="min-h-screen bg-[#FAF8F3] font-sans text-[#161412] pb-24">
         <Navbar />
@@ -423,6 +445,18 @@ export default function ProductPassportPage() {
       `}</style>
 
       <Navbar />
+      {error && (
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 print:hidden">
+          <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-xs text-amber-900">{error}</div>
+        </div>
+      )}
+      {analysisLoading && (
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 print:hidden">
+          <div className="rounded-xl border border-[#176B45]/20 bg-[#176B45]/5 px-4 py-3 text-xs text-[#176B45]">
+            Product loaded. Indexing regulatory, IP, biodiversity, and export evidence in the background...
+          </div>
+        </div>
+      )}
 
       <main className="max-w-5xl mx-auto pt-28 px-4 sm:px-6 space-y-10">
         

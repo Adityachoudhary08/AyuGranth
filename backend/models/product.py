@@ -17,6 +17,7 @@ class ProductCreate(BaseModel):
     intended_use: str = ""
     target_market: str = ""
     dosage_form: str = ""
+    uses_only_classical_texts: bool = False
     new_plant_variety_bred: bool = False
     unique_packaging: bool = False
     region_specific: bool = False
@@ -27,15 +28,16 @@ class ProductOut(BaseModel):
     id: str = Field(..., alias="_id")
     user_id: str
     name: str
-    ingredients: List[str]
-    source_region: str
-    manufacturing_process: str
-    intended_use: str
-    target_market: str
-    dosage_form: str
-    new_plant_variety_bred: bool
-    unique_packaging: bool
-    region_specific: bool
+    ingredients: List[str] = Field(default_factory=list)
+    source_region: str = ""
+    manufacturing_process: str = ""
+    intended_use: str = ""
+    target_market: str = ""
+    dosage_form: str = ""
+    uses_only_classical_texts: bool = False
+    new_plant_variety_bred: bool = False
+    unique_packaging: bool = False
+    region_specific: bool = False
     classification: Optional[str] = None
     created_at: datetime
 

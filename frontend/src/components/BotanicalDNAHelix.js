@@ -540,7 +540,7 @@ export async function initBotanicalDNA(container) {
 
   // 1. Scene & Renderer setup
   const scene = new THREE.Scene()
-  scene.background = new THREE.Color('#ffffff')
+  scene.background = new THREE.Color('#f9f6f0')
 
   // Refined camera: framed cleanly with generous horizontal breathing room for text
   const camera = new THREE.PerspectiveCamera(32, width / height, 0.1, 100)
