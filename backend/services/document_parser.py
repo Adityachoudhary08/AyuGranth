@@ -20,7 +20,6 @@ English + Hindi.
 
 Notes
 -----
-- GPU OCR is intentionally disabled to avoid CUDA out-of-memory errors.
 - 300 DPI is intentionally retained for OCR quality.
 """
 
@@ -43,18 +42,12 @@ logger = logging.getLogger(__name__)
 _ocr_reader = None
 
 
-def _get_ocr_reader():
-    """Lazy-initialise and return the shared EasyOCR reader."""
+def _get_ocr_reader(gpu: bool = False):
+    """Lazy-initialise one process-local EasyOCR reader for the device."""
     global _ocr_reader
 
     if _ocr_reader is None:
         import easyocr
-
-        # CPU mode is intentional.
-        #
-        # The corpus contains very large scanned PDFs and the embedding model
-        # may also use the GPU. Running EasyOCR on GPU can cause CUDA OOM.
-        gpu = False
 
         logger.info(
             "Initialising EasyOCR reader (gpu=%s, languages=['en', 'hi'])",
@@ -158,20 +151,20 @@ def _write_cache_file(cache_file: Path, text: str) -> None:
 # OCR extraction
 # ---------------------------------------------------------------------------
 
-def _extract_with_ocr(path: str) -> str:
+def _extract_with_ocr(path: str, gpu: bool = False) -> str:
     """
     OCR a scanned PDF one page at a time.
 
     Features
     --------
     - 300 DPI for Hindi/Sanskrit/Devanagari quality.
-    - CPU OCR to avoid CUDA OOM.
+    - Device-specific OCR for the parallel GPU/CPU ingestion workers.
     - Page-level cache.
     - Cached pages are skipped.
     - Empty OCR results are cached too.
     - Individual page failures do not crash the complete document.
     """
-    reader = _get_ocr_reader()
+    reader = _get_ocr_reader(gpu=gpu)
 
     pdf_path = Path(path)
 
@@ -316,7 +309,11 @@ def _extract_with_ocr(path: str) -> str:
                         pdf_path.name,
                     )
 
-            except Exception:
+            except Exception as exc:
+                if _is_cuda_oom(exc):
+                    _clear_cuda_cache()
+                    raise
+
                 # ---------------------------------------------------------
                 # PAGE-LEVEL FAILURE RECOVERY
                 # ---------------------------------------------------------
@@ -354,6 +351,30 @@ def _extract_with_ocr(path: str) -> str:
         doc.close()
 
     return "\n\n".join(pages)
+
+
+def _is_cuda_oom(exc: BaseException) -> bool:
+    """Return whether an exception represents CUDA memory exhaustion."""
+    if "cuda out of memory" in str(exc).lower():
+        return True
+
+    try:
+        import torch
+
+        return isinstance(exc, torch.cuda.OutOfMemoryError)
+    except (ImportError, AttributeError):
+        return False
+
+
+def _clear_cuda_cache() -> None:
+    """Release cached CUDA allocations after a GPU OCR failure."""
+    try:
+        import torch
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+    except (ImportError, AttributeError):
+        pass
 
 
 # ---------------------------------------------------------------------------

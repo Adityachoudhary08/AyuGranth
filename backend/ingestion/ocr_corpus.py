@@ -21,12 +21,16 @@ import argparse
 import asyncio
 import csv
 import logging
+import multiprocessing as mp
 import os
 import re
 import sys
+import time
+import traceback
 from pathlib import Path
 
 import fitz
+from motor.motor_asyncio import AsyncIOMotorClient
 from tqdm import tqdm
 
 # Ensure backend root is importable
@@ -36,7 +40,10 @@ from services.document_parser import (
     _extract_with_pymupdf,
     _extract_with_ocr,
     _get_ocr_cache_dir,
+    _is_cuda_oom,
+    _clear_cuda_cache,
 )
+from core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -159,11 +166,42 @@ def _page_count(pdf_path: str) -> int:
         return len(document)
 
 
+async def _load_existing_documents() -> set[str]:
+    """Load source names already present in legal_chunks when available."""
+    if not settings.MONGODB_URI:
+        return set()
+
+    client = AsyncIOMotorClient(
+        settings.MONGODB_URI,
+        serverSelectionTimeoutMS=2000,
+    )
+
+    try:
+        await client.admin.command("ping")
+        collection = client[settings.MONGODB_DB_NAME]["legal_chunks"]
+        existing: set[str] = set()
+
+        async for document in collection.find({}, {"source_document": 1}):
+            source_document = document.get("source_document")
+            if source_document:
+                existing.add(source_document)
+
+        return existing
+    except Exception as exc:
+        logger.warning(
+            "MongoDB resumability check unavailable; continuing OCR: %s",
+            exc,
+        )
+        return set()
+    finally:
+        client.close()
+
+
 # ============================================================================
 # OCR
 # ============================================================================
 
-def _run_ocr(pdf_path: str) -> str:
+def _run_ocr(pdf_path: str, gpu: bool = False) -> str:
     """
     Run the existing OCR implementation.
 
@@ -174,7 +212,186 @@ def _run_ocr(pdf_path: str) -> str:
         - page cache
     """
 
-    return _extract_with_ocr(pdf_path)
+    return _extract_with_ocr(pdf_path, gpu=gpu)
+
+
+def _ocr_worker(device: str, work_queue, result_queue) -> None:
+    """Process OCR jobs using one persistent reader and one device."""
+    gpu = device == "gpu"
+    gpu_failures = 0
+
+    try:
+        from services.document_parser import _get_ocr_reader
+
+        _get_ocr_reader(gpu=gpu)
+        result_queue.put({
+            "event": "worker_ready",
+            "device": device,
+        })
+    except Exception as exc:
+        result_queue.put({
+            "event": "worker_error",
+            "device": device,
+            "error": repr(exc),
+            "traceback": traceback.format_exc(),
+        })
+        return
+
+    while True:
+        pdf_path = work_queue.get()
+
+        if pdf_path is None:
+            return
+
+        filename = Path(pdf_path).name
+
+        try:
+            _run_ocr(pdf_path, gpu=gpu)
+            result_queue.put({
+                "event": "complete",
+                "device": device,
+                "path": pdf_path,
+            })
+            logger.info("OCR complete on %s: %s", device.upper(), filename)
+        except Exception as exc:
+            if gpu and _is_cuda_oom(exc):
+                gpu_failures += 1
+                _clear_cuda_cache()
+                logger.warning(
+                    "GPU OCR OOM for %s; re-queueing for CPU "
+                    "(GPU OOM failures: %d)",
+                    filename,
+                    gpu_failures,
+                )
+                work_queue.put(pdf_path)
+                result_queue.put({
+                    "event": "gpu_oom",
+                    "device": device,
+                    "path": pdf_path,
+                    "error": repr(exc),
+                })
+                continue
+
+            logger.exception("OCR failed on %s: %s", device.upper(), filename)
+            result_queue.put({
+                "event": "complete",
+                "device": device,
+                "path": pdf_path,
+                "error": repr(exc),
+            })
+
+
+def _run_parallel_ocr(
+    ocr_files: list[str],
+    cpu_workers: int,
+    gpu_workers: int = 1,
+) -> dict:
+    """Run OCR files through one GPU and bounded CPU worker processes."""
+    if not ocr_files:
+        return {"gpu_files": 0, "cpu_files": 0, "failed": 0, "seconds": 0.0}
+
+    context = mp.get_context("spawn")
+    work_queue = context.Queue()
+    result_queue = context.Queue()
+
+    for pdf_path in ocr_files:
+        work_queue.put(pdf_path)
+
+    gpu_available = False
+    try:
+        import torch
+
+        gpu_available = torch.cuda.is_available()
+    except ImportError:
+        pass
+
+    workers = []
+    if gpu_workers > 1:
+        raise ValueError("Only one GPU OCR worker is supported")
+
+    if gpu_available and gpu_workers == 1:
+        workers.append(
+            context.Process(
+                target=_ocr_worker,
+                args=("gpu", work_queue, result_queue),
+                name="ocr-gpu",
+            )
+        )
+    elif gpu_workers == 1:
+        logger.warning(
+            "GPU OCR worker requested but CUDA is unavailable; "
+            "starting CPU OCR workers only."
+        )
+    else:
+        logger.info("GPU OCR worker disabled by --gpu-workers 0")
+    workers.extend(
+        context.Process(
+            target=_ocr_worker,
+            args=("cpu", work_queue, result_queue),
+            name=f"ocr-cpu-{index}",
+        )
+        for index in range(cpu_workers)
+    )
+
+    started = time.perf_counter()
+    for worker in workers:
+        worker.start()
+
+    completed = 0
+    stats = {"gpu_files": 0, "cpu_files": 0, "failed": 0}
+    failures: list[tuple[str, str]] = []
+
+    while completed < len(ocr_files):
+        try:
+            result = result_queue.get(timeout=2)
+        except Exception:
+            if not any(worker.is_alive() for worker in workers):
+                missing = len(ocr_files) - completed
+                stats["failed"] += missing
+                failures.append(("<worker processes>", f"{missing} jobs lost"))
+                break
+            continue
+
+        if result["event"] == "gpu_oom":
+            continue
+
+        if result["event"] == "worker_ready":
+            logger.info(
+                "%s OCR worker ready",
+                result["device"].upper(),
+            )
+            continue
+
+        if result["event"] == "worker_error":
+            logger.error(
+                "%s OCR worker unavailable: %s",
+                result["device"].upper(),
+                result["error"],
+            )
+            logger.error("Worker traceback:\n%s", result["traceback"])
+            continue
+
+        completed += 1
+        device = result["device"]
+        if result.get("error"):
+            stats["failed"] += 1
+            failures.append((Path(result["path"]).name, result["error"]))
+        elif device == "gpu":
+            stats["gpu_files"] += 1
+        else:
+            stats["cpu_files"] += 1
+
+    for _worker in workers:
+        work_queue.put(None)
+
+    for worker in workers:
+        worker.join(timeout=10)
+        if worker.is_alive():
+            worker.terminate()
+
+    stats["seconds"] = time.perf_counter() - started
+    stats["failures"] = failures
+    return stats
 
 
 # ============================================================================
@@ -185,6 +402,8 @@ async def ocr_corpus(
     data_dir: str = "data",
     metadata_csv: str = "data/AAYU_GRANTHA_AVAILABLE_PDFS.csv",
     topics: list[str] | None = None,
+    cpu_workers: int = 2,
+    gpu_workers: int = 1,
 ) -> dict:
 
     metadata = _load_metadata_csv(metadata_csv)
@@ -232,6 +451,18 @@ async def ocr_corpus(
             if item[1]["category_folder"] in topic_set
         ]
 
+    existing_documents = await _load_existing_documents()
+    skipped_existing = sum(
+        1
+        for file_path, _metadata in pdf_files
+        if Path(file_path).name in existing_documents
+    )
+    pdf_files = [
+        item
+        for item in pdf_files
+        if Path(item[0]).name not in existing_documents
+    ]
+
     if not pdf_files:
         print("No PDF files found.")
         return {
@@ -251,69 +482,54 @@ async def ocr_corpus(
         "native_text_files": 0,
         "failed": 0,
         "pages": 0,
+        "skipped_existing": skipped_existing,
     }
 
-    pbar = tqdm(
-        pdf_files,
-        desc="OCR pre-pass",
-        unit="file",
-    )
+    ocr_files: list[str] = []
+    pbar = tqdm(pdf_files, desc="Classifying PDFs", unit="file")
 
-    for file_path, metadata_row in pbar:
-
+    for file_path, _metadata_row in pbar:
         filename = Path(file_path).name
-
-        pbar.set_postfix_str(
-            filename[:45]
-        )
+        pbar.set_postfix_str(filename[:45])
 
         try:
-
             page_count = _page_count(file_path)
             stats["pages"] += page_count
 
-            if not _needs_ocr(file_path):
-
+            if _needs_ocr(file_path):
+                ocr_files.append(file_path)
+                logger.info("OCR required: %s (%d pages)", filename, page_count)
+            else:
                 stats["native_text_files"] += 1
-
-                logger.info(
-                    "Native text OK, OCR not required: %s",
-                    filename,
-                )
-
-                continue
-
-            logger.info(
-                "OCR required: %s (%d pages)",
-                filename,
-                page_count,
-            )
-
-            _run_ocr(file_path)
-
-            stats["ocr_files"] += 1
-
-            logger.info(
-                "OCR complete/cache populated: %s",
-                filename,
-            )
-
+                logger.info("Native text OK, OCR not required: %s", filename)
         except KeyboardInterrupt:
-            logger.warning(
-                "OCR interrupted by user."
-            )
+            logger.warning("OCR interrupted by user.")
             raise
-
         except Exception:
             stats["failed"] += 1
+            logger.exception("OCR classification failed for %s", filename)
 
-            logger.exception(
-                "OCR failed for %s",
-                filename,
-            )
+    stats["ocr_files"] = len(ocr_files)
+    max_cpu_workers = max(1, (os.cpu_count() or 4) - 2)
+    effective_cpu_workers = min(max(1, cpu_workers), max_cpu_workers)
 
-            # Continue with next PDF.
-            continue
+    if ocr_files:
+        ocr_stats = _run_parallel_ocr(
+            ocr_files,
+            effective_cpu_workers,
+            gpu_workers=gpu_workers,
+        )
+        stats["gpu_files"] = ocr_stats["gpu_files"]
+        stats["cpu_files"] = ocr_stats["cpu_files"]
+        stats["failed"] += ocr_stats["failed"]
+        stats["ocr_seconds"] = ocr_stats["seconds"]
+
+        for filename, error in ocr_stats.get("failures", []):
+            logger.error("OCR failed entirely for %s: %s", filename, error)
+    else:
+        stats["gpu_files"] = 0
+        stats["cpu_files"] = 0
+        stats["ocr_seconds"] = 0.0
 
     print(
         f"\n{'=' * 60}"
@@ -328,13 +544,25 @@ async def ocr_corpus(
         f"  OCR files:         {stats['ocr_files']}"
     )
     print(
+        f"  Processed on GPU:  {stats['gpu_files']}"
+    )
+    print(
+        f"  Processed on CPU:  {stats['cpu_files']}"
+    )
+    print(
         f"  Native-text files: {stats['native_text_files']}"
+    )
+    print(
+        f"  Skipped existing:  {stats['skipped_existing']}"
     )
     print(
         f"  Failed:            {stats['failed']}"
     )
     print(
         f"  Total pages:       {stats['pages']}"
+    )
+    print(
+        f"  OCR wall-clock:    {stats['ocr_seconds']:.2f} seconds"
     )
     print(
         f"{'=' * 60}"
@@ -375,6 +603,21 @@ def main():
         help="Comma-separated Category Folder values",
     )
 
+    parser.add_argument(
+        "--cpu-workers",
+        type=int,
+        default=2,
+        help="CPU OCR workers (default: 2; capped at CPU count minus 2)",
+    )
+
+    parser.add_argument(
+        "--gpu-workers",
+        type=int,
+        choices=(0, 1),
+        default=1,
+        help="GPU OCR workers (default: 1; requires CUDA)",
+    )
+
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -402,6 +645,8 @@ def main():
             data_dir=args.data_dir,
             metadata_csv=args.metadata_csv,
             topics=topics_list,
+            cpu_workers=args.cpu_workers,
+            gpu_workers=args.gpu_workers,
         )
     )
 

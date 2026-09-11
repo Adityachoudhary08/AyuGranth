@@ -25,7 +25,11 @@ easyocr>=1.7.1
 
 # Embeddings
 sentence-transformers>=3.0.0
-torch>=2.3.0
+
+# torch/torchvision/torchaudio: DO NOT install via this file.
+# Install separately with the CUDA build for this machine's GPU:
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+# Verify with: python -c "import torch; print(torch.cuda.is_available())"
 
 # LLM clients
 langchain-google-genai>=2.0.0
@@ -47,6 +51,7 @@ networkx>=3.3
 
 # Progress bars
 tqdm>=4.66.0
+pytest>=8.0.0
 
 # HTTP client (Ollama reachability check)
 httpx>=0.27.0
