@@ -282,14 +282,14 @@ export default function PatentProcessSection() {
         />
 
         {/* Alternating Steps: Step 1 Left, Step 2 Right, Step 3 Left, Step 4 Right, Step 5 Left, Step 6 Right */}
-        <div className="flex flex-col gap-1.5 sm:gap-2 md:gap-0">
+        <div className="flex flex-col gap-4 sm:gap-5 md:gap-5 lg:gap-6">
           {PROCESS_STEPS.map((s, index) => {
             const isLeft = index % 2 === 0
 
             return (
               <div
                 key={s.step}
-                className={`relative flex items-center w-full ${index > 0 ? 'md:-mt-48 lg:-mt-52' : ''}`}
+                className="relative flex items-center w-full"
               >
                 {/* Central Node on the vertical line */}
                 <div
@@ -319,7 +319,7 @@ export default function PatentProcessSection() {
       </div>
 
       {/* BOTTOM APPLICATION CTA & OFFICIAL PORTAL LINK */}
-      <div className="w-full max-w-4xl mx-auto px-6 sm:px-8 mt-4 sm:mt-6">
+      <div className="w-full max-w-4xl mx-auto px-6 sm:px-8 mt-6 sm:mt-8">
         <div className="border-t border-[#ded7c7] pt-8 sm:pt-10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="text-center sm:text-left">
             <h4 className="font-sans text-lg sm:text-xl text-[#161412] font-bold leading-snug">

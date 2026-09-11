@@ -189,6 +189,22 @@ async def search_similar_chunks(
             logger.warning("Candidate retrieval failed: %s", e)
             raw_chunks = []
 
+    # Atlas vector filters depend on the configured index definition. Enforce
+    # the domain boundary again in application code so a TK query can never
+    # leak ABS, regulatory, or other evidence types into its result set.
+    if source_type_filter:
+        before_filter = len(raw_chunks)
+        raw_chunks = [
+            chunk for chunk in raw_chunks
+            if chunk.get("source_type") == source_type_filter
+        ]
+        if before_filter != len(raw_chunks):
+            logger.info(
+                "[RETRIEVAL FILTER] source_type=%s removed %d cross-domain result(s)",
+                source_type_filter,
+                before_filter - len(raw_chunks),
+            )
+
     # Deduplicate and format results
     seen_keys = set()
     results: list[dict[str, Any]] = []

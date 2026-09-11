@@ -25,7 +25,7 @@ export default function Topbar() {
   ];
 
   return (
-    <header className="h-16 border-b border-[#161412]/10 bg-[#f8f7f4] flex items-center justify-between px-6 z-40 relative">
+    <header className="app-topbar h-16 border-b border-[#161412]/10 bg-[#f4f6f3] flex items-center justify-between px-6 z-40 relative">
       <div className="flex-1 flex items-center gap-4">
         {/* Command Search Bar Trigger */}
         <button className="flex items-center gap-2 text-sm text-[#161412]/50 bg-white border border-[#161412]/10 rounded-xl px-4 py-2 w-72 hover:border-[#176B45]/50 hover:bg-white shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#176B45]/20">

@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  Scale, 
-  AlertCircle, 
-  CheckCircle2, 
-  AlertTriangle, 
-  ArrowRight, 
-  FileText, 
-  ShieldAlert, 
+import {
+  ArrowLeft,
+  Scale,
+  AlertCircle,
+  CheckCircle2,
+  AlertTriangle,
+  ArrowRight,
+  FileText,
+  ShieldAlert,
   BookOpen,
   RotateCcw,
   ExternalLink,
@@ -33,9 +33,9 @@ export default function PatentabilityTool() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: type === 'checkbox' ? checked : value 
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
@@ -64,7 +64,7 @@ export default function PatentabilityTool() {
 
   const getStatusBadgeStyle = (status) => {
     const normalized = (status || '').toLowerCase();
-    if (normalized.includes('likely_patentable') || normalized.includes('likely patentable')) {
+    if (normalized.includes('potentially_novel') || normalized.includes('favourable') || normalized.includes('potentially patentable')) {
       return {
         banner: 'bg-emerald-50/80 border-emerald-200/80 text-emerald-950',
         badge: 'bg-emerald-100/70 border-emerald-300 text-emerald-900',
@@ -72,7 +72,7 @@ export default function PatentabilityTool() {
         icon: <CheckCircle2 className="w-6 h-6 text-emerald-700 shrink-0 mt-0.5" />
       };
     }
-    if (normalized.includes('potentially') || normalized.includes('uncertain')) {
+    if (normalized.includes('potentially') || normalized.includes('concern') || normalized.includes('inventive_step') || normalized.includes('overlap')) {
       return {
         banner: 'bg-amber-50/80 border-amber-200/80 text-amber-950',
         badge: 'bg-amber-100/70 border-amber-300 text-amber-900',
@@ -80,7 +80,7 @@ export default function PatentabilityTool() {
         icon: <AlertTriangle className="w-6 h-6 text-amber-700 shrink-0 mt-0.5" />
       };
     }
-    if (normalized.includes('insufficient')) {
+    if (normalized.includes('insufficient') || normalized.includes('further_search') || normalized.includes('limited')) {
       return {
         banner: 'bg-stone-50 border-stone-200 text-stone-900',
         badge: 'bg-stone-100 border-stone-300 text-stone-800',
@@ -101,13 +101,26 @@ export default function PatentabilityTool() {
     if (norm.includes('favourable') || norm.includes('favorable') || norm.includes('low')) {
       return 'bg-emerald-50 text-emerald-800 border-emerald-200';
     }
-    if (norm.includes('review') || norm.includes('needed') || norm.includes('moderate') || norm.includes('defensible')) {
+    if (norm.includes('review') || norm.includes('needed') || norm.includes('moderate') || norm.includes('defensible') || norm.includes('proof')) {
       return 'bg-amber-50 text-amber-800 border-amber-200';
     }
-    if (norm.includes('risk') || norm.includes('excluded') || norm.includes('statutory')) {
+    if (norm.includes('risk') || norm.includes('excluded') || norm.includes('statutory') || norm.includes('concern')) {
       return 'bg-rose-50 text-rose-800 border-rose-200';
     }
     return 'bg-stone-50 text-stone-700 border-stone-200';
+  };
+
+  const getComparisonBadge = (status) => {
+    switch (status) {
+      case 'exact':
+        return 'bg-rose-50 text-rose-800 border-rose-200';
+      case 'partial':
+        return 'bg-amber-50 text-amber-800 border-amber-200';
+      case 'not_found':
+        return 'bg-emerald-50 text-emerald-800 border-emerald-200';
+      default:
+        return 'bg-stone-50 text-stone-700 border-stone-200';
+    }
   };
 
   return (
@@ -115,16 +128,16 @@ export default function PatentabilityTool() {
       <Navbar />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6" style={{ paddingTop: '135px' }}>
-        
+
         {/* Navigation Breadcrumb */}
         <div className="mb-8">
-          <Link 
-            to="/ip-intelligence" 
+          <Link
+            to="/ip-intelligence"
             className="inline-flex items-center text-xs font-semibold uppercase tracking-wider text-[#176B45] hover:text-[#125537] mb-5 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5 mr-1.5" /> Back to IP Intelligence
           </Link>
-          
+
           <div className="flex items-center gap-3 mb-2.5">
             <div className="w-10 h-10 rounded-lg bg-[#176B45]/10 text-[#176B45] flex items-center justify-center shrink-0">
               <Scale className="w-5 h-5" />
@@ -134,8 +147,8 @@ export default function PatentabilityTool() {
             </div>
           </div>
           <p className="text-sm text-[#161412]/65 max-w-2xl leading-relaxed">
-            Evaluate your formulation and processing methods against Indian Patent Law (specifically Section 3(p), Section 3(d), and Section 3(e)). 
-            This is an AI-assisted preliminary evaluation to support research and patent strategy.
+            Evaluate your formulation and processing methods against Indian Patent Law (specifically Section 3(p), Section 3(d), and Section 3(e)).
+            This is an AI-assisted preliminary evaluation strictly grounded in your provided specifications.
           </p>
         </div>
 
@@ -161,89 +174,85 @@ export default function PatentabilityTool() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-[#161412] mb-1.5">
-                  Formulation Description <span className="text-red-600">*</span>
+                  Formulation & Process Description <span className="text-red-500">*</span>
                 </label>
-                <p className="text-xs text-[#161412]/55 mb-2.5">
-                  Include botanical names, specialized extraction methods (e.g. CO2, hydroalcoholic), targeted therapeutic use, and carrier systems.
-                </p>
-                <textarea 
-                  required 
-                  name="formulation_description" 
-                  value={formData.formulation_description} 
-                  onChange={handleChange} 
+                <textarea
+                  required
+                  name="formulation_description"
+                  value={formData.formulation_description}
+                  onChange={handleChange}
                   rows={5}
-                  className="w-full bg-[#fbfaf7] text-[#161412] border border-[#161412]/15 rounded-xl p-4 text-sm focus:outline-none focus:border-[#176B45] focus:bg-white transition-all resize-none leading-relaxed placeholder-[#161412]/35" 
-                  placeholder="e.g. A synergistic phytopharmaceutical formulation comprising supercritical CO2 extract of Ashwagandha (Withania somnifera) standardized to 5% withanolides and liposomal-encapsulated Curcuminoids, demonstrating 4-fold bioavailability enhancement for anti-inflammatory therapy..."
+                  className="w-full bg-[#fbfaf7] text-[#161412] border border-[#161412]/15 rounded-xl p-4 text-sm focus:outline-none focus:border-[#176B45] focus:bg-white transition-all resize-none leading-relaxed placeholder-[#161412]/35"
+                  placeholder="e.g. A topical herbal formulation comprising standardized extracts of Curcuma longa rhizome and Boswellia serrata resin in a 2:1 weight ratio. The extracts are prepared using 70% hydro-alcoholic extraction and incorporated into a phospholipid-based topical delivery system with an average particle size of 150 nm for inflammatory skin conditions..."
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-[#161412] mb-1.5">Regulatory Category</label>
-                <select 
-                  name="category" 
-                  value={formData.category} 
-                  onChange={handleChange} 
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
                   className="w-full bg-[#fbfaf7] text-[#161412] border border-[#161412]/15 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#176B45] focus:bg-white transition-all"
                 >
                   <option>Proprietary Ayurvedic Medicine</option>
                   <option>Classical Medicine</option>
-                  <option>Phytopharmaceutical</option>
-                  <option>Cosmetic</option>
-                  <option>Ayurveda-Aahar</option>
+                  <option>Phytopharmaceutical Drug</option>
+                  <option>Nutraceutical / Food Supplement</option>
+                  <option>Cosmeceutical</option>
                 </select>
-                <p className="text-xs text-[#161412]/50 mt-1.5">Classical medicine classifications face immediate statutory exclusion under Section 3(p).</p>
               </div>
 
-              <div className="pt-2">
+              <div className="pt-2 border-t border-[#161412]/10">
                 <p className="text-xs font-semibold uppercase tracking-wider text-[#161412]/60 mb-3">Additional IP Characteristics</p>
                 <div className="space-y-2.5">
                   <label className="flex items-start gap-3 p-3.5 bg-[#fbfaf7] hover:bg-[#f6f4ed] border border-[#161412]/10 rounded-xl cursor-pointer transition-colors">
-                    <input 
-                      type="checkbox" 
-                      name="region_specific" 
-                      checked={formData.region_specific} 
-                      onChange={handleChange} 
-                      className="mt-0.5 w-4 h-4 text-[#176B45] rounded border-[#161412]/20 focus:ring-[#176B45]" 
+                    <input
+                      type="checkbox"
+                      name="region_specific"
+                      checked={formData.region_specific}
+                      onChange={handleChange}
+                      className="mt-0.5 w-4 h-4 text-[#176B45] rounded border-[#161412]/20 focus:ring-[#176B45]"
                     />
                     <div className="text-xs">
                       <span className="font-medium text-[#161412] block mb-0.5">Region-specific botanical origin (Geographical Indication context)</span>
-                      <span className="text-[#161412]/55">Botanical materials sourced from distinct agro-climatic zones with established reputation.</span>
+                      <span className="text-[#161412]/60">Ingredients procured from specific geographic regions with recognized terroir or traditional reputation.</span>
                     </div>
                   </label>
 
                   <label className="flex items-start gap-3 p-3.5 bg-[#fbfaf7] hover:bg-[#f6f4ed] border border-[#161412]/10 rounded-xl cursor-pointer transition-colors">
-                    <input 
-                      type="checkbox" 
-                      name="unique_packaging" 
-                      checked={formData.unique_packaging} 
-                      onChange={handleChange} 
-                      className="mt-0.5 w-4 h-4 text-[#176B45] rounded border-[#161412]/20 focus:ring-[#176B45]" 
+                    <input
+                      type="checkbox"
+                      name="unique_packaging"
+                      checked={formData.unique_packaging}
+                      onChange={handleChange}
+                      className="mt-0.5 w-4 h-4 text-[#176B45] rounded border-[#161412]/20 focus:ring-[#176B45]"
                     />
                     <div className="text-xs">
                       <span className="font-medium text-[#161412] block mb-0.5">Proprietary container geometry or industrial dispenser design</span>
-                      <span className="text-[#161412]/55">Applies to novel visual shape, configuration, or ornamental packaging under the Designs Act, 2000.</span>
+                      <span className="text-[#161412]/60">Novel external physical shape, applicator ergonomics, or decorative packaging eligible for Design Registration.</span>
                     </div>
                   </label>
 
                   <label className="flex items-start gap-3 p-3.5 bg-[#fbfaf7] hover:bg-[#f6f4ed] border border-[#161412]/10 rounded-xl cursor-pointer transition-colors">
-                    <input 
-                      type="checkbox" 
-                      name="new_plant_variety_bred" 
-                      checked={formData.new_plant_variety_bred} 
-                      onChange={handleChange} 
-                      className="mt-0.5 w-4 h-4 text-[#176B45] rounded border-[#161412]/20 focus:ring-[#176B45]" 
+                    <input
+                      type="checkbox"
+                      name="new_plant_variety_bred"
+                      checked={formData.new_plant_variety_bred}
+                      onChange={handleChange}
+                      className="mt-0.5 w-4 h-4 text-[#176B45] rounded border-[#161412]/20 focus:ring-[#176B45]"
                     />
                     <div className="text-xs">
                       <span className="font-medium text-[#161412] block mb-0.5">Utilizes a novel bred botanical variety</span>
-                      <span className="text-[#161412]/55">Evaluates applicability under the Protection of Plant Varieties and Farmers' Rights (PPV&FR) Act, 2001.</span>
+                      <span className="text-[#161412]/60">New botanical genotype bred through controlled cultivation eligible under PPV&FR Act, 2001.</span>
                     </div>
                   </label>
                 </div>
               </div>
 
               <div className="pt-3">
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="w-full sm:w-auto px-8 py-3.5 bg-[#176B45] text-white font-medium text-sm rounded-xl hover:bg-[#125537] transition-all shadow-sm flex items-center justify-center gap-2"
                 >
                   Analyze Patentability <ArrowRight className="w-4 h-4" />
@@ -267,7 +276,7 @@ export default function PatentabilityTool() {
         {/* Results Screen */}
         {result && (
           <div className="space-y-8 animate-in fade-in duration-300">
-            
+
             {/* Primary Result Banner */}
             {(() => {
               const style = getStatusBadgeStyle(result.status || result.posture);
@@ -280,8 +289,7 @@ export default function PatentabilityTool() {
                         <div className="flex items-center gap-2.5 mb-1.5">
                           <span className="text-[10px] font-bold uppercase tracking-widest text-[#161412]/60">Preliminary Patentability Posture</span>
                           <span className={cn("px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider", style.badge)}>
-                            {result.confidence ? `Confidence: ${result.confidence}` : 'Confidence: Moderate'}
-                            {result.confidence_score ? ` (${result.confidence_score}%)` : ''}
+                            Confidence: {result.confidence || 'Moderate'}
                           </span>
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-serif tracking-tight text-[#161412]">
@@ -290,8 +298,8 @@ export default function PatentabilityTool() {
                       </div>
                     </div>
 
-                    <button 
-                      onClick={reset} 
+                    <button
+                      onClick={reset}
                       className="inline-flex items-center gap-1.5 px-4 py-2 bg-white/90 hover:bg-white text-[#161412] text-xs font-semibold rounded-lg border border-[#161412]/15 shadow-2xs transition-all self-start"
                     >
                       <RotateCcw className="w-3.5 h-3.5 text-[#176B45]" />
@@ -314,7 +322,7 @@ export default function PatentabilityTool() {
                 <span className="text-[10px] font-bold uppercase tracking-widest text-[#176B45]">Analysis Synthesis</span>
                 <h3 className="text-xl font-serif text-[#161412]">Executive Summary</h3>
               </div>
-              
+
               <div className="text-sm leading-relaxed text-[#161412]/80 space-y-4">
                 {(result.summary || result.reasoning || '').split('\n\n').map((para, idx) => (
                   <p key={idx} className="leading-relaxed">
@@ -324,88 +332,279 @@ export default function PatentabilityTool() {
               </div>
             </div>
 
-            {/* User Input → Analysis Connection ("Information Considered") */}
-            {result.input_analysis && (
-              <div className="bg-white p-7 sm:p-9 rounded-2xl border border-[#161412]/12 shadow-sm">
-                <div className="border-b border-[#161412]/10 pb-3 mb-5">
+            {/* Your Invention — Exact Features Extracted */}
+            <div className="bg-white p-7 sm:p-9 rounded-2xl border border-[#161412]/12 shadow-sm">
+              <div className="border-b border-[#161412]/10 pb-3 mb-5 flex items-center justify-between">
+                <div>
                   <span className="text-[10px] font-bold uppercase tracking-widest text-[#176B45]">Input Grounding</span>
-                  <h3 className="text-xl font-serif text-[#161412]">Information Considered & Relevance</h3>
+                  <h3 className="text-xl font-serif text-[#161412]">Your Invention — Exact Features</h3>
                 </div>
+                <span className="text-xs px-2.5 py-1 bg-[#176B45]/10 text-[#176B45] rounded-md font-medium">
+                  Verbatim Specification
+                </span>
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  <div className="space-y-3.5 bg-[#faf8f3] p-5 rounded-xl border border-[#161412]/8">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block">Evaluated Subject</span>
-                      <span className="text-sm font-semibold text-[#161412]">{result.input_analysis.product || 'Botanical Formulation'}</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4 bg-[#faf8f3] p-5 rounded-xl border border-[#161412]/8">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block mb-0.5">Evaluated Subject / Formulation</span>
+                    <span className="text-sm font-semibold text-[#161412]">
+                      {result.invention_features?.formulation_type || result.input_analysis?.product || 'Herbal Formulation'}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block mb-1">Key Botanical Ingredients Identified</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {((result.invention_features?.ingredients?.length ? result.invention_features.ingredients : result.input_analysis?.ingredients) || []).map((ing, i) => (
+                        <span key={i} className="px-2.5 py-1 bg-white border border-[#161412]/12 rounded-md text-xs font-medium text-[#161412]">
+                          {ing}
+                        </span>
+                      ))}
                     </div>
+                  </div>
 
+                  {result.invention_features?.plant_parts && result.invention_features.plant_parts.length > 0 && (
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block mb-1">Key Botanical Ingredients Identified</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block mb-1">Plant Parts Specified</span>
                       <div className="flex flex-wrap gap-1.5">
-                        {result.input_analysis.ingredients && result.input_analysis.ingredients.length > 0 ? (
-                          result.input_analysis.ingredients.map((ing, i) => (
-                            <span key={i} className="px-2.5 py-1 bg-white border border-[#161412]/12 rounded-md text-xs font-medium text-[#161412]">
-                              {ing}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-xs text-[#161412]/60 italic">Botanical constituents extracted from text</span>
-                        )}
+                        {result.invention_features.plant_parts.map((part, i) => (
+                          <span key={i} className="px-2.5 py-0.5 bg-white border border-[#161412]/10 text-[#161412] rounded text-xs">
+                            {part}
+                          </span>
+                        ))}
                       </div>
                     </div>
+                  )}
 
+                  {result.invention_features?.ratios_quantities && result.invention_features.ratios_quantities.length > 0 && (
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block">Regulatory Classification</span>
-                      <span className="text-xs font-medium text-[#161412] bg-white px-2.5 py-0.5 rounded border border-[#161412]/10 inline-block mt-0.5">
-                        {result.input_analysis.category || 'Proprietary Ayurvedic Medicine'}
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block mb-0.5">Ratios / Quantities</span>
+                      <span className="text-xs font-semibold text-[#161412] bg-white px-2.5 py-1 rounded border border-[#161412]/10 inline-block">
+                        {result.invention_features.ratios_quantities.join(', ')}
                       </span>
                     </div>
-                  </div>
+                  )}
 
-                  <div className="space-y-3.5 bg-[#faf8f3] p-5 rounded-xl border border-[#161412]/8">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block">Targeted Therapeutic Utility</span>
-                      <span className="text-sm text-[#161412]/85">{result.input_analysis.intended_use || 'General physiological support'}</span>
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block mb-1">Distinguishing Technical Interventions</span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {result.input_analysis.technical_features && result.input_analysis.technical_features.length > 0 ? (
-                          result.input_analysis.technical_features.map((feat, i) => (
-                            <span key={i} className="px-2.5 py-1 bg-[#176B45]/10 border border-[#176B45]/20 rounded-md text-xs font-medium text-[#176B45]">
-                              {feat}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-xs text-[#161412]/55 italic">Standard uncharacterized herbal mixture</span>
-                        )}
-                      </div>
-                    </div>
-
-                    {result.input_analysis.traditional_references_mentioned && result.input_analysis.traditional_references_mentioned.length > 0 && (
-                      <div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block">Classical Literature Mentioned</span>
-                        <span className="text-xs text-[#161412]/80">{result.input_analysis.traditional_references_mentioned.join(', ')}</span>
-                      </div>
-                    )}
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block mb-0.5">Regulatory Classification</span>
+                    <span className="text-xs font-medium text-[#161412] bg-white px-2.5 py-0.5 rounded border border-[#161412]/10 inline-block">
+                      {result.invention_features?.category || result.input_analysis?.category || formData.category}
+                    </span>
                   </div>
                 </div>
 
-                {result.input_analysis.why_this_matters && (
-                  <div className="p-4 bg-[#176B45]/5 border border-[#176B45]/15 rounded-xl">
-                    <span className="text-xs font-bold text-[#176B45] uppercase tracking-wider block mb-1">
-                      Why This Information Matters to Patent Examination
+                <div className="space-y-4 bg-[#faf8f3] p-5 rounded-xl border border-[#161412]/8">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block mb-0.5">Targeted Therapeutic Utility</span>
+                    <span className="text-sm text-[#161412]/85">
+                      {result.invention_features?.intended_use || result.input_analysis?.intended_use || 'General physiological support'}
                     </span>
-                    <p className="text-xs leading-relaxed text-[#161412]/80">
-                      {result.input_analysis.why_this_matters}
-                    </p>
                   </div>
-                )}
+
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block mb-1">Extraction Method & Solvents</span>
+                    <span className="text-xs text-[#161412]/85 bg-white px-2.5 py-1 rounded border border-[#161412]/10 inline-block">
+                      {result.invention_features?.extraction_methods?.length
+                        ? result.invention_features.extraction_methods.join(', ')
+                        : (result.input_analysis?.technical_features?.[0] || 'Standard extraction')}
+                    </span>
+                  </div>
+
+                  {result.invention_features?.delivery_system && (
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block mb-0.5">Delivery System / Carrier</span>
+                      <span className="text-xs font-medium text-[#176B45] bg-[#176B45]/10 px-2.5 py-1 rounded border border-[#176B45]/20 inline-block">
+                        {result.invention_features.delivery_system}
+                      </span>
+                    </div>
+                  )}
+
+                  {result.invention_features?.particle_size && (
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block mb-0.5">Particle Size</span>
+                      <span className="text-xs text-[#161412] bg-white px-2.5 py-0.5 rounded border border-[#161412]/10 inline-block">
+                        {result.invention_features.particle_size}
+                      </span>
+                    </div>
+                  )}
+
+                  {result.invention_features?.dosage_application && (
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/50 block mb-0.5">Application Regimen</span>
+                      <span className="text-xs text-[#161412]/80">
+                        {result.invention_features.dosage_application}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Novelty & Inventive Step Assessment */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Novelty Card */}
+              <div className="bg-white p-6 sm:p-7 rounded-2xl border border-[#161412]/12 shadow-sm space-y-3">
+                <div className="flex items-center justify-between border-b border-[#161412]/10 pb-3">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#176B45]">Statutory Requirement</span>
+                    <h4 className="text-lg font-serif text-[#161412]">Novelty (Section 2(1)(j))</h4>
+                  </div>
+                  <span className={cn(
+                    "px-2.5 py-1 text-[11px] font-bold rounded-md border",
+                    result.novelty_assessment?.status === 'novelty_concern'
+                      ? "bg-rose-50 text-rose-800 border-rose-200"
+                      : result.novelty_assessment?.status === 'no_anticipation_found'
+                        ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                        : "bg-stone-50 text-stone-800 border-stone-200"
+                  )}>
+                    {result.novelty_assessment?.status_label || 'Assessment Complete'}
+                  </span>
+                </div>
+                <p className="text-xs text-[#161412]/80 leading-relaxed">
+                  {result.novelty_assessment?.analysis || "Evaluated against retrieved corpus records."}
+                </p>
+              </div>
+
+              {/* Inventive Step Card */}
+              <div className="bg-white p-6 sm:p-7 rounded-2xl border border-[#161412]/12 shadow-sm space-y-3">
+                <div className="flex items-center justify-between border-b border-[#161412]/10 pb-3">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#176B45]">Statutory Requirement</span>
+                    <h4 className="text-lg font-serif text-[#161412]">Inventive Step / Synergy (Section 3(e))</h4>
+                  </div>
+                  <span className={cn(
+                    "px-2.5 py-1 text-[11px] font-bold rounded-md border",
+                    result.inventive_step_assessment?.status === 'inventive_step_concern'
+                      ? "bg-rose-50 text-rose-800 border-rose-200"
+                      : "bg-amber-50 text-amber-800 border-amber-200"
+                  )}>
+                    {result.inventive_step_assessment?.status_label || 'Experimental Data Required'}
+                  </span>
+                </div>
+                <p className="text-xs text-[#161412]/80 leading-relaxed">
+                  {result.inventive_step_assessment?.analysis || "Under Indian patent law, formulations combining known herbal extracts face Section 3(e) objections unless comparative experimental data demonstrates unexpected synergy."}
+                </p>
+              </div>
+            </div>
+
+            {/* Feature-by-Feature Prior-Art Comparison */}
+            {result.prior_art_comparisons && result.prior_art_comparisons.length > 0 && (
+              <div className="bg-white p-7 sm:p-9 rounded-2xl border border-[#161412]/12 shadow-sm space-y-6">
+                <div className="border-b border-[#161412]/10 pb-3">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#176B45]">Detailed Claim Comparison</span>
+                  <h3 className="text-xl font-serif text-[#161412]">Feature-by-Feature Prior-Art Analysis</h3>
+                  <p className="text-xs text-[#161412]/60 mt-1">
+                    Direct comparison of your claimed invention parameters against retrieved statutory prior art.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  {result.prior_art_comparisons.map((item, idx) => (
+                    <div key={idx} className="border border-[#161412]/12 rounded-xl p-5 bg-[#faf8f3]/40 space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#161412]/8 pb-3">
+                        <div className="flex items-center gap-2">
+                          <BookOpen className="w-4 h-4 text-[#176B45] shrink-0" />
+                          <h4 className="font-serif font-bold text-sm text-[#161412]">{item.document_title}</h4>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="text-[10px] uppercase font-bold text-[#161412]/50 tracking-wider">Similarity</span>
+                          <span className="px-2 py-0.5 bg-amber-50 text-amber-900 border border-amber-200 rounded font-semibold text-xs">
+                            {Math.round(item.semantic_similarity * 100)}%
+                          </span>
+                        </div>
+                      </div>
+
+                      <blockquote className="text-xs text-[#161412]/75 italic bg-white p-3.5 rounded-lg border border-[#161412]/8 leading-relaxed">
+                        "{item.excerpt}"
+                      </blockquote>
+
+                      {/* Feature Comparison Table */}
+                      {item.comparisons && item.comparisons.length > 0 && (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left border-collapse text-xs">
+                            <thead>
+                              <tr className="border-b border-[#161412]/10 bg-white/60 text-[10px] font-bold uppercase tracking-wider text-[#161412]/50">
+                                <th className="py-2.5 px-3">Invention Feature</th>
+                                <th className="py-2.5 px-3">Your Specification</th>
+                                <th className="py-2.5 px-3">Prior-Art Disclosure</th>
+                                <th className="py-2.5 px-3 text-right">Status</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#161412]/8">
+                              {item.comparisons.map((c, cIdx) => (
+                                <tr key={cIdx} className="hover:bg-white/50">
+                                  <td className="py-2.5 px-3 font-medium text-[#161412]">{c.feature_name}</td>
+                                  <td className="py-2.5 px-3 text-[#161412]/80">{c.user_specification}</td>
+                                  <td className="py-2.5 px-3 text-[#161412]/70">{c.prior_art_disclosure}</td>
+                                  <td className="py-2.5 px-3 text-right">
+                                    <span className={cn("px-2 py-0.5 rounded text-[10px] font-bold uppercase border", getComparisonBadge(c.status))}>
+                                      {c.status.replace('_', ' ')}
+                                    </span>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+
+                      <p className="text-xs text-[#161412]/80 pt-2 border-t border-[#161412]/8">
+                        <span className="font-semibold text-[#161412]">Overlap Summary: </span>
+                        {item.overall_overlap_summary}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
-            {/* Patentability Analysis Table */}
+            {/* Relevant Prior-Art / Evidence (or No-Match Notice) */}
+            <div className="bg-white p-7 sm:p-9 rounded-2xl border border-[#161412]/12 shadow-sm">
+              <div className="border-b border-[#161412]/10 pb-3 mb-6">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#176B45]">Documented Evidence</span>
+                <h3 className="text-xl font-serif text-[#161412]">Relevant Prior-Art & Citations</h3>
+              </div>
+
+              {result.prior_art && result.prior_art.length > 0 ? (
+                <div className="space-y-4">
+                  {result.prior_art.map((item, idx) => (
+                    <div key={idx} className="border border-[#161412]/12 rounded-xl p-5 bg-[#faf8f3]/40 space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#161412]/8 pb-3">
+                        <div className="flex items-center gap-2">
+                          <BookOpen className="w-4 h-4 text-[#176B45] shrink-0" />
+                          <h4 className="font-serif font-bold text-sm text-[#161412]">{item.title}</h4>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="text-[10px] uppercase font-bold text-[#161412]/50 tracking-wider">Semantic Similarity</span>
+                          <span className="px-2 py-0.5 bg-amber-50 text-amber-900 border border-amber-200 rounded font-semibold text-xs">
+                            {typeof item.similarity_score === 'number' ? `${item.similarity_score}%` : item.similarity_score}
+                          </span>
+                        </div>
+                      </div>
+
+                      <blockquote className="text-xs text-[#161412]/75 italic bg-white p-3.5 rounded-lg border border-[#161412]/8 leading-relaxed">
+                        "{item.excerpt}"
+                      </blockquote>
+
+                      <div className="text-xs">
+                        <span className="font-semibold text-[#161412] mr-1">Relevance:</span>
+                        <span className="text-[#161412]/75 leading-relaxed">{item.why_it_matters}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-6 text-center border border-dashed border-[#161412]/15 rounded-xl bg-[#faf8f3]/30 space-y-2">
+                  <p className="text-sm font-serif text-[#161412]">No supporting prior-art evidence was retrieved from the currently indexed corpus.</p>
+                  <p className="text-xs text-[#161412]/60 max-w-xl mx-auto leading-relaxed">
+                    Absence of direct matches in this system does not guarantee novelty — exhaustive cross-referencing against the confidential CSIR-TKDL database and international patent offices (InPASS, WIPO, USPTO) is essential before filing.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Patentability Criteria Analysis Table */}
             {result.criteria && result.criteria.length > 0 && (
               <div className="bg-white rounded-2xl border border-[#161412]/12 shadow-sm overflow-hidden">
                 <div className="px-7 py-5 border-b border-[#161412]/10 bg-[#fbfaf7]/70">
@@ -447,51 +646,6 @@ export default function PatentabilityTool() {
               </div>
             )}
 
-            {/* Relevant Prior-Art / Classical Evidence */}
-            <div className="bg-white p-7 sm:p-9 rounded-2xl border border-[#161412]/12 shadow-sm">
-              <div className="border-b border-[#161412]/10 pb-3 mb-6">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#176B45]">Documented Evidence</span>
-                <h3 className="text-xl font-serif text-[#161412]">Relevant Prior-Art & Classical References</h3>
-              </div>
-
-              {result.prior_art && result.prior_art.length > 0 ? (
-                <div className="space-y-4">
-                  {result.prior_art.map((item, idx) => (
-                    <div key={idx} className="border border-[#161412]/12 rounded-xl p-5 bg-[#faf8f3]/40 space-y-3">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#161412]/8 pb-3">
-                        <div className="flex items-center gap-2">
-                          <BookOpen className="w-4 h-4 text-[#176B45] shrink-0" />
-                          <h4 className="font-serif font-bold text-sm text-[#161412]">{item.title}</h4>
-                        </div>
-                        <div className="flex items-center gap-2 text-xs">
-                          <span className="text-[10px] uppercase font-bold text-[#161412]/50 tracking-wider">Semantic Similarity</span>
-                          <span className="px-2 py-0.5 bg-amber-50 text-amber-900 border border-amber-200 rounded font-semibold text-xs">
-                            {typeof item.similarity_score === 'number' ? `${item.similarity_score}%` : item.similarity_score}
-                          </span>
-                        </div>
-                      </div>
-
-                      <blockquote className="text-xs text-[#161412]/75 italic bg-white p-3.5 rounded-lg border border-[#161412]/8 leading-relaxed">
-                        "{item.excerpt}"
-                      </blockquote>
-
-                      <div className="text-xs">
-                        <span className="font-semibold text-[#161412] mr-1">Why this matters:</span>
-                        <span className="text-[#161412]/75 leading-relaxed">{item.why_it_matters}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-6 text-center border border-dashed border-[#161412]/15 rounded-xl bg-[#faf8f3]/30">
-                  <p className="text-xs text-[#161412]/60">
-                    No direct statutory or classical citations met the similarity threshold in the currently indexed corpus.
-                    A full clearance across the international Patent Cooperation Treaty (PCT) minimum documentation is advised.
-                  </p>
-                </div>
-              )}
-            </div>
-
             {/* Applicable Legal Framework */}
             {result.legal_framework && result.legal_framework.length > 0 && (
               <div className="bg-white p-7 sm:p-9 rounded-2xl border border-[#161412]/12 shadow-sm">
@@ -531,8 +685,8 @@ export default function PatentabilityTool() {
                         <span className={cn(
                           "px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded border",
                           item.color === 'green' ? "bg-emerald-50 text-emerald-800 border-emerald-200" :
-                          item.color === 'red' ? "bg-rose-50 text-rose-800 border-rose-200" :
-                          "bg-amber-50 text-amber-800 border-amber-200"
+                            item.color === 'red' ? "bg-rose-50 text-rose-800 border-rose-200" :
+                              "bg-amber-50 text-amber-800 border-amber-200"
                         )}>
                           {item.status}
                         </span>
@@ -586,6 +740,7 @@ export default function PatentabilityTool() {
 
           </div>
         )}
+
       </main>
     </div>
   );

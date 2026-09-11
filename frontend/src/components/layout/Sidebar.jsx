@@ -67,7 +67,7 @@ export default function Sidebar() {
   const pathname = location.pathname;
 
   return (
-    <aside className="w-64 h-full bg-white border-r border-[#161412]/10 flex flex-col">
+    <aside className="app-sidebar w-64 h-full bg-white border-r border-[#161412]/10 flex flex-col">
       <div className="h-16 flex items-center px-6 border-b border-[#161412]/10">
         <Link to="/" className="text-xl font-serif text-[#176B45] font-semibold tracking-wide flex items-center gap-2">
           <span>AyuGranth</span>

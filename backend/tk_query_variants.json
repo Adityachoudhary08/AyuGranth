@@ -1,0 +1,253 @@
+[WARN] MongoDB unavailable; continuing without database: No replica set members found yet, Timeout: 5.0s, Topology Description: <TopologyDescription id: 6aa4204f975de5c02de73a02, topology_type: ReplicaSetNoPrimary, servers: [<ServerDescription ('ac-bqzk0gv-shard-00-00.yjvda8w.mongodb.net', 27017) server_type: Unknown, rtt: None>, <ServerDescription ('ac-bqzk0gv-shard-00-01.yjvda8w.mongodb.net', 27017) server_type: Unknown, rtt: None>, <ServerDescription ('ac-bqzk0gv-shard-00-02.yjvda8w.mongodb.net', 27017) server_type: Unknown, rtt: None>]>
+{
+  "Withania somnifera": [],
+  "Withania somnifera root": [
+    {
+      "title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+      "id": "6aa10b9dac26c5f8e09628c1",
+      "score": 0.5724,
+      "text": "2.\t Duration of Study: 3 years.\n\n3.\t Participating centre: NARIP, Cheruthuruthy\n\n4.\t PI: Dr. Parvathy G Nair\n\n5.\t Date of initiation: 18th November, 2022\n\n6.\t Current status: On-going.\n\n7.\t Summary of Project: Raw drugs of Murivenna purchased. Botani"
+    },
+    {
+      "title": "525464660c__06_Ayurveda_Scientific_Evidence_Clinical_Drug_Research.pdf",
+      "id": "6aa10949ac26c5f8e0962815",
+      "score": 0.5058,
+      "text": "madhu root powder at the Research, Drug Research and Clinical Research including Bio medical instrumentation and dose of २.५ gwith 3.५% gylcerrhizic acid content In=1  and Soy extract at the dose Of (n=20) child Health Care Research were given for pe"
+    },
+    {
+      "title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+      "id": "6aa10b9dac26c5f8e09629eb",
+      "score": 0.505,
+      "text": "ANNUAL REPORT 2022-2023\nCENTRAL COUNCIL FOR RESEARCH IN AYURVEDIC SCIENCES\n319\nAllocated Programme: Other departmental \nwork\nStudied \nparameters: \nMorphological \nand \norganoleptic studies\nEvaluated plant species/formulations: Withania somnifera \n(L.)"
+    },
+    {
+      "title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+      "id": "6aa10b9dac26c5f8e09628b5",
+      "score": 0.483,
+      "text": "27.\t Development of drug master file and dossier on roots of Withania somnifera, an important promising \nmedical plant based on leads from Ayurveda and contemporary research\n\n28.\t Comparative phytochemicals and pharmacological evaluation of small bra"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e096252b",
+      "score": 0.4551,
+      "text": "af, \nStem, Root & Whole plant) (03), Commelina benghalensis (Leaf, Stem, Root & Whole plant) (03), \nCipadessa baccifera (Leaf, Stem & Whole plant), Phyllanthus maderaspatensis (Whole plant) – 03, \nScaevola taccada (Leaf, Stem, Root & Whole plant), Ne"
+    },
+    {
+      "title": "0fd790f3f9__API-Vol-5.pdf",
+      "id": "6aa10cb9ac26c5f8e0962a2e",
+      "score": 0.4504,
+      "text": "THERAPEUTIC USES  -  á£la, Aruci, Gulma, Jvara, K¤mi, Raktapitta, Ga¸·am¡l¡, \nUpadaÆsa, KuÀ¶ha, Vibandha, K¡mal¡, H¤droga, V¡tarakta, \náotha, M£trak¤cchra, D¡ha, Udaravik¡ra, Prameha, Vra¸a, \nKa¸du, Grahan¢, A¿mar¢. \nDOSE  -  50 - 100 ml kv¡tha.\n\n12\n"
+    },
+    {
+      "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+      "id": "6aa1088eac26c5f8e0962720",
+      "score": 0.4421,
+      "text": "8.\t Project Outcome: Genotoxicity of six plants viz. Semecarpus anacardium (Bhallatak), Aconitum \nferox (Vatsanabha), Datura metel (Dhattaura), Croton tiglium (Jaypal) Strychnos nuxvomica \n(Vishamushti), Canabis sativa (Bhanga) was studied using Ames"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e0962527",
+      "score": 0.4417,
+      "text": "227\nAnnual Report  2023-24\nCentral Council for Research in Ayurvedic Sciences\nSagrent-Leaf Mimusops elengi Linn. -Flower \nMurraya koenigii (L.) Spreng- Leaf, Emblica \nofficinalis Gaertn-Leaf Wedelia calendulacea Less \nnon- Rich -Aerial part, Gossypiu"
+    },
+    {
+      "title": "0fd790f3f9__API-Vol-5.pdf",
+      "id": "6aa10cb9ac26c5f8e0962a19",
+      "score": 0.4389,
+      "text": "76\nSARPAGANDHË (Root)\nRauwlolfia serpentina (Linn) \nBenth.ex.Kurz\n166\n77\náVETAPUNARNAVË  (Root)\nBorhaavia verticillata Poir \n168\n78\nTAILAPARÛAH (Leaf)\nEucalyptus globules Labill\n170\n79\nTINIáAH (Wood)\nOugenia oojeinensis (Roxb)Hochr\n172\n80\nTINTIÚÌKAH "
+    },
+    {
+      "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+      "id": "6aa1088eac26c5f8e096271f",
+      "score": 0.4388,
+      "text": "6.\t IAEC approval no: Proposal No.: IISER Pune/IAEC/2019_3/05\n\n7.\t Current Status: Project completed.\n\n8.\t Project Outcome: Yastimadhu (Glycyrrhiza glabra Linn.) root, Guduchi (Tinospora cordifolia) \nstem and Vacha (Acorus calamus) rhizomes are used "
+    }
+  ],
+  "Tinospora cordifolia": [
+    {
+      "title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+      "id": "6aa113fcac26c5f8e0962e72",
+      "score": 0.5577,
+      "text": "639\nMadhuparn¢ \nGu·£c¢ \nTinospora cordifolia (Wild.) \nMiers.\n640\nMadhuphala \nN¡rikela \nCocos nucifera Linn. \n641\nMadhuras¡ \nM£rv¡ \nMarsedenia tenacissima \nWight and Arn.\n642\nMadhuras¡ \nGu·£c¢ \nTinospora cordifolia (Wild.) \nMiers.\n643\nMadhusrava \nM£rv"
+    },
+    {
+      "title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+      "id": "6aa113fcac26c5f8e0962e5f",
+      "score": 0.5494,
+      "text": "209\nCandana \nRaktacandana \nPterocarpus santalinus Linn. \nF.\n210\nCandra \nKarp£ra \nCinnamomum camphora \n(Linn.) Nees Eberm\n211\nCandra¿£ra \nCandra¿£ra \nLepidium sativum Linn. \n213\nCandraprabh¡ \nKarp£ra \nCinnamomum camphora \n(Linn) Nees Eberm\n214\nCapal¡ "
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e096252c",
+      "score": 0.5362,
+      "text": "inospora cordifolia, Curcuma longa, \nOperculina turpethum, Cyperus rotundus, Murva (Marcedenia tenacissima), Cow Milk, Withania \nsomnifera (02), Mucuna pruriens, Cybopogon citratus, Pluchea lanceolata, Ricinus communis, \nManjishtha (Rubia cordifolia)"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e096241b",
+      "score": 0.4971,
+      "text": "activation, PARP1 expression in cancer cells, and mitochondrial membrane potential in \nOVACR-3 cells have been studied. Additionally, the establishment of an ovarian tumor xenograft in nude \nmice has been optimized by injecting OCVAR 3 cells.\n3.2.11\t"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e096240d",
+      "score": 0.4956,
+      "text": "69\nAnnual Report  2023-24\nCentral Council for Research in Ayurvedic Sciences\nThis study aims to investigate the effects of aqueous extracts of Carica papaya leaves, Adhatoda vasaka \nleaves, and Tinospora cordifolia stems, as well as goat and cow milk"
+    },
+    {
+      "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+      "id": "6aa1088eac26c5f8e0962777",
+      "score": 0.4901,
+      "text": "11.\tSummary of the Project: The trial indicates similar protection rates from contracting COVID-19 \nin both study and control group, however there is significant change in W.H.O QOL scale indicating \nthe role of Chyvanprash lehyam in promoting qualit"
+    },
+    {
+      "title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+      "id": "6aa113fcac26c5f8e0962e65",
+      "score": 0.4869,
+      "text": "340\nGhu¸apriy¡ \nAtiviÀ¡ \nAconitum heterophyllum \nWall.\n341\nGirikany¡ \n(áv®ta)     \nApar¡jit¡ \nClitoria ternatea Linn.\n342\nGirikany¡ \nKum¡r¢ \nAloe barbadensis Mill. \n343\nGirikar¸ik¡ \nApar¡jit¡ \nClitoria ternatea Linn.\n344\nGokÀuraka \nGokÀura \nTribulus "
+    },
+    {
+      "title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+      "id": "6aa10b9dac26c5f8e096293b",
+      "score": 0.4768,
+      "text": "39. \nKataria S, Sharma P, Ram JP, Deswal V, Singh M, Rana R, et al. A pilot clinical study of an \nadd-on Ayurvedic formulation containing Tinospora cordifolia and Piper longum in mild to \nmoderate COVID-19. J Ayurveda Integr Med. 2022;13(2):100454. h"
+    },
+    {
+      "title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+      "id": "6aa113fcac26c5f8e0962e5a",
+      "score": 0.4684,
+      "text": "(Stapf.Ex.Holmes)\n97\nAm¤taphal¡ \nËmalak¢ \nEmblica officinalis Gaertn.\n98\nAm¤tavall¢ \nGu·uc¢ \nTinospora cordifolia (Wild.) \nMiers\n99\nAmarad¡ru \nDevad¡ru \nCedrus deodara (Roxb.) loud\n100\nAmarak¡À¶ha \nD®vad¡ru \nCedrus deodara (Roxb.) loud\n101\nAmbaÀ¶hak¢"
+    },
+    {
+      "title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+      "id": "6aa10b9dac26c5f8e096293c",
+      "score": 0.4671,
+      "text": "45. \nGorai PS, Ghosh R, Ghosh S, Samanta S, Sen A, Panja S, et al. Management of Black Root \nDisease-Causing Fungus Fusarium solani CRP1 by Endophytic Bacillus siamensis CNE6 \nthrough Its Metabolites and Activation of Plant Defense Genes. Microbiolog"
+    }
+  ],
+  "Tinospora cordifolia stem": [
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e096240d",
+      "score": 0.5305,
+      "text": "69\nAnnual Report  2023-24\nCentral Council for Research in Ayurvedic Sciences\nThis study aims to investigate the effects of aqueous extracts of Carica papaya leaves, Adhatoda vasaka \nleaves, and Tinospora cordifolia stems, as well as goat and cow milk"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e096252c",
+      "score": 0.5231,
+      "text": "inospora cordifolia, Curcuma longa, \nOperculina turpethum, Cyperus rotundus, Murva (Marcedenia tenacissima), Cow Milk, Withania \nsomnifera (02), Mucuna pruriens, Cybopogon citratus, Pluchea lanceolata, Ricinus communis, \nManjishtha (Rubia cordifolia)"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e096241b",
+      "score": 0.5115,
+      "text": "activation, PARP1 expression in cancer cells, and mitochondrial membrane potential in \nOVACR-3 cells have been studied. Additionally, the establishment of an ovarian tumor xenograft in nude \nmice has been optimized by injecting OCVAR 3 cells.\n3.2.11\t"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e0962528",
+      "score": 0.452,
+      "text": "L.- Stem Bark Clitoria ternatea \nLinn.- Root Ficus lacor Buch. – Ham- Stem Bark, \nLimonia acidissima Houtt. Hordeum vulgare L.- \nFruit Indigofera tinctoria L.- Leaf Juglans regia \nL.- Cotyledon Madhuca indica J.F. Gmel.- Flower, \nMoringa oleifera Lam"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e09623f5",
+      "score": 0.4385,
+      "text": "Column chromatography of the methanolic fraction of the T. cordifolia has afforded \nfour phytocompounds. Column chromatography of the methanolic fraction of the B. diffusa has afforded \ntwo phytocompounds."
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e09623db",
+      "score": 0.4303,
+      "text": "44\nAnnual Report  2023-24\nCentral Council for Research in Ayurvedic Sciences\nDuring the reporting period, Macro-microscopic studies, physicochemical studies, preliminary \nphytochemical screening of leaves of Ocimum tenuiflorum L., Ocimum gratissimum "
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e096252b",
+      "score": 0.4259,
+      "text": "af, \nStem, Root & Whole plant) (03), Commelina benghalensis (Leaf, Stem, Root & Whole plant) (03), \nCipadessa baccifera (Leaf, Stem & Whole plant), Phyllanthus maderaspatensis (Whole plant) – 03, \nScaevola taccada (Leaf, Stem, Root & Whole plant), Ne"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e0962527",
+      "score": 0.4226,
+      "text": "227\nAnnual Report  2023-24\nCentral Council for Research in Ayurvedic Sciences\nSagrent-Leaf Mimusops elengi Linn. -Flower \nMurraya koenigii (L.) Spreng- Leaf, Emblica \nofficinalis Gaertn-Leaf Wedelia calendulacea Less \nnon- Rich -Aerial part, Gossypiu"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e0962522",
+      "score": 0.4194,
+      "text": "icroscopic \nstudies, \npowder studies, camera \nlucida \ndrawings, \nExtraction, and TLC/ \nHPTLC\n3\nIMR Project: To establish \nthe \nbest \nprocurement \ntime for certain herbs by \nanalyzing \nthe \nseasonal \nvariation \nin \nbioactive \nsecondary \nmetabolite \nwi"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e096252d",
+      "score": 0.4033,
+      "text": "230\nAnnual Report  2023-24\nCentral Council for Research in Ayurvedic Sciences\n5\nAgasthi (1) Sesbania grandiflora, Amalaki (3) Phyllanthus emblica, Aragwadha (6) Cassia fistula, \nBakuci (2) Psoralia corylifolia, Bala (4) Sida sp., Bharangi (2) Roticua"
+    }
+  ],
+  "Withania somnifera root Tinospora cordifolia stem decoction": [
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e096240d",
+      "score": 0.5293,
+      "text": "69\nAnnual Report  2023-24\nCentral Council for Research in Ayurvedic Sciences\nThis study aims to investigate the effects of aqueous extracts of Carica papaya leaves, Adhatoda vasaka \nleaves, and Tinospora cordifolia stems, as well as goat and cow milk"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e096252b",
+      "score": 0.4775,
+      "text": "af, \nStem, Root & Whole plant) (03), Commelina benghalensis (Leaf, Stem, Root & Whole plant) (03), \nCipadessa baccifera (Leaf, Stem & Whole plant), Phyllanthus maderaspatensis (Whole plant) – 03, \nScaevola taccada (Leaf, Stem, Root & Whole plant), Ne"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e096241b",
+      "score": 0.4718,
+      "text": "activation, PARP1 expression in cancer cells, and mitochondrial membrane potential in \nOVACR-3 cells have been studied. Additionally, the establishment of an ovarian tumor xenograft in nude \nmice has been optimized by injecting OCVAR 3 cells.\n3.2.11\t"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e09623f5",
+      "score": 0.4623,
+      "text": "Column chromatography of the methanolic fraction of the T. cordifolia has afforded \nfour phytocompounds. Column chromatography of the methanolic fraction of the B. diffusa has afforded \ntwo phytocompounds."
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e0962528",
+      "score": 0.4608,
+      "text": "L.- Stem Bark Clitoria ternatea \nLinn.- Root Ficus lacor Buch. – Ham- Stem Bark, \nLimonia acidissima Houtt. Hordeum vulgare L.- \nFruit Indigofera tinctoria L.- Leaf Juglans regia \nL.- Cotyledon Madhuca indica J.F. Gmel.- Flower, \nMoringa oleifera Lam"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e0962482",
+      "score": 0.4569,
+      "text": "56.\t\nGandhi Y, Rawat H, Singh Dhanjal D, Kumar V, Charde V, Soni H, Mishra SK, Singh G, Singh S, Sharma \nP, Shakya SK. A Comparative Analysis of Phytochemicals, Metal Ions, Volatile Metabolites in Heart \nWood, Stem Bark and Leaves of Salix alba L. al"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e0962522",
+      "score": 0.4531,
+      "text": "icroscopic \nstudies, \npowder studies, camera \nlucida \ndrawings, \nExtraction, and TLC/ \nHPTLC\n3\nIMR Project: To establish \nthe \nbest \nprocurement \ntime for certain herbs by \nanalyzing \nthe \nseasonal \nvariation \nin \nbioactive \nsecondary \nmetabolite \nwi"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e0962527",
+      "score": 0.4441,
+      "text": "227\nAnnual Report  2023-24\nCentral Council for Research in Ayurvedic Sciences\nSagrent-Leaf Mimusops elengi Linn. -Flower \nMurraya koenigii (L.) Spreng- Leaf, Emblica \nofficinalis Gaertn-Leaf Wedelia calendulacea Less \nnon- Rich -Aerial part, Gossypiu"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e09623fb",
+      "score": 0.4412,
+      "text": "di, Jyotishmati, Petha, Vacha, \n\t Gambhari and Shatavari) used in Ayurveda for Neurocognitive enhancement\nPI: Mr. Rudramani Tiwari, RARI, Gwalior\nDate of Initiation: August, 2023\nDuration of Study: 3 years\nSummary of Project: Procurement of raw drug,"
+    },
+    {
+      "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+      "id": "6aa104c1ac26c5f8e096248d",
+      "score": 0.4364,
+      "text": "129.\t Monu Yadav, Milind Parle, Deepak Lamba, Sumit Kumar, Mini Dahiya and Kajal Joshi 2024. \nNeuroprotective effect of Dark Chocolate on ketamine-induced animal model of psychosis through \nthe reversal of behavioral, biochemical and histopathologica"
+    }
+  ]
+}
+[OK] MongoDB connection closed
