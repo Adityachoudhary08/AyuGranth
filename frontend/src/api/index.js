@@ -2,7 +2,7 @@ import { apiClient } from './client';
 export * from './ip';
 
 export const ragApi = {
-  askQuestion: async (data, config = {}) => apiClient.post('/ask/', data, config),
+  askQuestion: async (data, config = {}) => apiClient.post('/ask', data, config),
 };
 
 export const documentsApi = {
@@ -19,7 +19,7 @@ export const documentsApi = {
 };
 
 export const escalationApi = {
-  escalate: async (data, config = {}) => apiClient.post('/escalate/', data, config),
+  escalate: async (data, config = {}) => apiClient.post('/escalate', data, config),
 };
 
 export const complianceApi = {

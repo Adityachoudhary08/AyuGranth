@@ -1,0 +1,284 @@
+{
+  "indexed_documents": 31,
+  "indexed_chunks": 4109,
+  "term_counts": {
+    "Withania somnifera": {
+      "chunks": 29,
+      "documents": 6
+    },
+    "Ashwagandha": {
+      "chunks": 59,
+      "documents": 6
+    },
+    "Tinospora cordifolia": {
+      "chunks": 44,
+      "documents": 8
+    },
+    "Guduchi": {
+      "chunks": 57,
+      "documents": 6
+    }
+  },
+  "top_summary": [
+    {
+      "term": "Withania somnifera",
+      "results": [
+        {
+          "title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+          "id": "6aa10b9dac26c5f8e09629eb",
+          "score": 0.4992,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+          "id": "6aa10b9dac26c5f8e09628c1",
+          "score": 0.4869,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+          "id": "6aa113fcac26c5f8e0962e69",
+          "score": 0.4632,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+          "id": "6aa113fcac26c5f8e0962e7e",
+          "score": 0.4615,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+          "id": "6aa1088eac26c5f8e0962773",
+          "score": 0.4418,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+          "id": "6aa113fcac26c5f8e0962e66",
+          "score": 0.4242,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "40b03c23e1__b32232172.pdf",
+          "id": "6aa14d9ab536b8a66448dc59",
+          "score": 0.4175,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+          "id": "6aa104c1ac26c5f8e096252b",
+          "score": 0.4162,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+          "id": "6aa104c1ac26c5f8e0962489",
+          "score": 0.4162,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "525464660c__06_Ayurveda_Scientific_Evidence_Clinical_Drug_Research.pdf",
+          "id": "6aa10949ac26c5f8e0962815",
+          "score": 0.4141,
+          "source_type": "classical_tk"
+        }
+      ]
+    },
+    {
+      "term": "Ashwagandha",
+      "results": [
+        {
+          "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+          "id": "6aa1088eac26c5f8e096276f",
+          "score": 0.5723,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+          "id": "6aa104c1ac26c5f8e0962461",
+          "score": 0.5427,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+          "id": "6aa10b9dac26c5f8e09629f1",
+          "score": 0.5288,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+          "id": "6aa1088eac26c5f8e0962774",
+          "score": 0.5265,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+          "id": "6aa10b9dac26c5f8e096291d",
+          "score": 0.522,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+          "id": "6aa104c1ac26c5f8e0962480",
+          "score": 0.5139,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+          "id": "6aa104c1ac26c5f8e0962416",
+          "score": 0.5132,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+          "id": "6aa10b9dac26c5f8e09628e1",
+          "score": 0.5075,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+          "id": "6aa10b9dac26c5f8e09629f5",
+          "score": 0.5007,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+          "id": "6aa1088eac26c5f8e0962702",
+          "score": 0.4996,
+          "source_type": "classical_tk"
+        }
+      ]
+    },
+    {
+      "term": "Tinospora cordifolia",
+      "results": [
+        {
+          "title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+          "id": "6aa113fcac26c5f8e0962e72",
+          "score": 0.5577,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+          "id": "6aa113fcac26c5f8e0962e5f",
+          "score": 0.5494,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+          "id": "6aa104c1ac26c5f8e096252c",
+          "score": 0.5362,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+          "id": "6aa104c1ac26c5f8e096241b",
+          "score": 0.4971,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+          "id": "6aa104c1ac26c5f8e096240d",
+          "score": 0.4956,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+          "id": "6aa1088eac26c5f8e0962777",
+          "score": 0.4901,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+          "id": "6aa113fcac26c5f8e0962e65",
+          "score": 0.4869,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+          "id": "6aa10b9dac26c5f8e096293b",
+          "score": 0.4768,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+          "id": "6aa113fcac26c5f8e0962e5a",
+          "score": 0.4684,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+          "id": "6aa10b9dac26c5f8e096293c",
+          "score": 0.4671,
+          "source_type": "classical_tk"
+        }
+      ]
+    },
+    {
+      "term": "Guduchi",
+      "results": [
+        {
+          "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+          "id": "6aa104c1ac26c5f8e096241b",
+          "score": 0.4845,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+          "id": "6aa104c1ac26c5f8e096241c",
+          "score": 0.4612,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+          "id": "6aa1088eac26c5f8e0962770",
+          "score": 0.4423,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+          "id": "6aa1088eac26c5f8e0962777",
+          "score": 0.4416,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+          "id": "6aa1088eac26c5f8e0962703",
+          "score": 0.4385,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+          "id": "6aa1088eac26c5f8e096271e",
+          "score": 0.4303,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+          "id": "6aa104c1ac26c5f8e096247c",
+          "score": 0.4283,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+          "id": "6aa1088eac26c5f8e0962787",
+          "score": 0.4274,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+          "id": "6aa1088eac26c5f8e096271f",
+          "score": 0.4255,
+          "source_type": "classical_tk"
+        },
+        {
+          "title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+          "id": "6aa1088eac26c5f8e0962783",
+          "score": 0.4224,
+          "source_type": "classical_tk"
+        }
+      ]
+    }
+  ]
+}

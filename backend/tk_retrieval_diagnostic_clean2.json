@@ -1,0 +1,434 @@
+{
+  "database": "ipsakti",
+  "source_type": "classical_tk",
+  "indexed_documents": 31,
+  "indexed_chunks": 4109,
+  "term_counts": {
+    "Withania somnifera": {
+      "chunks": 29,
+      "documents": 6
+    },
+    "Ashwagandha": {
+      "chunks": 59,
+      "documents": 6
+    },
+    "Tinospora cordifolia": {
+      "chunks": 44,
+      "documents": 8
+    },
+    "Guduchi": {
+      "chunks": 57,
+      "documents": 6
+    }
+  },
+  "retrieval": {
+    "Withania somnifera": [
+      {
+        "document_title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+        "document_id": "6aa10b9dac26c5f8e09629eb",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4992,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "ANNUAL REPORT 2022-2023\nCENTRAL COUNCIL FOR RESEARCH IN AYURVEDIC SCIENCES\n319\nAllocated Programme: Other departmental \nwork\nStudied \nparameters: \nMorphological \nand \norganoleptic studies\nEvaluated plant species/formulations: Withania somnifera \n(L.) Dunal Sida cordifolia L. Elettaria cardamomum (L.) \nMaton Tinospora cordifolia (Willd.) Miers Curcuma longa \nL. Holarrhena antidysenterica (Roth) Wall. ex A. DC. \nPicrorhiza kurroa Royle ex Benth. Syzygium aromaticum \n(L.) Merr. & L.M. Perry Rubia cordifolia L. Trigonella \nfoenum-graecum L Anethum sowa Roxb. ex Fleming \nAsparagus racemosus Willd. Cassia angustifolia M. Vahl \nEmbelia ribes Burm.f. Glycyrrhiza glabra L. Emblica \nofficinalis Gaertn. Terminalia chebula Retz. Psoralea \ncorylifolia L. Zingiber officinale Roscoe Apium graveolens \nL. Plumbago zeylanica L. Coriandrum sativum L. Piper \nlongum L. Holarrhena antidysenterica (Roth) Wall. ex \nA. DC. Punica Grantatum L. Piper nigrum L. Terminalia \nbellirica (Gaertn.) Roxb. Terminalia chebula Retz. Abies \nwebbiana (Wall. ex D. Don) Lindl. Ephedra gerardiana \nWall. ex Stapf Acorus calamus L. Tribulus terrestris L. \nFoeniculum vulgare Mill. Cinnamomum zeylanicum Blume \nCyperus rotundus L. Aegle marmelos (L.) Corrêa Terminalia \narjuna (Roxb. ex DC.) Wight & Arn. Hemidesmus indicus \n(L.) R. Br. ex Schult. Withania somnifera (L.) Dunal \nTinospora cordifolia (Willd.) Miers Rubia cordifolia L. \nAsparagus racemosus Willd. Andrographis paniculata \n(Burm.f.) Nees Saraca asoca (Roxb.) Vetiveria zizanioides \n(L.) Nash Trigonella foenum-graecum L. Litchi chinensis \nSonn. Gonostegia hirta Blume ex Hassk Miq Commiphora \nwightii (Arn.) Bhandari Hingwashtak Churna\nCSMCARI, Chennai\nAllocated \nProgramme: \nIMR \nProject-\nPharmacognostical Evaluation of Medicinal \nPlants Cited in Ayurveda Formulary of India \nExcluding the Plants Mentioned in Ayurvedic \nPharmacopoeia of India-Part II\nStudied parameters: Botanical standardization \n(macroscopy, organoleptic study, Transverse \nsections and powder microscopy by Camera \nLucida drawings and photomicrographs) and \nphysiochemical parameters etc.\nEvaluated plant species: Gmelina arborea Roxb. \nGrewia asiatica L.Gymnema sylvestre (Retz.) R.Br. ex \nSm.Gynandropsis gynandra (L.) Briq. Heliotropium \nindicum L. Holoptelea integrifolia (Roxb.) Planch. \nHordeum vulgare L. Indigofera tinctoria Chapm. Moringa \noleifera Lam. Musa x paradisiaca L.\nAllocated Programme: Drug Master file and \ndossier on Fruits of Phyllanthus emblica L.\nStudied parameters: Macroscopy, Single Drug \nAnatomy, Powder Microscopy, Preliminary \nPhysicochemical Analysis and TLC Studies\nEvaluated plant species: Phyllanthus emblica L."
+      },
+      {
+        "document_title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+        "document_id": "6aa10b9dac26c5f8e09628c1",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4869,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "2.\t Duration of Study: 3 years.\n\n3.\t Participating centre: NARIP, Cheruthuruthy\n\n4.\t PI: Dr. Parvathy G Nair\n\n5.\t Date of initiation: 18th November, 2022\n\n6.\t Current status: On-going.\n\n7.\t Summary of Project: Raw drugs of Murivenna purchased. Botanical authentication and physico-\nchemical analysis completed. HPTLC analysis of raw drugs done. Batch 01 of Murivenna oil \nprepared. Physicochemical analysis of Murivenna oil ongoing\n2.2.27.\tDevelopment of drug master file and dossier on roots of Withania somnifera, an important \npromising medical plant based on leads from Ayurveda and contemporary research\n\n1.\t Objectives: Development of drug master file and dossier on roots of Withania somnifera, an \nimportant promising medical plant based on leads from Ayurveda and contemporary research”.\n\n2.\t Duration of Study: 2 years.\n\n3.\t Participating centre: RARI, Gwalior\n\n4.\t PI: Dr. A.K. Meena\n\n5.\t Date of initiation: 21st November, 2022\n\n6.\t Current status: On-going\n\n7.\t Summary of Project: Literature survey, procurement of raw drugs and instruments is going on. \n2.2.28.\tComparative phytochemicals and pharmacological evaluation of small branches with \nroot stem bark of selective Ayurvedic plants\n\n1.\t Objectives: Comparative phytochemicals and pharmacological evaluation of small branches with \nroot stem bark of selective Ayurvedic plants\n\n2.\t Duration of Study: 2 years.\n\n3.\t Participating centre: RARI, Gwalior\n\n4.\t PI: Dr. A.K. Meena\n\n5.\t Date of initiation: 25th November, 2022\n\n\nANNUAL REPORT 2022-2023\nCENTRAL COUNCIL FOR RESEARCH IN AYURVEDIC SCIENCES\n78\n\n6.\t Current status: On-going\n\n7.\t Summary of Project: Soxhlet extraction of Aegle root and Aegle marmelos branch is completed. \nSoxhlet extraction of Desmodium gangeticu Root and Desmodium gangeticum Branch is under \nprogress. Literature survey, procurement of raw drugs and instruments is going on.\n2.2.29.\tDevelopment of SOP and quality standards for the formulation of Ayush 56"
+      },
+      {
+        "document_title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+        "document_id": "6aa113fcac26c5f8e0962e69",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4632,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "436\nK¡kol¢ \nK¡kol¢ \nLilium polyphyllum D.Don\nWithania somniferum \nDunal\n437\nK¡kaja´gh¡ \nK¡kaja´gh¡ \nPeristrophe bicalyculata \nNees.\n438\nK¡kam¡c¢ \nK¡kam¡c¢ \nSolanum nigrum  Linn.\n439\nK¡kan¡sik¡ \nK¡kan¡sik¡ \nMaritima annua Linn. \n440\nK¡katikt¡ \nK¡katikt¡ \nCardiospermum helicacabum \nLinn.\n441\nK¡l¡ \nTagara \nValeriana wallichii D.C.\n442\nK¡l¡ j¢raka \nK¤Àna j¢raka \nCarum carvi Linn. \n443\nK¡l¡ loha \nAgaru \nAquilaria agallocha Roxb. \n444\nK¡l¡nus¡r¢ \nTagara \nValeriana wallichii D.C.\n445\nK¡l¡nus¡rik¡ \nTagara \nValeriana wallichii D.C.\n446\nK¡l¢yaka \nAgaru \nAquilaria agallocha Roxb. \n447\nK¡l¢yaka \nP¢ta candana \nCoscinium fenestratum \nColebr.\n448\nK¡rav¢ \nK¤À¸aj¢raka \nCarum carvi  Linn. \n449\nK¡rav¢ \nUpakuµcik¡ \nNigella sativa Linn. \n450\nK¡ravellaka \nK¡ravall¢ \nMomordica charantia Linn. \n451\nK¡ravall¢ \nK¡ravall¢ \nMomordica charantia Linn. \n452\nK¡rp¡sa \nK¡rp¡sa \nGossypium herbaceum Linn.\n453\nK¡yasth¡ \nHar¢tak¢ \nTerminalia chebula Retz.\n454\nK£Àm¡¸·a \nK£Àm¡¸·a \nBenincasa hispida (Thunb.) \nCogn.\n455\nK£Àm¡¸·aka \nK£Àm¡¸·¡ \nBenincasa hispida (Thunb.) \nCogn.\n456\nK¤À¸¡ \nCitraka \nPlumbago zeylanica Linn. \n457\nK¤À¸¡ \nPippal¢ \nPiper longum Linn. \n458\nK¤À¸¡garu \nAgaru \nAquilaria agallocha Roxb."
+      },
+      {
+        "document_title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+        "document_id": "6aa113fcac26c5f8e0962e7e",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4615,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "935\nU¶i´ga¸a \nU¶i´ga¸a \nBlepharis edulis pers.\n936\nUd¢cya \nHr¢vera \nColeus vettiveroides \nK.C.Jacob.\n937\nUdaka \nHr¢vera \nColeus vettiveroides \nK.C.Jacob.\n938\nUdumbara \nUdumbara \nFicus racemosa Linn.\n939\nU·upati \nKarp£ra \nCinnamomum camphora \n(Linn.) Nees & Eberm\n940\nUgr¡ \nVac¡ \nAcorus calamus Linn.\n941\nUgragandh¡ \nVac¡ \nAcorus calamus Linn.\n942\nUlli (S.Y.) \nRasona \nAllium sativum Linn. \n943\nUnmatta \nDhatt£ra \nDatura metel Linn.\n944\nUpakuµc¢ \nUpakuµcik¡ \nNigella sativa Linn.\n945\nUpakuµcik¡ \nUpakuµcik¡ \nNigella sativa Linn.\n946\nUpakuly¡ \nPippal¢ \nPiper Longum Linn.\n947\nUrubu \nEra¸·a \nRicinus communis Linn.\n948\nUrv¡ru \nErv¡ru \nCucumis melo Linn. \nVar.utilissimus Duth &Fuller\n949\nUrv¡ru \nErv¡ru \nCucumis melo Linn. \nVar.utilissimus Duth &Fuller\n950\nUtpala \nUtpala \nNymphaea stellata Willd.\n951\nUzinna \nK¡katikt¡ \nCardiospermum helicacabum \nLinn\n952\nV¡¶y¡laka \nBal¡ \nSida cordifolia Linn.\n953\nV¡jigandh¡ \nA¿vagandh¡ \nWithania somnifera Dunal\n954\nV¡jigandhik¡ \nA¿vagandh¡ \nWithania somnifera Dunal\n955\nV¡lh¢ka \nKu´kuma \nCrocus sativus Linn.\n956\nV¡luk¡ \nV¡luk¡ \nCinnamomum cecidodephne \nMeissn\n957\nV¡rah¢ \nV¡rah¢ \nDioscorea bulbifera Linn."
+      },
+      {
+        "document_title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+        "document_id": "6aa1088eac26c5f8e0962773",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4418,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "11.\tSummary of the Project: The study was conducted in 19 cities through 15 CCRAS institutes \nacross the country with sample size of 30,000 (Test group: 20000 and Control group: 10000).\nParticipants in both the intervention and control groups were evaluated on the basis of Immune \nStatus Questionnaire (ISQ) Score. It is a self assessment questionnaire comprising of seven items \nviz: common cold, diarrhea, sudden high fever, headache, muscle and joint pain, skin problems \nand coughing. The items are scored on a 5-point Likert scale ranging from 0 to 4. After 30 days of \nintervention mean ISQ score in Ayurveda intervention group at baseline was 8.50 which increased \nto 9.16 at 30th day (Mean difference = 0.66)  depicting the better immune status of the participants. \nWhereas, in control group mean ISQ score at baseline was 8.68 which after 30 days reached to 8.91 \n(Mean difference = 0.23). The p value was found significant (<0.001) at 30th day analysis between \nthe groups. The mean score on Physical, Psychological, Social relationships and Environment \ndomains of WHO QoL BREF questionnaire at the end of the study was almost similar in both the \nintervention and control group.\n4.5.11.\tA prospective non-randomized open labeled controlled interventional study on the \n\t\neffect of Ashwagandha (Withania somnifera) as a prophylactic measure among high risk \n\t\npopulation (Health Care Workers/ Containment Zone Population) exposed to COVID-19"
+      },
+      {
+        "document_title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+        "document_id": "6aa113fcac26c5f8e0962e66",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4242,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "363\nHapuÀ¡ \nHapuÀ¡ \nJuniperus communis Linn.\n364\nHar¢tak¢ \nHar¢tak¢ \nTerminalia chebula Retz.\n365\nHarapriya \nKarav¢ra \nNerium indicum Mill.\n366\nHare¸u \nR®¸uk¡ \nVitex agnus-castus Linn.\n367\nHare¸uk¡ \nRe¸uk¡ \nVitex agnus-castus Linn.\n368\nHaricandana \nP¢tacandana \nCoscinium fenestratum \nColebr.\n369\nHaridr¡ \nHaridr¡ \nCurcuma longa Linn. \n370\nHastipippal¢ \nGajapippal¢ \nScindapsus officinalis \nSchult.\n371\nHavuÀa \nHapuÀa \nJuniperus communis Linn.\n372\nHayagandh¡ \nA¿vagandh¡ \nWithania somnifera Dunal.\n373\nHayam¡raka \nKarav¢ra \nNerium indicum Mill. \n374\nHi´gu \nHi´gu \nFerula foetida Regel \n375\nHi´gupatr¢ \nHi´gupatr¢ \nFerula faeschkeanaVatke.\n376\nHima \náveta candana \nSantalam alba Linn.\n377\nHima \náveta s¡riv¡ \nHemidesmus indicus R.Br.\n378\nHiÆsr¡ \nHiÆsr¡ \nCapparis spinosa Linn.\n379\nHint¡la \nHint¡la \nPhonix pelucida Roxb.\n380\nHirav¢ \nSvar¸akÀ¢r¢ \nEuphorbia thomsoniana \nBoiss\n381\nHiruberaka \nHr¢vera \nColeus vettiveroides \nK.C .Jacob\n382\nHr¢vera \nHr¢vera \nColeus vettiveroides \nK.C .Jacob\n383\nHut¡¿a \nCitraka \nPlumbago zeylanica Linn.\n384\nHutabhuk \nCitraka \nPlumbago zeylanica Linn.\n385\nÍÀa¸a \nMarica \nPiper nigrum Linn.\n386\nÍÀa¸aka \nMarica \nPiper nigrum Linn."
+      },
+      {
+        "document_title": "40b03c23e1__b32232172.pdf",
+        "document_id": "6aa14d9ab536b8a66448dc59",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4175,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "11. \nAmlavetasa \nvetasalmarasa \nOmreinis peduneuylata\n\n1. Gercinia \nRoxb. \nIndies\n\n2. Mheum \nspecies\n\n12. \nArka \nravi \nksira \n(a) Calotropis procera \ndugdha \n(Ait) R.Or. \n. payas \n(b) C. gigantea (Linn) R.Wr. \npuspa \nEx. Ait. \nmulasvarasa \n327 \n\n\nP \ni \n. \n1 \n2 \n3 \n4\n\n13. \nArjuna \ntvak kvatha \nTerminalia arjuna W.&A. \npartha kalka \nparthasvarasa\n\n14. \nAsoka \nnata \nSaraca asoca (Rose) \nDC. Wild\n\n15. \nAsSmantaka \nFicus rumphii Blume.\n\n16. \nASvagandha \nWithania somnifera \nDunal\n\n17. \n Asvattha \nFicus religiosa Linn.\n\n18. \nAsana \nPterocarpus marsupium \nRoxb.\n\n19. \nAhiphena \nnagaphena toya \nPapaver somniferum Linn. \nphaniphena\n\n20. \nAkarkarabha \nakarakara \nAnacyclus pyrethrum Dc.\n\n21. \nAkhuparnika \nmUusakarni \nIpomea reniformis \nChois. Hallier f.\n\n22. \nAtmagupta \nmarkati \nMucuna prurita Hook \nsvayamgupta \nvanari\n\n23. \nAmalaki \ndhatri \ndhatri rasa \nEmblica officinalis Gartn \namla \ndhatri svarasa \namala \nor \nkvatha svarasa \ndhatri carna\n\n24. \nAmra \nMagifera Indica Linn.\n\n25. \nAmraharidra \namahaldi \nCurcuma amada Roxb.\n\n26. \nAmrata \nkapitana \nSpondias magnifara \nWilld. \namrataka \nSpondias Pinnata \nKurz.\n\n27. \nAragvadha \nVyadhighata. \nCassia fistula Linn. \nsampaka\n\n28. \nIksu \nsita \nkhanda \nSoccharum officinarum \nsarkara \nguda \nLinn. \npuratana guda \nrasa\n\n29. \n—iItkata \nSesbania bispinosa W.F. wight.\n\n30. \n indravaruni \nindravarunika rasa \nCitrullus colocynthis \ngavaksi \nIndrayana kvatha \n328 \nSchrad. \n\n\n5 \n6 \nSee \n1 \n2 \n3 \n4\n\n31. \n Utpala \nnilotpala\n\n32. \nUdumbara \nudumbara \nrasa \nsara\n\n33. \nUnnaba\n\n34. \n-urvaru\n\n35. \nUsarerevanda\n\n36. \n Usira \nnalada \nvirana\n\n37. \nRddhi\n\n38. \nRsbhaka\n\n39. \nEranda \nVataribija \nrubuka mila \nurubika \ntaila\n\n40. \nErandskarkati \nPapita\n\n41. \n Elavaluka \nelavala\n\n42. \nKatabhi \nkatabhi biija\n\n43. \nKatuka \ntikta \nkaturohini \nkutaki\n\n44. \nKatphala\n\n45. \nKantakari \nduhsparsa \nvyaghri ambu \nnidigdhika \n(svarasa) \nbhatakataiya \nkantakari rasa\n\n46. \nKattma\n\n47. \nKadali \nrambha \nKadali kanda- \nsvarasa \nrambha rasa\n\n48. \nKapittha \nkapittha rasa"
+      },
+      {
+        "document_title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+        "document_id": "6aa104c1ac26c5f8e096252b",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4162,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "af, \nStem, Root & Whole plant) (03), Commelina benghalensis (Leaf, Stem, Root & Whole plant) (03), \nCipadessa baccifera (Leaf, Stem & Whole plant), Phyllanthus maderaspatensis (Whole plant) – 03, \nScaevola taccada (Leaf, Stem, Root & Whole plant), Nervilia concolor (whole plant), Clinacanthus \nnutans, Euphorbia heterophylla, Ormocarpum cochinchinense, Diospyros phlebodes, Psydrax dicoccos, \nDolichos trilobus, Theriophonum minutum\nCSMCARI.\nChennai\n(54 single drugs)\n4\nCroton bonplandianus, Tabernaemontana divaricata, Pterolobium hexapetalum, Aesculus indica, \nWaltheria indica, Turnera ulmifolia, Phyllantus virgatus, Thymus linearis, Acacia sinuate, Bryonopsis \nlaciniosa, Euphorbia thymifolia, Phyllanthus maderaspatensis, Solanum violaceum, Bacopia monnieri, \nButea monosperma, Cardiospermum haliocacabum, Phyllanthus reticulate, Zizyphus mauitiana, \nAcacia sinuata, Caesalpinia bonduc, Ficus benghalensis, Ficus hispida, Ipomoea muricata, Piper betle, \nCalotropis procera, Zanthoxylum alatum, Vitex negundo, Dichrostachys cinerea, Eclipta alba, Elettaria \ncardamomum, Embelia ribes, Emblica officinalis, Ephedra garardiana, Erythrina indica, Euphorbia \nnerrifolia, Momordica charentia, Andrographis paniculate, Alstonia scholaris, Achypanthes aspera, \nSenegalia catechu, Mesua ferrea, Oroxylum indicum, Aegel maranelos, Gmelina arborea, Herb-\n7, Marselia Minuta, VK, VJ, VG, KK, KJ, KG, YK, SK, Tvak, Ela, Patra, Nagkesar, Guduchi, Haritaki, \nBibhitaki, Amalaki, Sunthi, NARIP-QC-T12, NARIP-QC-T15, NARIP-QC-S12, NARIP-QC-S15, NARIP-\nQC-T18, NARIP-QC-S18, Haritaki (04), Crataeva nurvula (02), Terminalia chebula, Phyllanthus \nemblica, Terminalia bellirica, Withania somnifera, Asparagus racemosus, Glycyrrhiza glabra, Piper \nlongum, Aegle marmelos, Terminalia arjuna, Zingiber officinalis, Tinospora cordifolia, Curcuma longa, \nOperculina turpethum, Cyperus rotundus, Murva (Marcedenia tenacissima), Cow Milk, Withania \nsomnifera (02), Mucuna pruriens, Cybopogon citratus, Pluchea lanceolata"
+      },
+      {
+        "document_title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+        "document_id": "6aa104c1ac26c5f8e0962489",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4162,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "100.\t Meena AK, Chaturvedi S. Sreekala V. Comparative estimation of withaferin-a content using HPLC \ntechnique from fruit parts of the two chief species of withania genus used as in ayurvedic system of \nmedicine. Research Journal of Pharmacy and Technology. 2023;16(9):4193-8.\n\n101.\t Parwati K, Tiwari R, Verma DK, Kumar D, Yadav S, Rai R, Singh S, Srivastava P, Krishnamoorthi S. Ionic \nLiquid‐Supported Vat Dye (Congo Red)‐Based Donor–Acceptor Type Conjugated Polymeric Material \nas Photosensitizer for Dye‐Sensitized Solar Cells. Energy Technology. 2024 Jan;12(1):2300598.\n\n102.\t Rai S, Pande PP, Kumar K, Tiwari R, Krishnamoorthi S, Das A, Jana T. Enhancement of urease \nproperties by introducing new interface based on pH-responsive polymer-enzyme bioconjugates \nvia grafting through-RAFT polymerization technique. Materials Chemistry and Physics. 2023 Sep \n1;305:128009.\n\n103.\t Roney M, Singh G, Dubey A, Soni H, Tandon S, Narasimhaji CV, Tufail A, Akm MH, Aluwi MF. \nPolypharmacological assessment of Amoxicillin and its analogues against the bacterial DNA gyrase \nB using molecular docking, DFT and molecular dynamics simulation. Aspects of Molecular Medicine. \n2023 Dec 1;2:100024.\n\n104.\t Saibu OA, Singh G, Omoboyowa DA, Oyejoke AK, Olugbodi SA, Bamisaye A,. Adeniji CB, Ajayi TM, \nAkinpelu YI, Christianah A. Ogunwole CA, Ighodaro OM, Francis AC, Discovery of putative natural \ncompounds inhibitor of the germinant spore receptor CspC in Clostridioides difficile infection: \nGaining insights via In silico and bioinformatics approach, Informatics in Medicine Unlocked, \nVolume 42, 2023,101339, ISSN 2352-9148,\n\n105.\t Singh G, Al-Fahad D, Al-Zrkani M K, Chaudhuri T K, Soni H, Tandon S, Patil, R. Identification of \npotential inhibitors of HER2 targeting breast cancer—a structure-based drug design approach. (J \nBiomol Struct Dyn) 2023 1–18."
+      },
+      {
+        "document_title": "525464660c__06_Ayurveda_Scientific_Evidence_Clinical_Drug_Research.pdf",
+        "document_id": "6aa10949ac26c5f8e0962815",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4141,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "madhu root powder at the Research, Drug Research and Clinical Research including Bio medical instrumentation and dose of २.५ gwith 3.५% gylcerrhizic acid content In=1  and Soy extract at the dose Of (n=20) child Health Care Research were given for period of १२weeks. The study revealed decline in the lipid peroxides without significant change in serum lipidlevels which were statistically significant (p<0.05) ' SOME OF THE EVIDENCES EMERGED FROM DOUBLE BLIND RANDOMIZED CONTROLLED Management of Hemiplegia by Panchakarma therapy Panchakarma Vs Palliative In a comparative study on 7४४ hemiplegics revealed at that ५५२ CLINICAL TRIALS AND OTHER EFFICACY TRIALS ARE: subject who received Panchakarma therapy showed significant recovery from illness besides Ashwagandha (Withania somnifera) on the process of ageing improvement in motor function and quality of life in comparison to subjects who received shamana therapy (Palliative therapyl alone Ashwagandha Vs Placebo gm of root powder of Ashwagandha withania somniferal Further information can be obtained from administered in dosage of two tablets three Times daily with milk for one year showed statistically significant increase in Hemoglobin, RBC count, Hair melanin & Seated stature and Director General decreaseinserum cholesterol and ESR१ . Central Council for Research in Ayurvedic Sciences No. 61-65, nstitutional Area, D'-Block, Janakpuri, New Delhi-11००५८ Ayush 64 an Ayurvedic in P. vivax malaria Telephone : +91-11-28525520/28524457, Fax +91-11-28520748 Email dg-ccras@nic in Ayush-64 Vs Control Chloroqvine ३gm of Ayush-o4 was given per in divided doses for Website WWW ccras nicin days. Significant decrease In lymphocytes total disappearance of parasires with clinical improvementwas seenin 72.4 १5.४% case s WWw indianmedicine nic.in Vacha (Acorus calamus) in Ischemic Heart Disease (IHD ) C C R.A.S. २०14 document is meant for publicity and distribution Vacha (१ sgm. three fimes day) Vs Guggulv (4gm. Three fimes day) and Placeb"
+      }
+    ],
+    "Ashwagandha": [
+      {
+        "document_title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+        "document_id": "6aa1088eac26c5f8e096276f",
+        "source_type": "classical_tk",
+        "similarity_score": 0.5723,
+        "prior_art_relevance": "Moderate",
+        "page": null,
+        "section": null,
+        "text": "1.\t Objectives:\n• Primary objective: The primary objective is to study the efficacy and safety of Ashwagandha \nin the prophylaxis against COVID-19 in High Risk Health Care Worker population (HRP) in \ncomparison to HCQS.\n• Secondary objective: Evaluation of general physical and mental health benefits of \nAshwagandha. By virtue of a comprehensive capture of clinical data, the study will evaluate \n\n\nAnnual Report 2020-2021 \nCentral Council for Research in Ayurvedic Sciences\n151\nthe effect of Ashwagandha on expression of COVID-19 in case of prophylaxis failure and \nother common community respiratory infections.\n\n2.\t Study Design:  Randomized prospective, open label, parallel efficacy, two arm multi centric study\n\n3.\t Sample Size: 400 (200 in each arm) at Nagpur 190, at Hassan 190 and 20 at Mumbai Centre\n\n4.\t Duration of Study:  6 months\n\n5.\t Interventions: Ashwagandha (an aqueous extract of Withania somnifera Root) 2 Tablets (250 \nmg each) twice a day after food.\n\n6.\t Participating centre along with PI:\nS. No.\nName of the participating centre\nName of PI\n\n1.\nCARI, Mumbai\nDr. Manohar Saheb Gundeti\nDr. Muffazal Lakdawala\n\n2.\nDatta Meghe Institute of Medical Sciences, \n(DMIMS), Nagpur\nProf. Dr. Dilip Gode\nDr. R. Govind Reddy\n\n3.\nSDM College of Ayurveda & Hospital,\nHassan\nDr Prasanna Narasimha Rao\n* Chief Coordinator\n   Center for Rheumatic Diseases CRD, Pune:  Dr. Arvind Chopra\n\n7.\t Date of IEC Approval\nS. No.\nName of the participating centre\nDate of IEC Approval\n\n1.\nCARI, Mumbai\n17/08/2020\n\n2.\nDatta Meghe Institute of Medical Sciences, \n(DMIMS), Nagpur\n07/08/2020\n\n3.\nSDM College of Ayurveda & Hospital, Hassan\n11/08/2020\n\n8.\t CTRI Registration/Reference (for clinical trials) :  CTRI/2020/08/027163\n\n9.\t Date of initiation:\nS. No.\nName of the participating centre\nDate of initiation\n\n1.\nCARI, Mumbai\n26/09/2020\n\n2.\nDatta Meghe Institute of Medical Sciences, \n(DMIMS), Nagpur\n01/10/2020\n\n3.\nSDM College of Ayurveda & Hospital, Hassan\n16/09/2020"
+      },
+      {
+        "document_title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+        "document_id": "6aa104c1ac26c5f8e0962461",
+        "source_type": "classical_tk",
+        "similarity_score": 0.5427,
+        "prior_art_relevance": "Moderate",
+        "page": null,
+        "section": null,
+        "text": "100\nAnnual Report  2023-24\nCentral Council for Research in Ayurvedic Sciences\nBRIEF REPORT ON COMPLETED PROJECT\n4.3.1\t Title: A study of Ashwagandha administration in participant vaccinated against COVID-19 \non safety, immunogenicity and protection: A randomized, double blind placebo controlled \nmulti-centric clinical trial.\nPIs: Dr. Manohar S. Gundeti (CARI-Mumbai), K. Rajeshwar Reddy (R.A. Podar Medical College Nodal \nCentre) Dr. Girish Tillu (DHS, SPPU-Pune, Prof. (Dr.) Tanuja Nesari (AIIA-Delhi), Dr Shekhar Namburi \n(RARI-Nagpur), Dr Satish Mahajan (DMIMS-wardha), Dr Prasanna Narasimha Rao (SDM-Hassan), Dr. \nSantosh Y. Mudakappagol (KLE-Belgavi), Dr. Sarvesh Kumar Singh (NIA-Jaipur), Dr. Susmita Chaudhuri \n(THSTI, Faridabad) \nChief Coordinator:    Center for Rheumatic Diseases CRD, Pune:  Dr. Arvind Chopra\nDate of Initiation: 4th December, 2021\nCTRI:  CTRI/2021/06/03449\t\nThis study was  Prospective, randomized, double blind, parallel group, placebo controlled study with the \nprimary objective to  explore the effects of co-administration of Ashwagandha on the immunogenicity \nof COVID-19 vaccine and the secondary objective were to study the safety of co-administration \nof Ashwagandha with COVID-19 vaccine, to assess the protection offered by co-administration of \nAshwagandha against breakthrough COVID-19 infection, to assess the effects of co-administration of \nAshwagandha on sustenance of immune response to the COVID-19 vaccine and to assess the effect of \nAshwagandha co-administration with COVID-19 vaccine on Quality of Life. The sample size was 1200 \nfor 1 year at CARI-Mumbai/R.A. Podar Medical College DHS, SPPU-Pune, AIIA-Delhi, DMIMS Wardha/ \nRARI-Nagpur, SDM-Hassan, KLE-Belgavi and NIA-Jaipur. The Study has been completed and a total of \n1200 patients have been enrolled, out of which 1032 completed & 168 dropped out from the study.  The \nstatistical analysis is under progress.\n4.4\t\nKAP Studies\nDuring the reporting period, 3 projects on Knowledge, Aptitude an"
+      },
+      {
+        "document_title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+        "document_id": "6aa10b9dac26c5f8e09629f1",
+        "source_type": "classical_tk",
+        "similarity_score": 0.5288,
+        "prior_art_relevance": "Moderate",
+        "page": null,
+        "section": null,
+        "text": "artwood), \nSahacharabhed (Barleria grandiflora), Patalgaruda (Cocculus hirsutus), \nBhumiamalabhed (Phyllanthus reticulatus), Shatavari (Asparagus \nracemosus), Bilmbi (Averrhoa bilmbi), Kanchanar (Bauhinia purpurea), \nBharangi (Clerodendrum serratum), Bhumiamalabhed (Phyllanthus \nreticulate) (bark), Bhumiamalabhed (Phyllanthus reticulatus) (Leaf), \nVidarikand (Pueraria tuberosa), Turushka (Altingia excelsa), Padmak \n(Prunus cerasoides), Rohisha (Cymbopogon martini), Shukta,\nSthauneya (Taxus baccata), Nakha (Capparis sepiaria), Bibhitaki \n(Terminalia bellirica), Elavaaluka (Prunus cerasus), Sprikka \n(Anisomeles malabarica), Dadhimastu, Iksu Niryasa (Saccharum \nofficinarum), Ajapaya, Krishna sariva (Cryptolepsis buchanani) (4), \nTrapusha (Cucumis sativus) (4), Talamuli (Curculigo orchioides) (4), \nDurva (Cynodon dactylon) (leaf) (4), Durva (Cynodon dactylon) (stem) \n(4), Lajjalu (Mimosa Pudica) (root)(4), Lajjalu (Mimosa Pudica)\n(seed) (4), Nagarmotha Cyperus scariosus (4), Dhattura (Datura \nmetel)(root)(4), Dhattura Datura metel(leaf) (4), Datura metel(fruit) \n(4), Asparagus racemosus (Shatavari), Ashwagandha (Withania \nsomnifera), Musta (Cyperus rotundus), Ela (Elettaria cardamomum) \nKutaja (Holarrhena antidysenterica), Haridra (Curcuma longa),\nMaricha (Piper nigrum), Krushna Jiraka(Carum carvi), Mocharasa, \n(Bombax malabaricum), Pippali (Piper longum), Lavanga (Syzygium"
+      },
+      {
+        "document_title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+        "document_id": "6aa1088eac26c5f8e0962774",
+        "source_type": "classical_tk",
+        "similarity_score": 0.5265,
+        "prior_art_relevance": "Moderate",
+        "page": null,
+        "section": null,
+        "text": "1.\t Objectives : \n• \nPrimary objective: Comparative assessment of Ashwagandha capsule intake in prophylaxis \nof COVID-19, with control arm of Standard Prophylactic Care in a community where at least \n1 confirmed case is already identified\n• \nSecondary objective:\n\nComparative assessment of severity of Covid-19 infection in subjects taking Ashwagandha \ncapsule and those not taking it in following situations:\n\n\nAnnual Report 2020-2021 \nCentral Council for Research in Ayurvedic Sciences\n155\n\n\nAssessment of subjects not requiring hospitalization\n\n\nSeverity of symptoms of hospitalized patients in wards\n\n\nPatients requiring ICU admission / Ventilator support\n\nGlobal assessment of overall change as per the investigator & QOL (Efficacy assessment) \n\nSafety assessment by evaluation of occurrence of AE/SAE due to consumption of Ayurveda \nIntervention.\n\n2.\t Study Design : Non-randomized, Active Controlled Trial\n\n3.\t Sample Size : Planned: 5000 (2500 trial and 2500 Control); However due to pandemic situation \nand  logistic reasons could achieve sample size of -3600 (1800 trial & 1800 control)\n\n4.\t Duration of Study : 45 days\n\n5.\t Interventions : Ashwagandha capsule + Standard Prophylactic Care recommended by Government \nTelangana Health authorities\nControl: Standard Prophylactic Care recommended by Government of Telangana Health authorities\n\n6.\t Participated centre along with PI :\nS. No.\nName of the Participating Centre\nName of PI\n\n1.\nNCIMH, Hyderabad in Collaboration with Vishva \nAyurveda Parishad-Telangana State Unit\nDr T Saketh Ram, R.O (Ay.)\n\n7.\t Date of IEC approval:\nS. No.\nName of the Participating Centre\nDate of IEC approval\n\n1.\nNCIMH, Hyderabad in Collaboration with Vishva \nAyurveda Parishad-Telangana State Unit\n30/04/2020\n\n8.\t CTRI Registration (for clinical trials) : CTRI/2020/05/025429\n\n9.\t Date of initiation : 10/06/2020\nS. No.\nName of the Participating Centre\nDate of initiation"
+      },
+      {
+        "document_title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+        "document_id": "6aa10b9dac26c5f8e096291d",
+        "source_type": "classical_tk",
+        "similarity_score": 0.522,
+        "prior_art_relevance": "Moderate",
+        "page": null,
+        "section": null,
+        "text": "9.\t Date of initiation:\nS. No.\nName of the Participating Centre\nDate of initiation\n\n1.\nDMIMS, Wardha\n20th December, 2021\n\n10. Current status:\nTable - 74: Status of project along participating Centers\nS. \nNo.\nParticipating Centre\nNo. of cases \nenrolled\nNo. of cases \ncompleted\nNo. of cases \nDrop outs\nNo. of cases \ncontinued\n\n1.\nDMIMS, Wardha\n100\n94\n6\n0\n\n11. Summary of the Project: Study completed in September 2022.\nOngoing project\n4.3.3.\t A study of Ashwagandha administration in participants vaccinated against COVID-19 on \nsafety, immunogenicity and protection: A randomized, double blind, placebo controlled, \nmulti-centric clinical trial\n\n1.\t Objectives:\n Primary objective: To explore the effects of co-administration of Ashwagandha on the \nimmunogenicity of COVID-19 vaccine.\n Secondary objectives: \n To study the safety of co-administration of Ashwagandha with COVID-19 vaccine\n\n\nANNUAL REPORT 2022-2023\nCENTRAL COUNCIL FOR RESEARCH IN AYURVEDIC SCIENCES\n162\n To assess the protection offered by co-administration of Ashwagandha against breakthrough \nCOVID-19 infection\n To assess the effects of co-administration of Ashwagandha on sustenance of immune \nresponse to the COVID-19 vaccine\n To assess the effect of Ashwagandha co-administration with COVID-19 vaccine on Quality \nof Life\n\n2.\t Study Design: Prospective, randomized, double blind, parallel group, placebo controlled study.\n\n3.\t Sample Size: Total 1200\n\n4.\t Duration of Study: 12 months\n\n5.\t No. of Groups: 2 (Ashwagandha & Placebo)\n\n6.\t Interventions: Ashwagandha"
+      },
+      {
+        "document_title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+        "document_id": "6aa104c1ac26c5f8e0962480",
+        "source_type": "classical_tk",
+        "similarity_score": 0.5139,
+        "prior_art_relevance": "Moderate",
+        "page": null,
+        "section": null,
+        "text": "44.\t\nSingh H, Yadav B, Rai AK, Srivastava S, Saiprasad A, Jameela S, et al. Ashwagandha (Withania \nsomnifera) and Shunthi (Zingiber officinale) in mild and moderate COVID-19: An open-label \nrandomized controlled exploratory trial. Complement Ther Med. 2023 Sep;76:102966.\n\n45.\t\nVipin Kumar Sharma, Bidhan Mahajon, Sophia Jameela, Shruti Khanduri, Avinash K. Jain, Rakesh \nRana, Renu Singh, Narayanam Srikanth and K. S. Dhiman. Safety and Prescription Trends of Rasa \nAushadhis (Ayurveda Herbomineral Formulations): A Critical Appraisal of Reported Medical \nPractices from CCRAS Experience. Journal of Natural Remedies; Vol 24 (3) | March 2024; \npg.no.589-599\n\n\n115\nAnnual Report  2023-24\nCentral Council for Research in Ayurvedic Sciences\nMedicinal Plant Research\n\n46.\t\nGandhi Y, Grewal J, Jain V, Rawat H, Mishra SK, Kumar V, Kumar R, Shakya SK, Sharma P, Dhanjal \nDS, Prasad SB. Emblica officinalis: A promising herb confining versatile applications. South African \nJournal of Botany. 2023 Aug 1;159:519-31.\n\n47.\t\nGandhi Y, Kumar V, Singh G, Prasad SB, Mishra SK, Soni H, Rawat H, Singh S, Charde V, Gupta A, \nDhanjal DS. Chemoprofiling and medicinal potential of underutilized leaves of Cyperus scariosus. \nScientific Reports. 2024 Mar 27;14(1):7263.\n\n48.\t\nKumar S, Ratha KK, Jaiswal S, Rao MM, Acharya R. Exploring the potential of andrographis paniculata \nand its bioactive compounds in the management of liver diseases: A comprehensive food chemistry \nperspective. Food Chemistry Advances. 2024 Jun 1;4:100674.\n\n49.\t\nMahajon B, Dwivedi H, Vijayakumar V, Sanwal CS, Nesari TM. Research and development activities \nunder central sector scheme of the National Medicinal Plants Board, India. Medicinal Plants-\nInternational Journal of Phytomedicines and Related Industries. 2023;15(3):610-8."
+      },
+      {
+        "document_title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+        "document_id": "6aa104c1ac26c5f8e0962416",
+        "source_type": "classical_tk",
+        "similarity_score": 0.5132,
+        "prior_art_relevance": "Moderate",
+        "page": null,
+        "section": null,
+        "text": "73\nAnnual Report  2023-24\nCentral Council for Research in Ayurvedic Sciences\n34 formulations and Lyophilization of 21 formulations has been completed. Solubility & LCMS data \nacquisition of 11 formulations have been completed. In-silico studies of 36 formulations and, cytotoxicity \nstudies of 34 formulations, and In-vitro CYP Inhibitory activity of 32 drugs have been completed. In-silico \nstudies, cytotoxicity assay, and In-vitro CYP Inhibitory activities of remaining formulations are under \nprogress.\n3.2.4\t Title: Mechanistic investigations on the efficacy and mode of action of Ashwagandha \nand YogarajGuggulu, using a hybrid Proteomics-Cheminformatics-Network medicine \napproach for the treatment of Osteoarthritis.\nPI: Dr. Sharad D. Pawar, CARI, Kolkata and Dr. Vibin Ramakrishnan, IIT, Guwahati\nDate of Initiation: 9th September, 2021\nIAEC approval no: 53/P/S/CARIDD/2018\nThis study aimed to determine the individual metabolites of Ashwagandha and YG, both individually \nand in combination. Additionally, it aims to screen individual constituents against drug molecules in \ndatabases, identify drug molecules similar to the metabolites, and assess metabolites in blood and/or \ntissue through in vivo experiments in mouse models. The study also involves identifying corresponding \ntargets of drugs with maximum chemical and structural similarity, understanding the role of these targets \nin disease pathways using protein-protein interaction (PPI) networks, and mapping the synergy among \nmetabolites, their target proteins, and associated pathways through a multi-component network. To date. \nquantification of biomarkers is completed. The efficacy study for the test drug Ashwagandha and Yogaraj \nGuggulu in the osteoarthritis model of animals is completed. Serum & cartilage samples for the Proteomics \n& metabolomics analysis are completed. Data analysis and histopathology study is in progress.\n3.2.5\t Title: Evaluation of Cytotoxicity, Pharmacokinetics, Anti-Cancer Activity, Detailed"
+      },
+      {
+        "document_title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+        "document_id": "6aa10b9dac26c5f8e09628e1",
+        "source_type": "classical_tk",
+        "similarity_score": 0.5075,
+        "prior_art_relevance": "Moderate",
+        "page": null,
+        "section": null,
+        "text": "1.\t Objective:\n Primary:\n Determine the individual metabolites of Ashwagandha, YG and in combination, using HPLC \nand Mass spectrometry. We propose profiling of various molecules present in each formulation \nand their combination. \n Screening of individual constituents against drug molecules in databases such as Drug Bank \nIdentification of drug molecules, similar to metabolites by screening them against molecular \ndatabases using standardized approaches such as Maximum Common Subgraph calculation \nand Tanimoto coefficient.\n Identification of metabolites in blood AND/OR tissue through an in vivo experiment in mouse \nmodels.\n Identify the corresponding targets of listed drugs with maximum chemical and structural \nsimilarity.\n Understand the role of identified targets in disease pathways, using protein-protein interaction \n(PPI) networks, in search of novel potential targets. Map the synergy among metabolites, \ntheir target proteins and the associated pathways by constructing a multi-component network \ncomprising of metabolites, their potential protein targets and associated pathways using the \nguilt-by-association approach. \n Secondary: \n Scrutiny of proteins obtained from network for re-purposing by identifying the binding sites \namong the protein-metabolite and protein- ‘similar drugs’ using molecular docking and \nMolecular Dynamics Simulations.\n\n\nANNUAL REPORT 2022-2023\nCENTRAL COUNCIL FOR RESEARCH IN AYURVEDIC SCIENCES\n103\n\n2.\t Duration of project: 2 years\n\n3.\t Participating center: CARI (Kolkata) and IIT (Guwahati)\n\n4.\t Name of the PI: Dr. Sharad D. Pawar/ Dr. Vibin Ramakrishnan.\n\n5.\t Date of initiation/enrolment: 9th September, 2021\n\n6.\t IAEC approval no: 53/P/S/CARIDD/2018\n\n7.\t Current Status: Project is under progress."
+      },
+      {
+        "document_title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+        "document_id": "6aa10b9dac26c5f8e09629f5",
+        "source_type": "classical_tk",
+        "similarity_score": 0.5007,
+        "prior_art_relevance": "Moderate",
+        "page": null,
+        "section": null,
+        "text": "), Arjuna (Terminalia arjuna), Trinparni \n(Operculina turpethum), Amalaki (Phyllanthus emblica), Nimba \n(Azadirachta indica), Nagarmotha (Cyperus scariosus), Guduchi \n(Tinospora cordifolia), Ashwagandha (Withania somnifera), Mishri, \nShatavari (Asparagus racemosus), Pippali (Piper longum), Vibhitaki \n(Terminalia bellirica), Hingu (Ferula asafoetida), Chirayata (Swertia \nchirayita), Jatamansi (Nardostachys jatamansi), Ativisha (Aconitum \nheterophyllum), Karkatshringi (Pistacia integerrima), Nagdamani \n(Tabernaemontana divaricata), Cow ghee (Goghrita), Mardenia \ntenacissima (Murva) (2),\n5\nAgasthikkuru (Sesbania grandiflora) (2), Agnimantha (Premna \nserratifolia)(3), Ajamoda (Trachyspermum ammi) (1), Amalaki \n(Emblica officinalis) (8), Aragwadha (Cassia fistula ) (5), Bakuci \n(Psoralea corylifolia) (4), Bala (Sida cordifolia) (3), Bharangi \n(Clerodendrum serratum) (1), Bilva (Aegle marmelos) (2), Brihati \n(Solanum indicum) (3), Buka (Spermacoce hispida) (1), Chavya (Piper \nretrofratum) (1), Chirabilva (Holoptelia integrifolia) (1), Citraka \n(Plumbago zeylanica) (4), Devadaru (Cedrus deodara) (4), Dinesavally \n(Ventilago maderaspatensis) (3), Ela (Elettaria cardamomum) (2), \nEranda (Ricinus communis)(6), Gambhari (Gmelina arborea) (2), \nGokshura (Tribulus terrestris) (6), Guduchi (Tinospora cordifolia) \n(1), Guggulu (Commiphorawightii) (3), Haridra (Curcuma longa) \nNARIP, Cheruthuruthy\n(254 single drugs)"
+      },
+      {
+        "document_title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+        "document_id": "6aa1088eac26c5f8e0962702",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4996,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "1.\nAswgandha, Shunthi, Gudduchi Kand, Gokshuru, Tulasi, Karvellak, Shunthi, Jambu \nBeej, Saunf, Babbol Phali, Methika, Bala Beej, Amra, Sandhav Lavan, Satpushpa, \nErandmool, Til Taila, Honey, Amala, Coded samples BS-1, Coded samples MM-1, \nCoded samples MP-1, Coded samples MS-1, Coded samples BM-1, Coded samples \nBP-1, Caffeine.\nRARI Gwalior\n(26 single drugs)\n\n2.\nPippali, Sunthi, Haritaki, Varun, Pasanabheda, Apamarga, Tila taila, Guda, Shigru, \nGandhaka, Tankan, Karpura,  Bhunimba, Haridra,  Nimba, Guduchi, Priyangu, \nKitamri, Dalchini, Marich, Ghia Supari, Sharapunkha, Bhringraja, Billwa majja, \nBhumyamalaki, Bibhitaki, Kali mirch, Baybidang, Ashwagandha, Bhallataka, \nKala til, Purana Gur, Vasaka, Bhrami, Kali musli, Guggul, Shatavar, Harar Chilka, \nMulethi, Ajawain, Chitrakmul, Punarnava, Devdaru, Musta, Sveta sariva, Patha, \nKutaja, Kiratatikta, Udumber, Vata, Ashwattha, Parisa, Palasha, Kulatha, Malati, \nDhava, Palasha, Shalmali, Laksha, Lodhra, Ketaki, Nalika, Vatankura, Hrivera, \nBakuchi, Chakramarda, Yavani, Vacha, Shwet Jiraka, Khandira, Saindhav Lavana, \nKshra, Bhanangi, Parpataka, Dhanyaka, Yavasa, Brihati, Apamanga, Sudha, Shukti, \nDanti, Hingu, Agnimantha, Shyonak, Gambhari, Prishanipanni, Shalaparni, Safed \nJeera, Sharkara, Saptaparna, Kasami, Ajagandha, Narikela.\nCARI, Kolkata\n(93 single drugs)\n\n2.\t DRUG STANDARDIZATION RESEARCH\n\n\nAnnual Report 2020-2021 \nCentral Council for Research in Ayurvedic Sciences\n59\n\n3.\nVanslochan, Sodhita Hingula – I, Sodhita Hingula – S, Sodhita Hingula – N, Gandhak \n(sulphur), Tankan (Borax), Hingula (Cinnabar), Parad (Mercury), Manashila \n(Realgar), Alstonia scholaris (bark).\nCSMCARI,\nChennai\n(10 single drugs)"
+      }
+    ],
+    "Tinospora cordifolia": [
+      {
+        "document_title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+        "document_id": "6aa113fcac26c5f8e0962e72",
+        "source_type": "classical_tk",
+        "similarity_score": 0.5577,
+        "prior_art_relevance": "Moderate",
+        "page": null,
+        "section": null,
+        "text": "639\nMadhuparn¢ \nGu·£c¢ \nTinospora cordifolia (Wild.) \nMiers.\n640\nMadhuphala \nN¡rikela \nCocos nucifera Linn. \n641\nMadhuras¡ \nM£rv¡ \nMarsedenia tenacissima \nWight and Arn.\n642\nMadhuras¡ \nGu·£c¢ \nTinospora cordifolia (Wild.) \nMiers.\n643\nMadhusrava \nM£rv¡ \nMarsedenia tenacissima \nWight and Arn.\n644\nMadhuyaÀ¶¢ \nYaÀ¶¢ \nGlycyrrhiza glabra Linn. \n645\nMah¡bal¡ \nMah¡bal¡ \nSida rhombifolia Linn. \n646\nMah¡d¡ru \nDevad¡ru \nCedrus deodara (Roxb.) \nLoud\n647\nMah¡meda \nMah¡meda \nPolygonnatum cirrhifolium \nRoyle \nAsparagus racemosus \nWilld.\n648\nMah¡nimba \nMah¡nimba \nMelia azedarach Linn.\n649\nMah¢dh¡trik¡ \nT¡malak¢ \nPhyllanthus niruri Linn. \n650\nMahauÀadha \náu¸th¢ \nZigniber officinale Rosc. \n651\nMahiÀ¡kÀa \nGuggulu \nCommiphora wightii (Arn.) \nBhandari\n652\nMalap£ (S.Y.) \nPhalgu \nFicus hispida Linn.f.\n653\nMand¡ra \nArka \nCalotropis proecera (Ait) \nR.Br.\n654\nMarica \nMarica \nPiper nigrum Linn.\n655\nMarka¶a \nËtmagup¶¡ \nMucuna prurita Hook. \n656\nMas£ra \nMas£ra \nLens culinaris Medic. \n657\nMisi \nMi¿rey¡ \nFoeniculum vulgare Mill.\n658\nMatsy¡kÀ¢ \nMatsy¡kÀ¢ \nAlteranthera sessilis (Linn) \nR.Br.\n659\nMatsy¡kÀik¡ \nMatsy¡kÀ¢ \nAlteranthera sessilis (Linn)"
+      },
+      {
+        "document_title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+        "document_id": "6aa113fcac26c5f8e0962e5f",
+        "source_type": "classical_tk",
+        "similarity_score": 0.5494,
+        "prior_art_relevance": "Moderate",
+        "page": null,
+        "section": null,
+        "text": "209\nCandana \nRaktacandana \nPterocarpus santalinus Linn. \nF.\n210\nCandra \nKarp£ra \nCinnamomum camphora \n(Linn.) Nees Eberm\n211\nCandra¿£ra \nCandra¿£ra \nLepidium sativum Linn. \n213\nCandraprabh¡ \nKarp£ra \nCinnamomum camphora \n(Linn) Nees Eberm\n214\nCapal¡ \nPippal¢ \nPiper longum Linn.\n215\nCarmas¡hv¡ \nSaptal¡ \nEuphorbia pilosa Linn. Lam\n216\nCavik¡ \nCavya \nPiper chaba Hunter.\n217\nCavya \nCavya \nPiper chaba Hunter.\n218\nCi¶¶am¤ta \n(S.Y.)         \nGud£c¢ \nTinospora cordifolia (Willd.) \nMiers\n219\nCiµc¡ \nCiµc¡ \nTamarindus indica Linn. \n220\nChinnodbhav¡ Gu·£c¢ \nTinospora cordifolia (Willd.) \nMiers\n221\nChinnaroh¡ \nGu·£c¢ \nTinospora cordifolia (Willd.) \nMiers\n222\nChinnaruh¡ \nGu·£c¢ \nTinospora cordifolia (Willd.) \nMiers\n223\nCirabilva \nCirabilva \nHoloptelea integrifolia \nPlanch.\n224\nCirivilva \nCirabilva \nHoloptelea integrifolia \nPlanch. \n225\nCitr¡ \nDant¢ \nBaliospermum montanum \nMuell.Arg.\n226\nCitr¡ \nEra¸·a \nRicinus communis Linn.\n227\nCitra \nEra¸·a \nRicinus communis Linn.\n228\nCitraka \nCitraka \nPlumbago zeylanica Linn. \n229\nCoca \nTvak \nCinnamomum zeylanicum"
+      },
+      {
+        "document_title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+        "document_id": "6aa104c1ac26c5f8e096252c",
+        "source_type": "classical_tk",
+        "similarity_score": 0.5362,
+        "prior_art_relevance": "Moderate",
+        "page": null,
+        "section": null,
+        "text": "inospora cordifolia, Curcuma longa, \nOperculina turpethum, Cyperus rotundus, Murva (Marcedenia tenacissima), Cow Milk, Withania \nsomnifera (02), Mucuna pruriens, Cybopogon citratus, Pluchea lanceolata, Ricinus communis, \nManjishtha (Rubia cordifolia), Bilva (Aegle marmelos), Giloy (Tinospora cordifolia), Acorus calamus, \nClerodendrum phlomidis, Murchit Ghrita, Kanji, Godugda, Dahi, Tamarindus indica, Seasamum \nindicum, Rock Salt, Saccharin offcinarum, Zingiber officinalis, Gokshur, Tinospora cordifolia, \nPhyllanthaceae, Glycyrrhiza glabra, Emblica Offcinalis, Tinospora cordifolia, Curcuma longa, Saindhav \nlavana, Sanay patra, Mulethi, Haritaki, Cow Ghee, Til Oil, Gokshur, Devdaru, Bibhitaki, Haritaki, \nNisodh, Awala, Samundra lavana, Moringa oleifera, Amalaki, Yashtimadhy, Lauha Bhasma, Yasad \nbhasma, NARIP-MV0-B1, NARIP-MV0-B2, Honey, Terminalia Chebula, Phoenix dactylifera, Zingiber \nofficinalis, Curcuma longa, Prunus amygdalus, Triphala Churna, Ajufa Vimal Munakka, New Royal \nGold, AN Special Munakka No. 1, Trilokya Vijya,  Nardostachys Jatamansi, Marsilea minuta, Alstonia \nscholaris, Picrorhiza Kurroa, Swertia chirayta, Caesalpinia crista, Berberis aristata, Holarrhena \nantidysenterica, Cedrus deodar, Cyperus rotundus, Terminalia chebula, Phyllanthus emblica, \nTerminalia bellirica, Haritaki, Ela, Lavang, Trivrat, Amalaki, Musta, Vidang, Bibhitaki, Mishri, Tamal \npatra, Chitrak, Pippali, Yavak Kshar, Sarijik Kshar, Sauvarchal Lavana, Samundra Lavana, Saindhav \nlanvana, Avadh Lavana, Vida, Sunthi, Marich, Pipaali, Ajamoda, Chaitya, hingu, Shodhit Hingu, \nOcimum Americanum, Tribulus terrestris, Moringa olifera, Argeria nervosa, Enicostema littorale, \nTribulus terrestris, Enicostema littorale, Ocimum Americanum\nCARI,\nJhansi\n(197 single \ndrugs)"
+      },
+      {
+        "document_title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+        "document_id": "6aa104c1ac26c5f8e096241b",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4971,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "activation, PARP1 expression in cancer cells, and mitochondrial membrane potential in \nOVACR-3 cells have been studied. Additionally, the establishment of an ovarian tumor xenograft in nude \nmice has been optimized by injecting OCVAR 3 cells.\n3.2.11\t \t Title: Pre-clinical development of Guduchi (Tinospora cordifolia (Thunb) Miers) stem \n\t through AYUSH route for adjunct therapy in tuberculosis to reduce anti-tubercular \n\t treatment (ATT) induced hepatotoxicity.\nPI: Dr. Vijay Kumar, CARI, Jhansi, Dr. Virendra Kumar Maheshbhai Prajapati, CSIR-CDRI- Lucknow & Dr. \nRashmi Sharma, CSIR-IIIM- Jammu\nDate of Initiation: 25th February, 2023\nIAEC approval no: CSIR-CDRI IAEC/2023/141/ Renew-0/ SN:7"
+      },
+      {
+        "document_title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+        "document_id": "6aa104c1ac26c5f8e096240d",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4956,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "69\nAnnual Report  2023-24\nCentral Council for Research in Ayurvedic Sciences\nThis study aims to investigate the effects of aqueous extracts of Carica papaya leaves, Adhatoda vasaka \nleaves, and Tinospora cordifolia stems, as well as goat and cow milk, both individually and in combination, \non biochemical and hematological parameters in experimental thrombocytopenic rats.  During the acute \ntoxicity study, an aqueous extract of Carica papaya leaf, Adhatoda vasaka leaf, and Tinospora cordifolia \nstem was found safe at a dose of 2000 mg/kg. Aqueous extract of Carica papaya leaf demonstrated dose-\ndependent inhibition of a decrease in the platelet and other blood cells, whereas aqueous extract of \nAdhatoda vasaka leaf and aqueous extract of Tinospora cordifolia stem demonstrated moderate inhibition \nof a decrease in these cells at higher doses in the cyclophosphamide-induced thrombocytopenia model. \nCow and goat milk alone treatments have not demonstrated a protective effect against cyclophosphamide-\ninduced thrombocytopenia when used alone or in combination with plant extracts. The draft final report \nis under vetting.\n3.1.19\t Title: Acute and 90-day oral toxicity study of AYUSH-SS granules in experimental animals.\nPI: Dr. Brijesh Singh Sisodia, RARI, Gwalior\nDate of Initiation: 15th March, 2022\nIAEC approval no: RARI-GWL/IAEC/2021/02\nThe aim of this study was to evaluate the acute oral toxicity and the 90-day repeated dose oral toxicity \nof AYUSH-SS granules in rats. The test drug was found to be safe in an acute oral toxicity study at a dose \nof 2000 mg/kg in rats. The test drug Ayush SS granule was also found safe during a 90-day repeated oral \ndose toxicity study up to 1000 mg/kg. Draft report preparation is in progress.\n3.1.20\tTitle: Acute and 90-day oral toxicity study of AYUSH-LND in experimental animals.\nPI: Dr. Brijesh Singh Sisodia, RARI, Gwalior\nDate of Initiation: 2nd March, 2022\nIAEC approval no: RARI-GWL/IAEC/2021/03\nThe aim of this study was to evaluate"
+      },
+      {
+        "document_title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+        "document_id": "6aa1088eac26c5f8e0962777",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4901,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "11.\tSummary of the Project: The trial indicates similar protection rates from contracting COVID-19 \nin both study and control group, however there is significant change in W.H.O QOL scale indicating \nthe role of Chyvanprash lehyam in promoting quality of life in study group.\n4.5.13.\tProspective non-randomized open labeled controlled interventional study on the effect \n\t\nof Guduchi (Tinospora cordifolia) as a prophylactic measure among high risk population \n\t\n(Health Care Workers/Containment Zone Population) exposed to COVID-19\n\n1.\t Objectives : \n• \nPrimary objective: Comparative assessment of Guduchi (Tinospora cordifolia)  intake in \nprophylaxis of COVID-19, with control arm of Standard Prophylactic Care in a community \nwhere at least 1 confirmed case is already identified\n• \nSecondary objective: \n¾\n¾ Comparative assessment of severity of Covid-19 infection in subjects taking Guduchi \n(Tinospora cordifolia) and those not taking it in following situations:\n\n\nAssessment of subjects not requiring hospitalization\n\n\nSeverity of symptoms of hospitalized patients in wards\n\n\nPatients requiring ICU admission / Ventilator support\n¾\n¾ Global assessment of overall change as per the investigator & QOL (Efficacy assessment) \n¾\n¾ Safety assessment by evaluation of occurrence of AE/SAE due to consumption of Ayurveda \nIntervention.\n\n2.\t Study Design : Non-randomized, Active Controlled Trial\n\n3.\t Sample Size : Planned: 5000 (2500 trial and 2500) However due to pandemic situation and  logistic \nreasons could achieve sample size of -2800 (1400 trial+1400 control)\n\n4.\t Duration of Study : 45 days\n\n5.\t Interventions: Guduchi 250 mg two capsules two times a day for one month + Standard \nProphylactic Care recommended by Government Telangana Health authorities; \nControl: Standard Prophylactic Care recommended by Government of Telangana Health authorities\n\n6.\t Participated centre along with PI :\nS. No.\nName of the Participating Centre\nName of PI"
+      },
+      {
+        "document_title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+        "document_id": "6aa113fcac26c5f8e0962e65",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4869,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "340\nGhu¸apriy¡ \nAtiviÀ¡ \nAconitum heterophyllum \nWall.\n341\nGirikany¡ \n(áv®ta)     \nApar¡jit¡ \nClitoria ternatea Linn.\n342\nGirikany¡ \nKum¡r¢ \nAloe barbadensis Mill. \n343\nGirikar¸ik¡ \nApar¡jit¡ \nClitoria ternatea Linn.\n344\nGokÀuraka \nGokÀura \nTribulus terrestris Linn.\n345\nGop¢ \náv®ta s¡riva \nHemidesmus indicusR.Br.\n346\nGranthi \nGranthipar¸¢ \nLeonotis nepetaefolia R.Br.\n347\nGranthik¡ \nGranthipar¸¢ \nLeonotis nepetaefolia R.Br.\n348\nGranthipar¸¢ \nGranthipar¸¢ \nLeonotis nepetaefolia R.Br.\n349\nGranthipar¸a \nGranthipar¸¢ \nLeonotis nepetaefolia R.Br.\n350\nGuµj¡ \nGuµj¡ \nAbrus precatorius Linn.\n351\nGu·£c¢ \nGu·£c¢ \nTinospora cordifolia (Willd.) \nMiers\n352\nGu·£cik¡ \nGu·uc¢ \nTinospora cordifolia (Willd.) \nMiers\n353\nGuggulu \nGuggulu \nCommiphora wightii (Arn.) \nBhandari\n354\nGuh¡ \ná¡li \nOryza sativa Linn.\n355\nGuh¡ \nP¤¿niparr¸¢ \nUraria picta Desv.\n356\nGul£c¢ \nGu·uc¢ \nTinospora cordifolia (Willd.) \nMiers\n357\nH¡¶a \nDhatt£ra \nDatura metel Linn.\n358\nH¤ddh¡tr¢ \nH¤ddh¡tr¢ \nSmilax china Linn.\n359\nHema \nDhatt£ra \nDatura metel Linn. \n360\nHema \nN¡gak®¿ara \nMesua ferrea Linn.\n361\nHaÆsap¡d¢ \nHaÆsapad¢ \nAdiantum lunulatum Burm.\n362\nHaÆsapad¢ \nHaÆsapad¢ \nAdiantum lunulatum Burm."
+      },
+      {
+        "document_title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+        "document_id": "6aa10b9dac26c5f8e096293b",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4768,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "39. \nKataria S, Sharma P, Ram JP, Deswal V, Singh M, Rana R, et al. A pilot clinical study of an \nadd-on Ayurvedic formulation containing Tinospora cordifolia and Piper longum in mild to \nmoderate COVID-19. J Ayurveda Integr Med. 2022;13(2):100454. https://doi.org/10.1016/j.\njaim.2021.05.008.\n\n40. \nRai AK, Ahmad A, Mundada P, Venugopal KK, Yadav B, Khanduri S, et al. Efficacy and safety \nof AYUSH-64 as standalone or adjunct to standard care in COVID-19: a structured summary of \nprotocol for a systematic review. Syst Rev 2022: 11: 103. 10.1186/s13643-022-01983-8.\n\n\nANNUAL REPORT 2022-2023\nCENTRAL COUNCIL FOR RESEARCH IN AYURVEDIC SCIENCES\n186\n\n41. \nSrikanth N, Kumar A, Rao CS, Singhal R, Yadav B, Khanduri S, et al. Disease Characteristics, \nCare-Seeking Behavior, and Outcomes Associated With the Use of AYUSH-64 in COVID-19 \nPatients in Home Isolation in India: A Community-Based Cross-Sectional Analysis. Front. \nPublic Health 2022; 10:904279. doi: 10.3389/fpubh.2022.904279.\nMedicinal Plant Research\n\n42. \nBalakrishnan P, Ajayan S, Mukkudakkattu S, Nechiyil K, Nambi N. Review of unique ophthalmic \nformulations in Vaidya Manorama: A traditional Kerala Ayurveda literature. J Ayurveda Integr \nMed. 2022 Apr-Jun;13(2):100576. DOI: 10.1016/j.jaim.2022.100576.\n\n43. \nChaturvedi, S, Ghimire, P, Meena, AK, Mritunjay, Sk. Studies on phytochemical and inhibitory \nactivity of psidium guajava leaf extracts with escherichia coli, bacillus subtilis and pseudomonas \naeruginosa Neuro Quantology. NeuroQuantology, 2022; 20(8):1828-1839. 10.48047/\nnq.2022.20.19.NQ99160.\n\n44. \nDutta S, Mondal S, Hazra K, Mangal AK, Bolleddu R, Dahiya J, et al. Pharmacognostical \nevaluation and phytochemical characterisation of Vetiveria zizanioides (L.) Nash roots. Int J \nPharmacognosy 2022; 9(5): 105-12. 10.13040/IJPSR.0975-8232."
+      },
+      {
+        "document_title": "2cedea8665__afi-common-single-drug-formulary2.pdf",
+        "document_id": "6aa113fcac26c5f8e0962e5a",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4684,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "(Stapf.Ex.Holmes)\n97\nAm¤taphal¡ \nËmalak¢ \nEmblica officinalis Gaertn.\n98\nAm¤tavall¢ \nGu·uc¢ \nTinospora cordifolia (Wild.) \nMiers\n99\nAmarad¡ru \nDevad¡ru \nCedrus deodara (Roxb.) loud\n100\nAmarak¡À¶ha \nD®vad¡ru \nCedrus deodara (Roxb.) loud\n101\nAmbaÀ¶hak¢ \nAmbaÀ¶hak¢ \nHibiscus sabdariffa Linn.\n102\nAmbhasa \nHr¢vera \nColeus vettiveroides \nK.C.Jacob\n103\nAmbhodhara \nMust¡ \nCyperus rotundus Linn.\n104\nAmbu \nHr¢vera \nColeus vettiveroides K.C. \nJacob\n105\nAmbuda \nMust¡ \nCyperus rotundus Linn. \n106\nAmbuja \nAmbuja \nNymphaea stellata Willd.\n107\nAmla \nNimb£ \nNymphaeastellataWilld.\n108\nAmlavetasa \nAmlavetasa \nGarcinia pedunculata Roxb. Rheum emodi Wal\n109\nAmukkura \nA¿vagandh¡ \nWithania somnifera Dunal\n110\nAnant¡ \náv®tas¡riv¡ \nHemidesmus indicus R.Br.\n111\náobh¡µjana \náigru \nMoringa pterygosperma \nGaertn.\n112\náophaghn¢ \nRaktapunarnav¡ Boerhaavia diffusa Linn.\n113\náothaghn¢ \nRaktapunarnav¡ Boerhaavia diffusa Linn.\n114\nAp¡m¡rga \nAp¡m¡rga \nAchyranthes aspera Linn\n115\nApar¡jit¡ \nApar¡jit¡ \nClitoria ternatea Linn.\n116\nár¢gandha \návetacandana \nSantalum album Linn.\n117\nár¢ka¸¶ha \n(S.Y.)        \nRaktacandana \nPterocarpus santalinus \nLinn.f.\n118\nár¢kha¸·a \návetacandana \nSantalum album Linn.\n119\nAraluka \nAraluka \nAilanthus excelsa Roxb."
+      },
+      {
+        "document_title": "ac73d67e1b__12_CCRAS_Ayurveda_Clinical_and_Plant_Research_2022_23.pdf",
+        "document_id": "6aa10b9dac26c5f8e096293c",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4671,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "45. \nGorai PS, Ghosh R, Ghosh S, Samanta S, Sen A, Panja S, et al. Management of Black Root \nDisease-Causing Fungus Fusarium solani CRP1 by Endophytic Bacillus siamensis CNE6 \nthrough Its Metabolites and Activation of Plant Defense Genes. Microbiology Spectrum. \n2023;11(2):e03082-22. https://doi.org/10.1128/spectrum.03082-22.\n\n46. \nHazra K, Dutta S, Mitra A, Ravte RK, Rao MM. Improvised storage of Cassia fistula L. fruit pod \nwith special references to Ayurvedic principles and practices by traditional text: An analytical \ninvestigation. Indian J Trad Know 2022;21(2):317-22.\n\n47. \nIslam A, Singh H, Sharma A. Impact of regional quality assessment of Tinospora cordifolia: \na scientific perspective for exploration of harvest strategy as a quality marker. Agricultural \nResearch. 2023 Jan 4:1-8. https://doi.org/10.1007/s40003-022-00645-4.\n\n48. \nKaur M, Ahmed S, Singh H, Sharma A. Phytochemical and pharmacological overview of \nTriticum aestivum: an update. Current Traditional Medicine. 2022;8(4):51-9. DOI: 10.2174/221\n\n5083808666220428135532.\n\n49. \nKolhe R, Gurav AM, Prasad GP, Rath C, Mangal AK, Srikanth N. Medicinal plants used in the \ntreatment of snakebite and scorpion sting by the tribes of Shahapur and Jawhar forest division. \nInd J Trad Know 2022; 21(3):605-615. 42/ijtk.v21i3.31576.\n\n50. \nKumar GM, Shiddamallayya N. Documentation of Plant Species in Homegardens of Three \nPhysiographic Regions of Hassan District, Karnataka. Indian J Ecology. 2022;49(2):570-81. \nDOI: https://doi.org/10.55362/IJE/2022/3563.\n\n51. \nKumar GP, Nagayya S. Invasive alien plant species of Hassan District, Karnataka, India. J \nThreatened Taxa. 2022 Sep 26;14(9):21870-90. DOI: org/10.11609/jott.5916.14.9.21870-21890."
+      }
+    ],
+    "Guduchi": [
+      {
+        "document_title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+        "document_id": "6aa104c1ac26c5f8e096241b",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4845,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "activation, PARP1 expression in cancer cells, and mitochondrial membrane potential in \nOVACR-3 cells have been studied. Additionally, the establishment of an ovarian tumor xenograft in nude \nmice has been optimized by injecting OCVAR 3 cells.\n3.2.11\t \t Title: Pre-clinical development of Guduchi (Tinospora cordifolia (Thunb) Miers) stem \n\t through AYUSH route for adjunct therapy in tuberculosis to reduce anti-tubercular \n\t treatment (ATT) induced hepatotoxicity.\nPI: Dr. Vijay Kumar, CARI, Jhansi, Dr. Virendra Kumar Maheshbhai Prajapati, CSIR-CDRI- Lucknow & Dr. \nRashmi Sharma, CSIR-IIIM- Jammu\nDate of Initiation: 25th February, 2023\nIAEC approval no: CSIR-CDRI IAEC/2023/141/ Renew-0/ SN:7"
+      },
+      {
+        "document_title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+        "document_id": "6aa104c1ac26c5f8e096241c",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4612,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "75\nAnnual Report  2023-24\nCentral Council for Research in Ayurvedic Sciences\nThe study aims to evaluate the pharmacokinetics, herb-drug interactions, toxicity, and efficacy of Guduchi, \nspecifically to assess its hepatoprotective activity in ATT-induced hepatotoxicity and investigate its anti-\ntuberculosis activity through in vitro and ex vivo assays. Quality control studies of the extract, in vitro \nanti-tuberculosis assays, and CYP inhibition of the aqueous extract have been completed. Assessment of \nthe formulation’s stability, marker quantitation, and hepatoprotective efficacy study is in progress.\n3.2.12\t\t Title: Pre-clinical development of Amalaki (Phyllanthus emblica Linn.) fruit through AYUSH \n\t route for adjunct therapy in tuberculosis to reduce anti-tubercular treatment (ATT) \n\t induced hepatotoxicity.\nPI: Dr. Vijay Kumar, CARI, Jhansi, Dr. S K Rath, CSIR-CDRI- Lucknow & Dr. Parvinder Pal Singh, CSIR-IIIM- Jammu\nDate of Initiation: 25th February, 2023\nIAEC approval no: CSIR-CDRI IAEC/2023/140/\nRenew-0/ S. No. - 6\nThe study aims to evaluate the pharmacokinetics, herb-drug interactions, toxicity, and efficacy of Amalaki, \nspecifically to assess its hepatoprotective activity in ATT-induced hepatotoxicity and investigate its anti-\ntuberculosis activity through in vitro and ex vivo assays. Quality control studies of the extract, in vitro \nanti-tuberculosis assays, and CYP inhibition of the aqueous extract have been completed. Assessment of \nthe formulation’s stability, marker quantitation, and hepatoprotective efficacy study is in progress.\n3.2.13\t\t Title: Pre-clinical development of Vasa (Justicia adhatoda Linn.) Leaves through AYUSH \n\t route for adjunct therapy in tuberculosis to reduce anti-tubercular treatment (ATT) \n\t induced hepatotoxicity.\nPI: Dr. Vijay Kumar, CARI, Jhansi, Dr. Virendra Kumar Maheshbhai Prajapati, CSIR-CDRI- Lucknow & Dr. \nUtpal Nandi, CSIR-IIIM- Jammu\nDate of Initiation: 25th February, 2023\nIAEC approval no: CSIR-CDRI IAEC/2023/139/\nRen"
+      },
+      {
+        "document_title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+        "document_id": "6aa1088eac26c5f8e0962770",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4423,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "10.\tCurrent status:\nTable -71: Status of projects along with participating centres\nS. \nNo.\nParticipating Centre\nNo. of cases \nenrolled\nNo. of cases \ncompleted\nNo. of cases \nDrop outs\n\n1.\nCARI, Mumbai\n20\n18\n02\n\n2.\nDatta Meghe Institute of Medical Sciences, \n(DMIMS), Nagpur\n190\n174\n16\n\n3.\nSDM College of Ayurveda & Hospital, Hassan\n190\n184\n06\nTotal\n400\n376\n24\n\n11.\tSummary: Study is completed.\n\n\nAnnual Report 2020-2021   \nCentral Council for Research in Ayurvedic Sciences\n152\n4.5.10.\tA prospective non-randomized open label controlled interventional study on the effect \n\t\nof Guduchi Ghan Vati/ Sudarshan Ghan Vati as a prophylactic measure among high risk \n\t\npopulation (Health Care Workers/Containment Zone population) exposed to COVID 19\n\n1.\t Objectives:  Comparative assessment of Guduchi Ghan Vati/ Sudarshan Ghan Vati intake in \nprophylaxis of COVID-19, with control arm of Standard Prophylactic Care in Population in \nContainment Zone.\n\n2.\t Study Design : Prospective, open label, non-randomized, controlled clinical study\n\n3.\t Sample Size : 30,000 (20,000+10,000)\n\n4.\t Duration of Study :03 months\n\n5.\t Interventions : Group A (intervention arm) Guduchi Ghan Vati / Sudarshan Ghan Vati + Standard \nProphylactic Care\nGroup B (control arm) Standard Prophylactic Care + Sanitizer, mask and printed IEC material \nissued by central/state/local health authorities as part of standard preventive measure against \nCOVID 19.\n\n6.\t Participated center along with PI :\nS. No.\nName of the Participating Centre\nName of PI\n\n1.\nJaipur\nRARI, Jaipur\nDr. S.K. Vedi, R.O. (Ay.), \nMobile No.: 9958426086\nEmail: drskvedi@gmail.com\n\n2.\nBhilwara\nRARI, Jaipur\nDr.Suhas A. Chaudhary, R.O. (Ay.), Mobile \nNo.: 9427073351\nEmail: vdsuhaschaudhary@gmail.com\n\n3.\nAhmedabad\nRARI, Ahmedabad\nDr. Anil Avhad, R.O. (Ay.), 9510176085\nEmail: anilavhad4u@gmail.com\n\n4.\nSurendranagar\nRARI, Ahmedabad\nDr.Paikrao Sumed, R.O. (Ay.), 7698825705\nEmail: sampaikrao27@gmail.com"
+      },
+      {
+        "document_title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+        "document_id": "6aa1088eac26c5f8e0962777",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4416,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "11.\tSummary of the Project: The trial indicates similar protection rates from contracting COVID-19 \nin both study and control group, however there is significant change in W.H.O QOL scale indicating \nthe role of Chyvanprash lehyam in promoting quality of life in study group.\n4.5.13.\tProspective non-randomized open labeled controlled interventional study on the effect \n\t\nof Guduchi (Tinospora cordifolia) as a prophylactic measure among high risk population \n\t\n(Health Care Workers/Containment Zone Population) exposed to COVID-19\n\n1.\t Objectives : \n• \nPrimary objective: Comparative assessment of Guduchi (Tinospora cordifolia)  intake in \nprophylaxis of COVID-19, with control arm of Standard Prophylactic Care in a community \nwhere at least 1 confirmed case is already identified\n• \nSecondary objective: \n¾\n¾ Comparative assessment of severity of Covid-19 infection in subjects taking Guduchi \n(Tinospora cordifolia) and those not taking it in following situations:\n\n\nAssessment of subjects not requiring hospitalization\n\n\nSeverity of symptoms of hospitalized patients in wards\n\n\nPatients requiring ICU admission / Ventilator support\n¾\n¾ Global assessment of overall change as per the investigator & QOL (Efficacy assessment) \n¾\n¾ Safety assessment by evaluation of occurrence of AE/SAE due to consumption of Ayurveda \nIntervention.\n\n2.\t Study Design : Non-randomized, Active Controlled Trial\n\n3.\t Sample Size : Planned: 5000 (2500 trial and 2500) However due to pandemic situation and  logistic \nreasons could achieve sample size of -2800 (1400 trial+1400 control)\n\n4.\t Duration of Study : 45 days\n\n5.\t Interventions: Guduchi 250 mg two capsules two times a day for one month + Standard \nProphylactic Care recommended by Government Telangana Health authorities; \nControl: Standard Prophylactic Care recommended by Government of Telangana Health authorities\n\n6.\t Participated centre along with PI :\nS. No.\nName of the Participating Centre\nName of PI"
+      },
+      {
+        "document_title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+        "document_id": "6aa1088eac26c5f8e0962703",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4385,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "4.\nGokshur, Amalaki, Guduchi, Shatpushpa, Haritaki, Sunthi, Maricha, Dalchini, Hingu, \nAjmoda, Haridra, Daruharidra, Vacha, Madhuyashthi, Kushtha, Pippali, Jeerak, Jambu, \nAmra, Karvellak, Gudmar, Methika, Bilva, Nimba, Mishreya (Saunf), Sanay, Bala, \nPunarnava (Rakta), Danvyas, Kutki, Pashanbheda, Kutaj, Devdaru, Saral, Gajapippali, \nBrahati, Kantkari, Prisniparni, Karkatshringi, Prativisha, Musta, Khadir, Puga, Lavang, \nTejpatra, Ela, Nagkesar, Yavani, Dhanyak, Pippalimul, Dadima, Shatpushpa (Bharjit), \nHingu, Ashwgandha, Shatavari, Bala, Shvet Musali, Jayapala, Kutaja, Bilva, Surasa/\nTulasi, Karanja, Tagara, Haritaki, Shwet Chandan, Sukshmela, Kankol, Shal Niryas, \nSaral Niryas, Shati and Guduchi, Satavari, Vaca, Vasa, Nirgundi, Bhunimba, Bilva, \nAlstonia scholaris, Kancanara, Albizia Lebbeck, Putakankara, Aragvadha, Palasa, \nKaranja, Araluka,  Salmali, Sigru, Simsapa, Kadamba, Babbula, Kamamaci, Buchini, \nCirabilva, Jambu, Arjuna, Tvakpatra, Madayanti, Arka, Aswagandha, Granthimlla, \nBhrigraja, Guduchi, Jambu, Priyangu,  Apamarga, Vidang, Karpotra\nCARI,\nJhansi\n(107 single drugs)"
+      },
+      {
+        "document_title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+        "document_id": "6aa1088eac26c5f8e096271e",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4303,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "7.\t Current Status: Project completed.\n\n8.\t Project Outcome: The acute and 90 days oral toxicity study of Kanchanar guggulu found to be \nsafe. All the animals of three groups (Group I, II & III) were apparently normal. No mortality, \nno abnormal clinical signs and no pathophysiological symptoms were observed in any animal \nthroughout the study period. In efficacy study of Kanchanar guggulu at dose level 100mg/\nkg, 200mg/kg and 400mg/kg body weight by oral route for consecutive 60 days showed anti-\nhypothyroidism effects. The High dose as well as the Mid Dose of Kanchanara guggulu significantly \nrestored hypothyroidism into normal homeostatic conditions although the Low Dose of the drug \nwas comparatively less effective as compared to other two doses. Abnormal pathophysiological \nfeatures have been noticed in the histological sections across all groups after disease induction \nthat restored significantly following the treatment with Kanchanara guggulu. These findings also \nsuggested that the effective doses of Kanchanar guggulu were found to be analogous, in activity, \nto the available drugs used against hypothyroidism in humans.\n\n\nAnnual Report 2020-2021 \nCentral Council for Research in Ayurvedic Sciences\n79\n3.1.5\t Exploration of Medhya properties (neuroprotective effect) of Yastimadhu (Glycyrrhiza \n\t\nglabra Linn.), Guduchi (Tinospora cardifolia) and Vacha (Acorus calamus) in animal \n\t\nmodel of neurotoxicity.\n\n1.\t Objectives\n\nPrimary: To explore the efficacy of the Guduchi, Yashtimalhu and Vacha plant extract on the \nAluminium induced model of neurodegeneration and cognition disorders.  \n\nSecondary: To explore the efficacy of the marker compounds of the above-said plants on the \nsame disease model and to explore the changes induced by the Aluminium treatment in the \nbrain.\n\n2.\t Duration of project : 1 year\n\n3.\t Participating centre: RARI, Pune\n\n4.\t Name of the PI:  Dr. Shrirang Jamadagni\n\n5.\t Date of initiation/enrolment: 7th January, 2020"
+      },
+      {
+        "document_title": "493bca7ae9__07_CCRAS_Ayurveda_Clinical_Research_Studies_2023_24.pdf",
+        "document_id": "6aa104c1ac26c5f8e096247c",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4283,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "17.\t\nVyas K, Chandla A, Nariyal V, Yadav B, Amin HD, Khanduri S, Sharma BS, Rana RK, Singhal R, Tripathi \nA, Chandrasekhararao B, Srikanth N, Dhiman K. An open-label prospective interventional study \nto assess the prophylactic effect of Guduchi Ghan Vati in COVID-19: A community-based study in \ncontainment zone of Himachal Pradesh, India. Journal of Research in Ayurvedic Sciences. 2023 Apr \n1;7(2):106-13.\nMedicinal Plant Research\n\n18.\t\nBhardwaj Y, Mumtam Taboh, Pulicherla Yugandhar, Srinivasulu Cheemanapalli, Bhuyan BK, \nShiddamallayya Mathapati. Traditional and common millet-based food recipes of the tribal \ncommunities of Arunachal Pradesh. Journal of drug research in ayurvedic sciences. 2023 Nov \n1;8(Suppl 1):S121–30.\nPharmacological Research\n\n19.\t\nAla S, Gaidhani SN, Reddy SV, Kumar YS, Jamadagni SB. Safety assessment of AYUSH-64 through \nacute and 90-days repeated dose oral toxicity. International Journal of Ayurveda Research. 2023 \nOct 1;4(4):231-41.\n\n\n113\nAnnual Report  2023-24\nCentral Council for Research in Ayurvedic Sciences\n\n20.\t\nKumar T, Panigrahi B, Nariya M, Thakar A. Pharmacokinetic analysis of Tulasi Swarasadi Taila \nadministered through Nasya (therapeutic nasal administration) and oral route in albino rats. AYU \n(An International Quarterly Journal of Research in Ayurveda). 2023 Jul 1;44(3):107-13.\nPharmacognosy Research\n\n21.\t\nThulasi R, Misro L, Maurya R, Thirupataiah B. Comparative pharmaconostical, phytochemical, \nHigh-Performance Thin-Layer Chromatography, Fourier-Transmission Infrared Spectroscopy and \nUltra-violet spectral studies on leaf and rhizome of Drynaria quercifolia(L.) J. Smith. Journal of Drug \nResearch in Ayurvedic Sciences 2023;8(4):360-9.\nLiterature Research\n\n22.\t\nLondhe D, Gundeti MS. Perspective on-‘Millet for Health’initiatives by Ayush Institutes across India \nbased on the Hon’ble Prime Minister’s Millet-promotion call through Mann ki Baat. Journal of \nResearch in Ayurvedic Sciences. 2023 Apr 1;7(Suppl 1):S41-4."
+      },
+      {
+        "document_title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+        "document_id": "6aa1088eac26c5f8e0962787",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4274,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "10.\tCurrent status :\nTable - 81: Status of project along participating Centers\nS. \nNo.\nParticipating Centre\nNo. of cases \nenrolled\nNo. of cases \ncompleted\nNo. of cases  Drop outs/ \nWithdrawal\n\n1.\nCARI, New Delhi\n12000\n9200\n2800\n\n11.\tSummary of the Project: Study completed, Data analysis done and publication of article is under \nprocess.\n4.5.22.\tImpact of Ayurvedic intervention (Guduchighan Vati) in prevention of COVID-19 \n\t\ninfection in containment areas of Himachal Pradesh-A community based study\n\n1.\t Objectives : \n• \nPrimary Objective: To know the efficacy of Ayurveda interventions in the community of \ncontainment area\n\n\nAnnual Report 2020-2021 \nCentral Council for Research in Ayurvedic Sciences\n169\n• \nSecondary Objective\n\nTo investigate the risk of COVID 19 among community of containment zone\n\nTo investigate improvement in general well-being of people living in containment area\n\nTo observe and study health seeking trends of general public of the area under study\n\nTo observe and study acceptance of Ayurvedic advocacies among public\n\n2.\t Study Design : Interventional, Single Arm Trial\n\n3.\t Sample Size : 1500\n\n4.\t Duration of Study :3  months\n\n5.\t Interventions : Guduchi Ghan Vati\n\n6.\t Participated centre along with PI :\nS. No.\nName of the Participating Centre\nName of PI\n\n1.\nRARI, Mandi\nDr. Kavita Vyas\n\n7.\t Date of IEC approval:\nS. No.\nName of the Participating Centre\nDate of IEC approval\n\n1.\nRARI, Mandi\n11/05/2020\n\n8.\t CTRI Registration (for clinical trials) : CTRI/2020/05/025213\n\n9.\t Date of initiation :\nS. No.\nName of the Participating Centre\nDate of initiation\n\n1.\nRARI, Mandi\n23/05/2020\n\n10.\tCurrent status :\nTable - 82: Status of project along participating Center\nS. \nNo.\nParticipating Centre\nNo. of cases \nenrolled\nNo. of cases \ncompleted\nNo. of cases  Drop \nouts/Withdrawal\n\n1.\nRARI, Mandi\n1500\n1165\n335"
+      },
+      {
+        "document_title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+        "document_id": "6aa1088eac26c5f8e096271f",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4255,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "6.\t IAEC approval no: Proposal No.: IISER Pune/IAEC/2019_3/05\n\n7.\t Current Status: Project completed.\n\n8.\t Project Outcome: Yastimadhu (Glycyrrhiza glabra Linn.) root, Guduchi (Tinospora cordifolia) \nstem and Vacha (Acorus calamus) rhizomes are used as Medhya Rasayanas (neuroprotective) in \nAyurvedic practice. Current study was planned to explore the Medhya properties of above said \ndrugs in AlCl3 treated rats which acted as chronic model of memory loss and cognitive disorder. \nThe aqueous extracts of Yastimadhu root, Guduchi stem and Vacha rhizome were prepared as \nper the Ayurvedic Pharmacopoeia of India and administered to the AlCL3 treated Wistar rats \nfor 42 days. Biochemical assessment of the brain tissues of the treated animals was done by \nAChE inhibition assay, oxidative stress assays viz. LPO, reduced GSH, SOD and catalase assay. \nNeurobehavioral assessment was done using Elevated Plus Maze. The treatment with extracts \nof Guduchi, Yashtimadhu and Vacha showed marked improvement in RTS in EPM, along with \nreduced oxidative stress and marked modulation of the AChE inhibition. \n3.1.6\t Evaluation of in-vitro safety study of some Ayurvedic drugs/plant extracts with special \n\t\nreference to Genotoxicity\n\n1.\t Objectives\n\n\tTo evaluate mutagenicity/ genotoxicity of the Ayurvedic drugs components/ materials/ plant \nextracts in-vitro.\n\n2.\t Duration of project: 2 years\n\n3.\t Participating centre: RARI, Pune\n\n4.\t Name of the PI:  Dr. Pallavi Jamadagni\n\n5.\t Date of initiation/enrolment: 10th October, 2018\n\n6.\t IAEC approval no: NA\n\n7.\t Current Status: Project completed.\n\n\nAnnual Report 2020-2021   \nCentral Council for Research in Ayurvedic Sciences\n80"
+      },
+      {
+        "document_title": "4c8c257b12__15_Ayurvedic_Drug_Formulation_and_Standardization_Studies.pdf",
+        "document_id": "6aa1088eac26c5f8e0962783",
+        "source_type": "classical_tk",
+        "similarity_score": 0.4224,
+        "prior_art_relevance": "Low",
+        "page": null,
+        "section": null,
+        "text": "11.\tSummary of the Project: \nThis was an open-label randomized controlled pilot study with a sample size of 30 participants (15 in \neach arm). The participants were asymptomatic or mild to moderate cases of COVID-19. Guduchighana \nVati 500 mg twice daily for 10 days was administered in the study group and Hydroxychloroquine for \n5 days in the control group. Paracetamol, Vitamin C, Multivitamin and Zinc were also provided in \nthe control group. The outcome measures include time to negative real-time reverse transcription–\npolymerase chain reaction (RT-PCR) assay for COVID-19, proportion of participants with negative \nRT-PCR for COVID-19 at 5th and 10th day, time to clinical recovery, improvement in laboratory \nparameters and incidence of adverse drug reaction/adverse event. \nThe proportion of participants with negative RT-PCR for COVID-19 in the Guduchighana Vati group \n(93.3%) was better as compared to the control group (66.6%) till 10th day of the study period. However, \nthe results are statistically not significant (p=0.068). All the symptomatic patients in the Guduchighana \nVati group clinically recovered whereas one patient remained symptomatic in the control group on the \n5th day. No symptoms of COVID-19 were observed at 10th day in both the groups. No adverse drug \nreaction/serious adverse event were observed during the study period in either of the groups.\nThe manuscript related to the study has been accepted for publication in AYU Journal.\n4.5.20.\tA prospective open label controlled interventional study on the effect of Ayurvedic \n\t\nintervention (Ayurveda Raksha Kit) as a prophylactic measure in the Pandemic of \n\t\nCOVID-19 - A community based study"
+      }
+    ]
+  }
+}

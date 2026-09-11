@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import App from './App.jsx';
 import AppShell from './components/layout/AppShell.jsx';
 
@@ -52,6 +53,7 @@ const PlaceholderPage = ({ title }) => (
 export default function Router() {
   return (
     <BrowserRouter>
+      <SurfaceController />
       <Routes>
         {/* Landing Page (Existing) */}
         <Route path="/" element={<App />} />
@@ -113,4 +115,17 @@ export default function Router() {
       </Routes>
     </BrowserRouter>
   );
+}
+
+function SurfaceController() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    document.body.dataset.surface = pathname === '/' ? 'landing' : 'functional';
+    return () => {
+      delete document.body.dataset.surface;
+    };
+  }, [pathname]);
+
+  return null;
 }
