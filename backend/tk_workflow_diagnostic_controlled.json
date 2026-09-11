@@ -1,0 +1,134 @@
+{
+  "parsed": {
+    "raw_input": "A traditional Ayurvedic formulation containing Withania somnifera root and Tinospora cordifolia stem in a 2:1 ratio, prepared as a simple herbal decoction by boiling in water and traditionally used for general weakness and recovery after illness.",
+    "ingredients": [
+      "Withania somnifera root",
+      "Tinospora cordifolia stem"
+    ],
+    "ingredient_forms": [
+      "Withania somnifera root"
+    ],
+    "proportions": [
+      "in a 2:1 ratio"
+    ],
+    "preparation_method": "decoction",
+    "dosage_form": "Not specified by the user",
+    "intended_use": "Not specified by the user",
+    "extraction_method": "Not specified by the user",
+    "delivery_technology": "Not specified by the user",
+    "processing": "boiling in water and traditionally used for general weakness and recovery after illness",
+    "synthetic_modification": "Not specified by the user",
+    "other_features": []
+  },
+  "plan": [
+    {
+      "role": "individual_ingredient",
+      "query": "Withania somnifera root"
+    },
+    {
+      "role": "individual_ingredient",
+      "query": "Tinospora cordifolia stem"
+    },
+    {
+      "role": "combination",
+      "query": "Withania somnifera root + Tinospora cordifolia stem"
+    },
+    {
+      "role": "proportion_formulation",
+      "query": "Withania somnifera root + Tinospora cordifolia stem + in a 2:1 ratio"
+    },
+    {
+      "role": "preparation",
+      "query": "decoction"
+    },
+    {
+      "role": "combined_formulation",
+      "query": "Withania somnifera root Tinospora cordifolia stem decoction"
+    }
+  ],
+  "evidence_count": 0,
+  "evidence": [],
+  "matches": [
+    {
+      "feature": "Ingredient 1",
+      "user_value": "Withania somnifera root",
+      "evidence_value": "No supporting passage retrieved.",
+      "status": "NOT_FOUND",
+      "source": "Source citation unavailable in indexed metadata.",
+      "citation": "Source citation unavailable in indexed metadata.",
+      "reason": "The ingredient was not found in retrieved TK evidence."
+    },
+    {
+      "feature": "Ingredient 2",
+      "user_value": "Tinospora cordifolia stem",
+      "evidence_value": "No supporting passage retrieved.",
+      "status": "NOT_FOUND",
+      "source": "Source citation unavailable in indexed metadata.",
+      "citation": "Source citation unavailable in indexed metadata.",
+      "reason": "The ingredient was not found in retrieved TK evidence."
+    },
+    {
+      "feature": "Combination",
+      "user_value": "Withania somnifera root + Tinospora cordifolia stem",
+      "evidence_value": "No supporting passage retrieved.",
+      "status": "NOT_FOUND",
+      "source": "Source citation unavailable in indexed metadata.",
+      "citation": "Source citation unavailable in indexed metadata.",
+      "reason": "The complete submitted combination was not established in retrieved evidence."
+    },
+    {
+      "feature": "Ratio/proportion",
+      "user_value": "in a 2:1 ratio",
+      "evidence_value": "No supporting passage retrieved.",
+      "status": "NOT_FOUND",
+      "source": "Source citation unavailable in indexed metadata.",
+      "citation": "Source citation unavailable in indexed metadata.",
+      "reason": "Exact proportion match could not be established from the retrieved evidence."
+    },
+    {
+      "feature": "Preparation",
+      "user_value": "decoction",
+      "evidence_value": "No supporting passage retrieved.",
+      "status": "NOT_FOUND",
+      "source": "Source citation unavailable in indexed metadata.",
+      "citation": "Source citation unavailable in indexed metadata.",
+      "reason": "The submitted preparation was not established from the retrieved evidence."
+    },
+    {
+      "feature": "Dosage form",
+      "user_value": "Not specified by the user",
+      "evidence_value": "No supporting passage retrieved.",
+      "status": "NOT_FOUND",
+      "source": "Source citation unavailable in indexed metadata.",
+      "citation": "Source citation unavailable in indexed metadata.",
+      "reason": "Dosage form match was not established."
+    },
+    {
+      "feature": "Intended use",
+      "user_value": "Not specified by the user",
+      "evidence_value": "No supporting passage retrieved.",
+      "status": "NOT_FOUND",
+      "source": "Source citation unavailable in indexed metadata.",
+      "citation": "Source citation unavailable in indexed metadata.",
+      "reason": "The exact stated use was not established; no rewrite was applied."
+    },
+    {
+      "feature": "Extraction/process",
+      "user_value": "boiling in water and traditionally used for general weakness and recovery after illness",
+      "evidence_value": "No supporting passage retrieved.",
+      "status": "NOT_FOUND",
+      "source": "Source citation unavailable in indexed metadata.",
+      "citation": "Source citation unavailable in indexed metadata.",
+      "reason": "No submitted process feature was established in retrieved evidence."
+    },
+    {
+      "feature": "Exact formulation",
+      "user_value": "All submitted formulation features",
+      "evidence_value": "No supporting passage retrieved.",
+      "status": "NOT_FOUND",
+      "source": "Source citation unavailable in indexed metadata.",
+      "citation": "Source citation unavailable in indexed metadata.",
+      "reason": "Exact/near-exact formulation match was not established because one or more features remain unsupported."
+    }
+  ]
+}

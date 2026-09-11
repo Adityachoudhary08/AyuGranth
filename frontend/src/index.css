@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -105,4 +106,112 @@
     background-color: #176B45;
     color: #ffffff;
   }
+}
+
+/* Functional command-centre theme. The landing page does not receive this
+   scope, so its existing visual language remains unchanged. */
+body[data-surface='functional'] {
+  background: #f4f6f3;
+  color: #17211d;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+body[data-surface='functional'] .font-sans {
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+body[data-surface='functional'] .font-serif {
+  font-family: 'Newsreader', Georgia, serif;
+  letter-spacing: -0.025em;
+}
+
+body[data-surface='functional'] .font-mono {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+body[data-surface='functional'] input,
+body[data-surface='functional'] textarea,
+body[data-surface='functional'] select,
+body[data-surface='functional'] button {
+  font-family: inherit;
+}
+
+body[data-surface='functional'] ::-webkit-scrollbar-track {
+  background: #eef1ed;
+}
+
+body[data-surface='functional'] ::-webkit-scrollbar-thumb {
+  background: #b9c5bd;
+}
+
+body[data-surface='functional'] .app-sidebar {
+  background: #fbfcfa;
+  border-color: #dfe6e0;
+  box-shadow: 8px 0 28px rgba(34, 55, 43, 0.03);
+}
+
+body[data-surface='functional'] .app-sidebar a[href='/'] {
+  color: #176b45;
+  letter-spacing: -0.03em;
+}
+
+body[data-surface='functional'] .app-sidebar nav {
+  padding: 1.25rem 0.9rem;
+}
+
+body[data-surface='functional'] .app-sidebar nav h3 {
+  color: #849188;
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+}
+
+body[data-surface='functional'] .app-sidebar nav a {
+  border-radius: 0.7rem;
+  font-size: 0.78rem;
+  min-height: 2.45rem;
+}
+
+body[data-surface='functional'] .app-sidebar nav a[class*='bg-[#176B45]'] {
+  background: #e4f1e8;
+  color: #12613d;
+  box-shadow: inset 3px 0 0 #176b45;
+}
+
+body[data-surface='functional'] .app-topbar {
+  background: rgba(244, 246, 243, 0.92);
+  border-color: #dfe6e0;
+  backdrop-filter: blur(16px);
+}
+
+body[data-surface='functional'] .app-main {
+  background: #f4f6f3;
+}
+
+body[data-surface='functional'] .app-main h1,
+body[data-surface='functional'] .app-main h2,
+body[data-surface='functional'] .app-main h3 {
+  color: #17211d;
+}
+
+body[data-surface='functional'] .app-main input,
+body[data-surface='functional'] .app-main textarea,
+body[data-surface='functional'] .app-main select {
+  border-color: #cfdad1;
+  background: #fbfcfa;
+  border-radius: 0.75rem;
+  color: #17211d;
+}
+
+body[data-surface='functional'] .app-main input:focus,
+body[data-surface='functional'] .app-main textarea:focus,
+body[data-surface='functional'] .app-main select:focus {
+  border-color: #4b9a70;
+  box-shadow: 0 0 0 3px rgba(75, 154, 112, 0.14);
+}
+
+body[data-surface='functional'] .app-main button[type='submit'] {
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 18px rgba(23, 107, 69, 0.15);
+  font-weight: 600;
 }

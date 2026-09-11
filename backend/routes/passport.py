@@ -31,10 +31,11 @@ from core.database import get_db
 from core.dependencies import get_current_user
 from services.classifier_engine import classify_formulation
 from services.similarity_engine import search_similar_chunks
+from services.tk_prior_art import run_tk_prior_art
 
 # Import the route-level helpers directly (not the FastAPI endpoints).
 # We call the same underlying logic without going through HTTP.
-from routes.ip_engine import build_ip_map
+from routes.ip_engine import build_ip_map, _is_prior_art_source
 from routes.gi_navigator import _run_gi_engine
 from routes.copyright_design import _run_copyright_engine, _run_design_engine
 from routes.trade_secret import _run_trade_secret_engine
@@ -100,7 +101,8 @@ async def _run_ip_engine(product: dict, category: str) -> dict[str, Any]:
     )
 
     # 1. Prior-art search
-    chunks = await search_similar_chunks(description, top_k=10)
+    retrieved_chunks = await search_similar_chunks(description, top_k=10)
+    chunks = [chunk for chunk in retrieved_chunks if _is_prior_art_source(chunk)]
     max_sim = max((c["semantic_similarity"] for c in chunks), default=0.0)
     overall = (
         "High" if max_sim >= 0.75
@@ -150,34 +152,20 @@ async def _run_ip_engine(product: dict, category: str) -> dict[str, Any]:
 
 
 async def _run_tk_engine(product: dict) -> dict[str, Any]:
-    """Run TK overlap check against classical-text chunks."""
+    """Run the rebuilt evidence-driven TK workflow for Passport."""
     description = (
-        f"{product.get('name', '')} — ingredients: "
-        f"{', '.join(product.get('ingredients', []))}. "
-        f"Intended use: {product.get('intended_use', '')}."
+        f"{product.get('name', '')}; ingredients: {', '.join(product.get('ingredients', []))}; "
+        f"intended use: {product.get('intended_use', '')}; "
+        f"preparation: {product.get('manufacturing_process', '')}; dosage form: {product.get('dosage_form', '')}."
     )
-
-    chunks = await search_similar_chunks(
-        description, source_type_filter="classical_text", top_k=10
-    )
-    max_sim = max((c["semantic_similarity"] for c in chunks), default=0.0)
-
-    if max_sim >= 0.75:
-        overlap = "High"
-        color = "red"
-    elif max_sim >= 0.50:
-        overlap = "Moderate"
-        color = "yellow"
-    else:
-        overlap = "Low"
-        color = "green"
-
+    result = await run_tk_prior_art(description, top_k=8)
     return {
-        "has_overlap": overlap in ("High", "Moderate"),
-        "overlap_level": overlap,
-        "color": color,
-        "max_similarity": max_sim,
-        "top_matches": chunks[:3],
+        "has_overlap": result["overlap_level"] != "NOT ESTABLISHED",
+        "overlap_level": result["overlap_level"],
+        "color": "red" if result["overlap_level"] in ("STRONG", "EXACT / NEAR-EXACT") else "yellow" if result["overlap_level"] == "PARTIAL" else "green",
+        "max_similarity": result.get("max_similarity", 0.0),
+        "top_matches": result.get("evidence", [])[:3],
+        "assessment": result.get("assessment", ""),
     }
 
 
@@ -187,7 +175,7 @@ async def _run_abs_engine(product: dict, category: str) -> dict[str, Any]:
 
     region = product.get("source_region", "").strip().lower()
     is_biological = True  # Ayurvedic products are biological by default
-    region_triggers = region in _ABS_TRIGGER_REGIONS
+    region_triggers = any(trigger in region for trigger in _ABS_TRIGGER_REGIONS)
     applicable = is_biological and region_triggers
 
     result: dict[str, Any] = {
