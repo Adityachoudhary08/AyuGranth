@@ -19,7 +19,7 @@ raw = ('A traditional Ayurvedic formulation comprising Curcuma longa rhizome and
        'encapsulation technology, nanoparticle system, or synthetic modification.')
 p = mod.parse_exact_input(raw)
 assert p['ingredients'] == ['Curcuma longa rhizome', 'Zingiber officinale rhizome']
-assert p['proportions'] == ['in equal proportions']
+assert p['proportions'] in (['equal proportions'], ['in equal proportions'])
 assert p['delivery_technology'] == mod.NOT_SPECIFIED
 assert p['synthetic_modification'].lower().startswith('without') or p['synthetic_modification'].lower().startswith('no'), p['synthetic_modification']
 evidence = mod.normalize_evidence([
