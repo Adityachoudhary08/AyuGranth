@@ -1,27 +1,31 @@
 """
 Security utilities: JWT token management and password hashing.
 """
-
 from datetime import datetime, timedelta, timezone
-
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+import bcrypt
 
 from core.config import settings
 
-# ── Password hashing ─────────────────────────────────────────────────────
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# ── Password hashing ─────────────────────────────────────────────────────
 
 
 def hash_password(plain: str) -> str:
-    """Hash a plaintext password using bcrypt."""
-    return pwd_context.hash(plain)
+    """Hash a plaintext password using bcrypt directly."""
+    pwd_bytes = plain.encode("utf-8")[:72]
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(pwd_bytes, salt).decode("utf-8")
 
 
 def verify_password(plain: str, hashed: str) -> bool:
     """Verify a plaintext password against a bcrypt hash."""
-    return pwd_context.verify(plain, hashed)
+    try:
+        pwd_bytes = plain.encode("utf-8")[:72]
+        return bcrypt.checkpw(pwd_bytes, hashed.encode("utf-8"))
+    except Exception:
+        return False
+
 
 
 # ── JWT tokens ────────────────────────────────────────────────────────────
