@@ -636,12 +636,16 @@ def build_ip_map(
             "note": "Low similarity in local corpus — comprehensive search across InPASS, WIPO, and TKDL needed before filing.",
         })
 
-    # 2. Trademark — always recommended
+    # 2. Trademark
     ip_map.append({
         "regime": "Trademark",
         "status": "recommended",
         "color": "green",
-        "note": "Register product name, logo, and brand identity under Classes 5 and 3.",
+        "note": (
+            "Protect product name, logo, and brand identity. Potentially relevant Nice Classification "
+            "classes should be reviewed based on the actual goods/services (e.g., Class 5 if medicinal/Ayurvedic "
+            "preparations; Class 3 if cosmetics or personal care)."
+        ),
     })
 
     # 3. Geographical Indication
