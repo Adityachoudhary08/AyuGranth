@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
+    # ── Public passport verification ────────────────────────────────────
+    PUBLIC_APP_BASE_URL: str = "http://localhost:5173"
+
     # ── Bhashini ─────────────────────────────────────────────────────────
     BHASHINI_API_KEY: str = ""
 

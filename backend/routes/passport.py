@@ -17,16 +17,20 @@ Orchestrator that:
 from __future__ import annotations
 
 import asyncio
+from io import BytesIO
 import logging
 import time
 from datetime import datetime, timezone
 from typing import Any
 
+import qrcode
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import BaseModel, Field
+from starlette.responses import StreamingResponse
 
+from core.config import settings
 from core.database import get_db
 from core.dependencies import get_current_user
 from services.classifier_engine import classify_formulation
@@ -83,6 +87,137 @@ class ProductPassportResponse(BaseModel):
     disclaimer: str = (
         "This is a preliminary assessment for informational purposes only — "
         "not legal advice. Consult a qualified IP/regulatory professional."
+    )
+
+
+class PublicDomainStatus(BaseModel):
+    label: str
+    status: str
+    color: str
+
+
+class PublicPassportResponse(BaseModel):
+    passport_id: str
+    product_name: str
+    category: str
+    generated_at: datetime | None = None
+    last_analyzed: datetime | None = None
+    overall_status: str
+    domain_statuses: list[PublicDomainStatus]
+    public_url: str
+    verified_by: str = "AayuGranth"
+    privacy_note: str = (
+        "This is a publicly shared authenticity summary. Full analysis details "
+        "are private to the product owner."
+    )
+
+
+def _public_url(product_id: str) -> str:
+    return f"{settings.PUBLIC_APP_BASE_URL.rstrip('/')}/verify/{product_id}"
+
+
+def _public_domain_statuses(audit: dict | None) -> list[PublicDomainStatus]:
+    engine_results = (audit or {}).get("engine_results", {})
+    confidence = (audit or {}).get("confidence", 0.0)
+    review_color = "yellow" if confidence >= 0.6 else "red"
+    tk_level = engine_results.get("tk", {}).get("overlap_level")
+    abs_applicable = engine_results.get("abs", {}).get("applicable")
+    biodiversity_ready = bool(audit) and not abs_applicable and tk_level == "NOT ESTABLISHED"
+
+    return [
+        PublicDomainStatus(label="Regulatory", status="REVIEW", color=review_color),
+        PublicDomainStatus(label="IP", status="REVIEW", color=review_color),
+        PublicDomainStatus(
+            label="Biodiversity & TK",
+            status="READY" if biodiversity_ready else "REVIEW",
+            color="green" if biodiversity_ready else "yellow",
+        ),
+        PublicDomainStatus(label="International", status="REVIEW", color=review_color),
+    ]
+
+
+@router.get("/public/{product_id}", response_model=PublicPassportResponse)
+async def get_public_passport(
+    product_id: str,
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Return only the public authenticity summary; no account or formulation data."""
+    try:
+        obj_id = ObjectId(product_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid passport ID")
+
+    product = await db.products.find_one(
+        {"_id": obj_id},
+        {
+            "_id": 1,
+            "name": 1,
+            "created_at": 1,
+            "classification": 1,
+            "uses_only_classical_texts": 1,
+            "intended_use": 1,
+            "dosage_form": 1,
+        },
+    )
+    if not product:
+        raise HTTPException(status_code=404, detail="Passport not found")
+
+    audit = await db.audit_logs.find_one(
+        {"product_id": product_id},
+        {"confidence": 1, "engine_results": 1, "timestamp": 1},
+        sort=[("timestamp", -1)],
+    )
+    classification = product.get("classification")
+    if not classification:
+        classification = classify_formulation({
+            "uses_only_classical_texts": product.get("uses_only_classical_texts", False),
+            "contains_synthetic_or_new_molecules": False,
+            "intended_for_nutrition": (product.get("intended_use") or "").lower() in (
+                "nutrition", "nutraceutical", "food", "health food", "supplement"
+            ),
+            "intended_for_topical_cosmetic": (product.get("intended_use") or "").lower() in (
+                "cosmetic", "topical", "skin care", "beauty"
+            ),
+            "uses_extracts_not_in_classical_texts": (product.get("dosage_form") or "").lower() in (
+                "extract", "tincture", "phytopharmaceutical"
+            ),
+        })["category"]
+    category = classification or "Ayurvedic Formulation"
+    overall_status = "EVIDENCE REVIEWED" if audit and audit.get("confidence", 0) >= 0.9 else "NEEDS REVIEW"
+    analyzed_at = audit.get("timestamp") if audit else product.get("created_at")
+
+    return PublicPassportResponse(
+        passport_id=f"IPS-2026-{product_id[-6:].upper()}",
+        product_name=product.get("name", ""),
+        category=category,
+        generated_at=product.get("created_at"),
+        last_analyzed=analyzed_at,
+        overall_status=overall_status,
+        domain_statuses=_public_domain_statuses(audit),
+        public_url=_public_url(product_id),
+    )
+
+
+@router.get("/{product_id}/qr")
+async def get_passport_qr(product_id: str, db: AsyncIOMotorDatabase = Depends(get_db)):
+    """Generate a QR PNG for the privacy-limited public passport view."""
+    try:
+        obj_id = ObjectId(product_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid passport ID")
+
+    exists = await db.products.find_one({"_id": obj_id}, {"_id": 1})
+    if not exists:
+        raise HTTPException(status_code=404, detail="Passport not found")
+
+    qr_image = qrcode.make(_public_url(product_id))
+    image_bytes = BytesIO()
+    qr_image.save(image_bytes, format="PNG")
+    image_bytes.seek(0)
+    return StreamingResponse(
+        image_bytes,
+        media_type="image/png",
+        headers={"Cache-Control": "public, max-age=300"},
     )
 
 

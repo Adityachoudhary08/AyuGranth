@@ -9,6 +9,7 @@ import {
   FileText, 
   Database, 
   ChevronDown 
+  , Trash2
 } from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
 
@@ -18,6 +19,7 @@ export default function PassportHeader({
   onDownloadCard,
   onDownloadFullDossier,
   onExportFullData,
+  onDelete,
   className = '',
 }) {
   const [isFullDataMenuOpen, setIsFullDataMenuOpen] = useState(false);
@@ -52,7 +54,7 @@ export default function PassportHeader({
           <div className="flex items-center gap-2 mb-1.5">
             <ShieldCheck className="w-4 h-4 text-[#176B45]" />
             <span className="text-[10.5px] font-mono font-bold uppercase tracking-[0.2em] text-[#176B45]">
-              IP-SAKTI VERIFIED DOSSIER
+              AAYUGRANTH VERIFIED DOSSIER
             </span>
           </div>
 
@@ -67,6 +69,16 @@ export default function PassportHeader({
 
         {/* Action Buttons: 2 Download Options */}
         <div className="flex flex-wrap items-center gap-2.5 shrink-0 print:hidden">
+          {onDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-white border border-red-200 hover:border-red-400 text-xs font-semibold text-red-700 rounded-xl transition-all shadow-xs"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Delete Passport</span>
+            </button>
+          )}
           <Link
             to={{
               pathname: "/ask-aayugranth",
@@ -81,7 +93,7 @@ export default function PassportHeader({
             className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-white border border-[#161412]/20 hover:border-[#176B45]/50 text-xs font-semibold text-[#161412] rounded-xl transition-all shadow-xs hover:bg-[#FAF8F3]"
           >
             <MessageSquare className="w-3.5 h-3.5 text-[#176B45]" />
-            <span>Ask IP-SAKTI</span>
+            <span>Ask AayuGranth</span>
           </Link>
 
           {/* OPTION 1: PASSPORT CARD ONLY */}

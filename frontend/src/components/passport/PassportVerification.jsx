@@ -1,9 +1,11 @@
-import { QrCode, ShieldCheck, Check, Copy, ExternalLink, Sparkles } from 'lucide-react';
+import { ShieldCheck, Check, Copy, ExternalLink, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '../../lib/utils/cn';
+import { getPassportQrUrl, getPublicPassportUrl } from '../../api';
 
 export default function PassportVerification({
   passportId = 'IPS-2026-008412',
+  productId = passportId,
   generatedDate = '10 Sep 2026',
   lastUpdated = '10 Sep 2026',
   evidenceCount = 8,
@@ -14,7 +16,7 @@ export default function PassportVerification({
 
   const handleCopyLink = () => {
     if (typeof window !== 'undefined') {
-      navigator.clipboard.writeText(window.location.href);
+      navigator.clipboard.writeText(getPublicPassportUrl(productId));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -34,7 +36,7 @@ export default function PassportVerification({
           </div>
 
           <p className="text-xs text-[#161412]/70 max-w-md leading-relaxed">
-            Every IP-SAKTI Product Passport is cryptographically keyed to its formulation record and evidence index.
+            Every AayuGranth Product Passport is cryptographically keyed to its formulation record and evidence index.
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2 text-xs font-sans">
@@ -87,10 +89,14 @@ export default function PassportVerification({
           </div>
         </div>
 
-        {/* Verification QR Pattern */}
+        {/* Verification QR */}
         <div className="p-4 bg-white border border-[#161412]/15 rounded-xl shadow-xs flex flex-col items-center shrink-0">
           <div className="w-28 h-28 bg-[#FAF8F3] border border-[#161412]/10 rounded-lg p-2.5 flex items-center justify-center">
-            <QrCode className="w-full h-full text-[#161412]/85" />
+            <img
+              src={getPassportQrUrl(productId)}
+              alt="Scan to verify this public passport summary"
+              className="w-full h-full object-contain"
+            />
           </div>
           <span className="text-[9px] font-mono text-[#161412]/50 uppercase tracking-widest mt-2">
             PASSPORT AUTHENTICITY

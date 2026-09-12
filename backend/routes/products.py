@@ -118,13 +118,44 @@ async def get_product(
     return product
 
 
+@router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_product(
+    product_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Permanently delete an owner's product passport and its audit records."""
+    try:
+        obj_id = ObjectId(product_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid product ID")
+
+    result = await db.products.delete_one(
+        {"_id": obj_id, "user_id": str(current_user["_id"])}
+    )
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    await db.audit_logs.delete_many({"product_id": product_id})
+
+
 @router.get("/", response_model=List[ProductOut])
 async def list_products(
     current_user: dict = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """List all products for the current user."""
-    cursor = db.products.find({"user_id": str(current_user["_id"])})
+    cursor = db.products.find(
+        {"user_id": str(current_user["_id"])},
+        {
+            "_id": 1,
+            "user_id": 1,
+            "name": 1,
+            "ingredients": 1,
+            "dosage_form": 1,
+            "created_at": 1,
+        },
+    ).sort("created_at", -1)
     products = await cursor.to_list(length=100)
     
     # Auto-provision dummy products for the MVP demo if empty

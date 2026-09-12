@@ -58,7 +58,7 @@ export default function ProductPassportPage() {
       exportMetadata: {
         exportedAt: new Date().toISOString(),
         format: 'IP-SAKTI-PRODUCT-PASSPORT-JSON-V1',
-        platform: 'AayuGranth IP-SAKTI Sahayak',
+        platform: 'AayuGranth',
       }
     };
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullExport, null, 2));
@@ -68,6 +68,21 @@ export default function ProductPassportPage() {
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
+  };
+
+  const handleDeletePassport = async () => {
+    const productName = passportData?.product?.name || 'this passport';
+    const confirmed = window.confirm(
+      `Delete "${productName}" permanently? This passport will be permanently deleted from the records. This action cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    try {
+      await productsApi.deleteProduct(passportId);
+      navigate('/passports');
+    } catch (deleteError) {
+      setError('Unable to delete this passport. Please try again.');
+    }
   };
 
   // Baseline verified dataset for standard initial viewing when no specific ID is in URL
@@ -467,6 +482,7 @@ export default function ProductPassportPage() {
           onDownloadCard={handleDownloadCard}
           onDownloadFullDossier={handleDownloadFullDossier}
           onExportFullData={handleExportFullData}
+          onDelete={handleDeletePassport}
         />
 
         {/* HERO: VIRTUAL DIGITAL IDENTIFICATION CARD */}
@@ -475,6 +491,7 @@ export default function ProductPassportPage() {
             productName={p.name}
             productCategory={p.category}
             passportId={passportData.passportId}
+            productId={passportId}
             originJurisdiction={p.countryOfOrigin || 'India'}
             targetMarket={p.targetCountry || 'United States'}
             status={passportData.status}
@@ -561,6 +578,7 @@ export default function ProductPassportPage() {
           {/* VERIFICATION & QR BLOCK */}
           <PassportVerification
             passportId={passportData.passportId}
+            productId={passportId}
             generatedDate={passportData.generatedAt}
             lastUpdated={passportData.lastUpdated}
             evidenceCount={passportData.evidenceCount}

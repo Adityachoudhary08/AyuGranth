@@ -28,6 +28,7 @@ import Evaluation from './pages/analytics/Evaluation.jsx';
 import AskAayuGranth from './pages/AskAayuGranth.jsx';
 import ProductPassport from './pages/ProductPassport.jsx';
 import ProductPassportPage from './pages/ProductPassportPage.jsx';
+import PublicPassportPage from './pages/PublicPassportPage.jsx';
 import Passports from './pages/Passports.jsx';
 import TrademarkPage from './pages/ip/TrademarkPage.jsx';
 import GITagPage from './pages/ip/GITagPage.jsx';
@@ -65,6 +66,7 @@ export default function Router() {
         
         {/* IP-SAKTI Product Passport */}
         <Route path="/passports" element={<Passports />} />
+        <Route path="/verify/:passportId" element={<PublicPassportPage />} />
         <Route path="/product-passport" element={<ProductPassportPage />} />
         <Route path="/product-passport/:passportId" element={<ProductPassportPage />} />
         <Route path="/patent-passport" element={<ProductPassportPage />} />

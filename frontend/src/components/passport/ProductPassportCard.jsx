@@ -1,10 +1,12 @@
-import { Shield, Sparkles, QrCode, CheckCircle2, AlertTriangle, AlertCircle, Clock, Globe, Download } from 'lucide-react';
+import { Shield, Sparkles, CheckCircle2, AlertTriangle, AlertCircle, Clock, Globe, Download } from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
+import { getPassportQrUrl } from '../../api';
 
 export default function ProductPassportCard({
   productName = 'AshwaBalance Capsules',
   productCategory = 'Ayurvedic Formulation',
   passportId = 'IPS-2026-008412',
+  productId = passportId,
   originJurisdiction = 'India',
   targetMarket = 'United States',
   status = 'NEEDS REVIEW', // 'EVIDENCE REVIEWED' | 'NEEDS REVIEW' | 'HIGH-RISK ISSUES DETECTED' | 'NOT YET ASSESSED'
@@ -78,11 +80,7 @@ export default function ProductPassportCard({
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-mono text-[11px] font-extrabold uppercase tracking-[0.25em] text-[#176B45]">
-                  IP-SAKTI
-                </span>
-                <span className="text-[10px] font-mono text-[#8C6D46]">•</span>
-                <span className="font-mono text-[10px] uppercase tracking-widest text-[#8C6D46] font-semibold">
-                  SAHAYAK
+                  AayuGranth
                 </span>
               </div>
               <p className="text-[9px] font-mono text-[#161412]/50 tracking-wider uppercase">
@@ -152,10 +150,12 @@ export default function ProductPassportCard({
           {/* Col 3: Visual Credential / QR Pattern */}
           <div className="flex flex-col items-center md:items-end justify-center">
             <div className="p-3 bg-white border border-[#161412]/15 rounded-xl shadow-xs flex flex-col items-center text-center">
-              {/* QR Pattern visual */}
               <div className="w-24 h-24 bg-[#FAF8F3] border border-[#161412]/10 rounded-lg p-2 flex items-center justify-center relative overflow-hidden">
-                <QrCode className="w-full h-full text-[#161412]/85" />
-                <div className="absolute inset-0 bg-[#176B45]/5 pointer-events-none" />
+                <img
+                  src={getPassportQrUrl(productId)}
+                  alt="Scan to verify this public passport summary"
+                  className="w-full h-full object-contain"
+                />
               </div>
               <span className="text-[9px] font-mono text-[#161412]/50 uppercase tracking-widest mt-1.5">
                 SECURE VERIFY

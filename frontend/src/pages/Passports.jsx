@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { AlertTriangle, ArrowRight, Plus, ShieldCheck } from 'lucide-react'
+import { AlertTriangle, ArrowRight, Plus, ShieldCheck, Trash2 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import { productsApi } from '../api'
 
@@ -130,13 +130,27 @@ export default function Passports() {
     }
   }
 
+  const deletePassport = async (product) => {
+    const confirmed = window.confirm(
+      `Delete "${product.name}" permanently? This passport will be permanently deleted from the records. This action cannot be undone.`
+    )
+    if (!confirmed) return
+
+    try {
+      await productsApi.deleteProduct(product._id)
+      setProducts((current) => current.filter((item) => item._id !== product._id))
+    } catch (deleteError) {
+      setError('Unable to delete this passport. Please try again.')
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#FAF8F3] text-[#161412] font-sans pb-24">
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-28 space-y-10">
         <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 border-b border-[#161412]/10 pb-7">
           <div>
-            <p className="text-[10px] font-mono font-bold uppercase tracking-[0.22em] text-[#176B45]">IP-SAKTI PRODUCT INTELLIGENCE</p>
+            <p className="text-[10px] font-mono font-bold uppercase tracking-[0.22em] text-[#176B45]">AAYUGRANTH PRODUCT INTELLIGENCE</p>
             <h1 className="font-serif text-4xl mt-2">My Product Passports</h1>
             <p className="text-sm text-[#161412]/65 mt-2 max-w-xl">Create, compare, and reopen your formulation intelligence records.</p>
           </div>
@@ -163,7 +177,8 @@ export default function Passports() {
           ) : (
             <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-3 pr-1">
               {products.map((product) => (
-                <Link key={product._id} to={`/product-passport/${product._id}`} className="group snap-start shrink-0 w-[min(82vw,300px)] bg-white border border-[#161412]/10 rounded-2xl p-5 hover:border-[#176B45]/50 hover:shadow-sm transition-all">
+                <div key={product._id} className="group snap-start shrink-0 w-[min(82vw,300px)] bg-white border border-[#161412]/10 rounded-2xl p-5 hover:border-[#176B45]/50 hover:shadow-sm transition-all">
+                  <Link to={`/product-passport/${product._id}`} className="block">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="font-serif text-xl leading-tight">{product.name}</h3>
                     <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold uppercase text-amber-800 bg-amber-50 border border-amber-200 rounded-full px-2 py-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> Needs review</span>
@@ -175,7 +190,16 @@ export default function Passports() {
                     <span>{product.created_at ? new Date(product.created_at).toLocaleDateString() : 'Not analyzed'}</span>
                   </div>
                   <div className="flex items-center gap-1 mt-4 text-xs font-semibold text-[#176B45] group-hover:gap-2 transition-all">Open passport <ArrowRight className="w-3.5 h-3.5" /></div>
-                </Link>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => deletePassport(product)}
+                    className="inline-flex items-center gap-1.5 mt-4 pt-3 border-t border-[#161412]/10 text-[11px] font-semibold text-red-700 hover:text-red-900"
+                    aria-label={`Permanently delete ${product.name}`}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Delete permanently
+                  </button>
+                </div>
               ))}
             </div>
           )}
