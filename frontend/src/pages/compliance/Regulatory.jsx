@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Scale, Search, CheckCircle2, ShieldAlert } from 'lucide-react';
 import { complianceApi } from '../../api';
+import { useTranslation } from 'react-i18next';
 
 export default function Regulatory() {
+  const { t } = useTranslation();
   const [productCategory, setProductCategory] = useState('');
   const [ingredients, setIngredients] = useState('');
   const [jurisdiction, setJurisdiction] = useState('India');
@@ -12,10 +14,11 @@ export default function Regulatory() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!productCategory || !ingredients) return;
+    if (!productCategory || !ingredients.trim()) return;
 
     setIsLoading(true);
     setError(null);
+    setResult(null);
 
     try {
       const response = await complianceApi.getRegulatoryPathway({
@@ -26,7 +29,7 @@ export default function Regulatory() {
       setResult(response);
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.detail || 'An error occurred fetching regulatory pathways.');
+      setError(err.response?.data?.detail || t('regulatory.errorMsg'));
     } finally {
       setIsLoading(false);
     }
@@ -37,36 +40,36 @@ export default function Regulatory() {
       <div>
         <h1 className="text-3xl font-serif text-[#176B45] mb-2 flex items-center gap-3">
           <Scale className="w-8 h-8" />
-          Regulatory Pathway
+          {t('regulatory.pageTitle')}
         </h1>
-        <p className="text-[#161412]/60">Determine the correct licensing and compliance pathway for your Ayush product.</p>
+        <p className="text-[#161412]/60">{t('regulatory.pageSubtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 space-y-6">
           <form onSubmit={handleSubmit} className="bg-white border border-[#161412]/10 rounded-xl p-5 shadow-sm space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#161412] mb-1">Product Category <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-[#161412] mb-1">{t('regulatory.productCategoryLabel')} <span className="text-red-500">*</span></label>
               <select
                 value={productCategory}
                 onChange={(e) => setProductCategory(e.target.value)}
                 className="w-full bg-[#f8f7f4] border border-[#161412]/10 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-[#176B45] transition-colors"
                 required
               >
-                <option value="">Select Category</option>
-                <option value="Classical Medicine">Classical Medicine (Section 3(a))</option>
-                <option value="Proprietary Ayurvedic Medicine">Proprietary Ayurvedic Medicine (Section 3(h))</option>
-                <option value="Cosmetic">Ayurvedic Cosmetic</option>
-                <option value="Food Supplement">Food Supplement (FSSAI)</option>
+                <option value="">{t('regulatory.selectCategory')}</option>
+                <option value="Classical Medicine">{t('regulatory.catClassicalMed')}</option>
+                <option value="Proprietary Ayurvedic Medicine">{t('regulatory.catProprietary')}</option>
+                <option value="Cosmetic">{t('regulatory.catCosmetic')}</option>
+                <option value="Food Supplement">{t('regulatory.catFoodSupplement')}</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#161412] mb-1">Key Ingredients <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-[#161412] mb-1">{t('regulatory.keyIngredientsLabel')} <span className="text-red-500">*</span></label>
               <textarea
                 value={ingredients}
                 onChange={(e) => setIngredients(e.target.value)}
-                placeholder="Comma separated ingredients..."
+                placeholder={t('regulatory.keyIngredientsPlaceholder')}
                 rows={3}
                 className="w-full bg-[#f8f7f4] border border-[#161412]/10 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-[#176B45] transition-colors resize-none"
                 required
@@ -83,7 +86,7 @@ export default function Regulatory() {
               ) : (
                 <Search className="w-4 h-4" />
               )}
-              Analyze Pathway
+              {t('regulatory.analyzeBtn')}
             </button>
           </form>
 

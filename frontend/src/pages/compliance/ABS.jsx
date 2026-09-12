@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ShieldCheck, Search, ArrowRight, CheckCircle2, CircleAlert, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
 import { complianceApi } from '../../api';
+import { useTranslation } from 'react-i18next';
 
 const STATUS_STYLES = {
   RELEVANT: 'bg-emerald-50 text-emerald-800 border-emerald-200',
@@ -15,6 +16,7 @@ function statusClass(status) {
 }
 
 function ObligationMini({ item }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   return (
     <div className="rounded-xl border border-[#161412]/10 bg-white p-5 shadow-sm">
@@ -26,7 +28,7 @@ function ObligationMini({ item }) {
       <p className="mt-2 text-xs font-medium text-[#161412]">{item.next_step}</p>
       {(item.details || item.evidence?.length > 0) && (
         <button onClick={() => setOpen(!open)} className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-[#176B45]">
-          {open ? 'Hide detail' : 'View detail'}
+          {open ? t('abs.hideDetail') : t('abs.viewDetail')}
           {open ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
         </button>
       )}
@@ -36,7 +38,7 @@ function ObligationMini({ item }) {
           {item.evidence?.map((ev) => (
             <div key={ev.source_chunk_id} className="rounded-lg border border-[#161412]/10 bg-[#fbfcfa] p-3 text-xs">
               <p className="font-semibold text-[#176B45]">{ev.document || ev.source}</p>
-              {ev.section && <p className="text-[#161412]/50">Section {ev.section}</p>}
+              {ev.section && <p className="text-[#161412]/50">{t('abs.section')} {ev.section}</p>}
               <p className="mt-1 line-clamp-3 text-[#161412]/70">{ev.excerpt}</p>
             </div>
           ))}
@@ -47,6 +49,7 @@ function ObligationMini({ item }) {
 }
 
 export default function ABS() {
+  const { t } = useTranslation();
   const [ingredients, setIngredients] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -67,7 +70,7 @@ export default function ABS() {
       setResult(response);
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.detail || 'An error occurred during ABS screening.');
+      setError(err.response?.data?.detail || t('abs.errorMsg'));
     } finally {
       setIsLoading(false);
     }
@@ -80,9 +83,9 @@ export default function ABS() {
       <div className="text-center mb-8">
         <h1 className="text-3xl font-serif text-[#176B45] mb-2 flex items-center justify-center gap-3">
           <ShieldCheck className="w-8 h-8" />
-          Access & Benefit Sharing (ABS)
+          {t('abs.pageTitle')}
         </h1>
-        <p className="text-[#161412]/60">Screen ingredients against ABS/statutory requirements with evidence-grounded assessment.</p>
+        <p className="text-[#161412]/60">{t('abs.pageSubtitle')}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-2xl mx-auto">
@@ -90,7 +93,7 @@ export default function ABS() {
           <textarea
             value={ingredients}
             onChange={(e) => setIngredients(e.target.value)}
-            placeholder="Enter ingredients (e.g. Neem, Ashwagandha, Aloe Vera)..."
+            placeholder={t('abs.ingredientsPlaceholder')}
             rows={4}
             className="w-full bg-white border border-[#161412]/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#176B45] shadow-sm resize-none"
             required
@@ -102,9 +105,9 @@ export default function ABS() {
           className="w-full py-3 bg-[#176B45] text-white font-medium rounded-xl hover:bg-[#125537] transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
         >
           {isLoading ? <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin" /> : <Search className="w-5 h-5" />}
-          Screen for ABS Considerations
+          {t('abs.screenBtn')}
         </button>
-        <p className="text-xs text-[#161412]/40 text-center">For a full screening with optional context fields, use the <a href="/abs" className="text-[#176B45] font-semibold underline">ABS Duties page</a>.</p>
+        <p className="text-xs text-[#161412]/40 text-center">{t('abs.fullScreeningNote')} <a href="/abs" className="text-[#176B45] font-semibold underline">{t('abs.absDutiesPage')}</a>.</p>
       </form>
 
       {error && (
@@ -116,7 +119,7 @@ export default function ABS() {
       {isLoading && (
         <div className="py-12 flex flex-col items-center justify-center">
           <div className="w-8 h-8 rounded-full border-2 border-[#176B45] border-t-transparent animate-spin mb-4" />
-          <p className="text-[#161412]/60 font-medium">Building evidence-grounded ABS assessment...</p>
+          <p className="text-[#161412]/60 font-medium">{t('abs.loadingMsg')}</p>
         </div>
       )}
 
@@ -132,7 +135,7 @@ export default function ABS() {
             </div>
             <p className="text-sm text-[#161412]/75">{result.reasoning}</p>
             <div className="mt-3 flex items-center gap-4 text-xs text-[#161412]/55">
-              <span>Confidence: <strong className="text-[#176B45]">{result.confidence}</strong></span>
+              <span>{t('abs.confidence')} <strong className="text-[#176B45]">{result.confidence}</strong></span>
               {result.confidence_score > 0 && <span>{Math.round(result.confidence_score * 100)}%</span>}
             </div>
           </div>
@@ -140,7 +143,7 @@ export default function ABS() {
           {/* Key Findings */}
           {result.key_findings?.length > 0 && (
             <div className="rounded-xl border border-[#161412]/10 bg-white p-5 shadow-sm">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#176B45] mb-4">Key Findings</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#176B45] mb-4">{t('abs.keyFindings')}</h3>
               <div className="space-y-2">
                 {result.key_findings.slice(0, 5).map((finding, i) => (
                   <div key={`${finding}-${i}`} className="flex gap-2 rounded-lg bg-[#f4f6f3] p-3">
@@ -158,7 +161,7 @@ export default function ABS() {
               <div className="flex items-start gap-3">
                 <CircleAlert className="mt-0.5 h-5 w-5 shrink-0 text-orange-700" />
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-orange-800 mb-2">Information needed to finalize ABS pathway</h3>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-orange-800 mb-2">{t('abs.infoGaps')}</h3>
                   <ul className="space-y-1 text-sm text-orange-900/80">
                     {result.information_gaps.map((gap) => (
                       <li key={gap} className="flex gap-2">
@@ -174,7 +177,7 @@ export default function ABS() {
           {/* Obligation Cards */}
           {obligations.length > 0 && (
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#176B45] mb-4">Obligation Navigator</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#176B45] mb-4">{t('abs.obligationNavigator')}</h3>
               <div className="grid gap-4 md:grid-cols-2">
                 {obligations.map((item) => <ObligationMini key={item.area} item={item} />)}
               </div>
@@ -186,15 +189,15 @@ export default function ABS() {
             <div className="rounded-xl border border-[#161412]/10 bg-white p-5 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
                 <BookOpen className="h-4 w-4 text-[#176B45]" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#176B45]">Evidence / Sources</h3>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#176B45]">{t('abs.evidenceSources')}</h3>
               </div>
               <div className="grid gap-3 md:grid-cols-2">
                 {result.evidence.map((ev) => (
                   <div key={ev.source_chunk_id} className="rounded-lg border border-[#161412]/10 bg-[#fbfcfa] p-3 text-xs">
                     <p className="font-semibold text-[#176B45]">{ev.document || ev.source}</p>
-                    {ev.section && <p className="text-[#161412]/50">Section {ev.section}</p>}
+                    {ev.section && <p className="text-[#161412]/50">{t('abs.section')} {ev.section}</p>}
                     <p className="mt-1 line-clamp-3 text-[#161412]/70">{ev.excerpt}</p>
-                    {ev.relevance && <p className="mt-1 text-[#161412]/50"><span className="font-semibold">Relevance:</span> {ev.relevance}</p>}
+                    {ev.relevance && <p className="mt-1 text-[#161412]/50"><span className="font-semibold">{t('abs.relevance')}</span> {ev.relevance}</p>}
                   </div>
                 ))}
               </div>
@@ -205,7 +208,7 @@ export default function ABS() {
           <p className="text-xs text-[#161412]/45 text-center">{result.disclaimer}</p>
           <div className="flex justify-center">
             <a href="/abs" className="inline-flex items-center gap-2 rounded-lg border border-[#cfdad1] bg-white px-5 py-2.5 text-xs font-semibold text-[#161412]/70 hover:border-[#176B45] hover:text-[#176B45] transition">
-              Full ABS screening with context <ArrowRight className="h-3.5 w-3.5" />
+              {t('abs.fullScreeningBtn')} <ArrowRight className="h-3.5 w-3.5" />
             </a>
           </div>
         </div>

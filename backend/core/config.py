@@ -46,6 +46,7 @@ class Settings(BaseSettings):
 
     # ── Bhashini ─────────────────────────────────────────────────────────
     BHASHINI_API_KEY: str = ""
+    BHASHINI_API_URL: str = "https://dhruva-api.bhashini.gov.in/services/inference/pipeline"
 
     # ── Embeddings ───────────────────────────────────────────────────────
     EMBEDDING_MODEL: str = "BAAI/bge-m3"
