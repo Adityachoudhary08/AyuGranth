@@ -11,11 +11,108 @@ import {
   ChevronUp,
   FileText,
   Building2,
-  PackageCheck
+  PackageCheck,
+  ListChecks,
+  Target
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../../components/Navbar';
 import { productsApi, exportApi } from '../../api';
+
+const RequirementCard = ({ item, sources, confidence, getStatusVisuals }) => {
+  const [expanded, setExpanded] = useState(null);
+  const visual = getStatusVisuals(item.status);
+  const Icon = visual.icon;
+
+  return (
+    <div className="bg-white rounded-xl border border-[#161412]/15 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+      <div className={`px-5 py-3 border-b border-[#161412]/5 flex items-center justify-between ${visual.bg}`}>
+        <div className="font-serif text-[#161412] text-lg">{item.area}</div>
+        <div className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border bg-white ${visual.text} ${visual.border}`}>
+          <Icon className="w-3.5 h-3.5" />
+          {visual.label}
+        </div>
+      </div>
+      <div className="p-5 md:p-6">
+        <div className="text-sm font-medium text-[#161412] mb-3">
+          {item.requirement}
+        </div>
+        <p className="text-sm text-[#161412]/70 leading-relaxed mb-6">
+          {item.detail}
+        </p>
+        
+        <div className="flex gap-6 pt-4 border-t border-[#161412]/10">
+          <button 
+            onClick={() => setExpanded(expanded === 'why' ? null : 'why')}
+            className={`text-[10px] font-bold uppercase tracking-wider transition-colors ${expanded === 'why' ? 'text-[#176B45]' : 'text-[#161412]/50 hover:text-[#161412]'}`}
+          >
+            {expanded === 'why' ? '− Hide reasoning' : '+ Why this result?'}
+          </button>
+          <button 
+            onClick={() => setExpanded(expanded === 'evidence' ? null : 'evidence')}
+            className={`text-[10px] font-bold uppercase tracking-wider transition-colors ${expanded === 'evidence' ? 'text-[#176B45]' : 'text-[#161412]/50 hover:text-[#161412]'}`}
+          >
+            {expanded === 'evidence' ? '− Hide evidence' : '+ View Evidence'}
+          </button>
+        </div>
+        
+        <AnimatePresence>
+          {expanded === 'why' && (
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+              <div className="mt-4 p-4 bg-[#f8f7f4] rounded-lg border border-[#161412]/10 text-sm">
+                <div className="text-[10px] font-bold text-[#161412]/50 uppercase tracking-widest mb-1.5">Assessment Reasoning</div>
+                <div className="text-[#161412]/80 leading-relaxed mb-4">{item.reasoning || item.detail}</div>
+                <div className="text-[10px] font-bold text-[#161412]/50 uppercase tracking-widest mb-1.5">Evidence Strength</div>
+                <div className="text-[#161412]/80 font-medium uppercase text-xs">{confidence}</div>
+              </div>
+            </motion.div>
+          )}
+          {expanded === 'evidence' && (
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+              <div className="mt-4 p-4 bg-[#f8f7f4] rounded-lg border border-[#161412]/10 text-sm">
+                {item.evidence_section || item.evidence_excerpt ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between border-b border-[#161412]/10 pb-2">
+                      <div>
+                        <span className="text-[10px] font-bold text-[#161412]/50 uppercase tracking-widest block">Authoritative Statutory Instrument</span>
+                        <span className="text-xs font-bold text-[#176B45]">{item.evidence_source || 'Official Regulatory Framework'}</span>
+                      </div>
+                      {item.evidence_section && (
+                        <span className="inline-flex text-[10px] font-mono font-bold bg-[#176B45]/10 text-[#176B45] px-2 py-0.5 rounded border border-[#176B45]/20">
+                          {item.evidence_section}
+                        </span>
+                      )}
+                    </div>
+
+                    {item.evidence_excerpt && (
+                      <div>
+                        <div className="text-[10px] font-bold text-[#161412]/50 uppercase tracking-widest mb-1">
+                          Extracted Legal Provision / Statutory Excerpt:
+                        </div>
+                        <div className="p-3 bg-white rounded border border-[#161412]/10 font-serif text-xs text-[#161412]/90 leading-relaxed italic">
+                          "{item.evidence_excerpt}"
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : sources && sources.length > 0 ? (
+                  <>
+                    <div className="text-[10px] font-bold text-[#161412]/50 uppercase tracking-widest mb-2">Retrieved Regulatory Sources</div>
+                    <ul className="list-disc pl-5 text-[#161412]/80 space-y-1">
+                      {sources.map((src, i) => <li key={i}>{src}</li>)}
+                    </ul>
+                  </>
+                ) : (
+                  <div className="text-[#161412]/60 italic">Source evidence unavailable for this assessment.</div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
 
 export default function InternationalLanding() {
   const [jurisdiction, setJurisdiction] = useState('USA');
@@ -37,11 +134,11 @@ export default function InternationalLanding() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await productsApi.listProducts();
-        const data = response.data || [];
-        setProducts(data);
-        if (data.length > 0) {
-          setSelectedProductId(data[0]._id);
+        const data = await productsApi.listProducts();
+        const products = Array.isArray(data) ? data : [];
+        setProducts(products);
+        if (products.length > 0) {
+          setSelectedProductId(products[0]._id);
         }
       } catch (err) {
         console.error("Failed to fetch products:", err);
@@ -75,11 +172,11 @@ export default function InternationalLanding() {
     setShowReasoning(false);
     
     try {
-      const response = await exportApi.navigateExport({
+      const result = await exportApi.navigateExport({
         product_id: selectedProductId,
         target_country: jurisdiction
       });
-      setAssessmentResult(response.data);
+      setAssessmentResult(result);
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.detail || "An error occurred while assessing market access.");
@@ -124,74 +221,55 @@ export default function InternationalLanding() {
 
         {/* SETUP PANEL (Jurisdiction & Product) */}
         <div className="bg-white p-8 md:p-10 rounded-2xl border border-[#161412]/15 shadow-sm mb-12">
-          <h2 className="text-xl font-serif text-[#161412] mb-6 text-center">Where are you taking your product?</h2>
+          <h2 className="text-2xl font-serif text-[#161412] mb-8 text-center">Configure Market Assessment</h2>
           
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 mb-10">
-            {/* USA Option */}
-            <button 
-              onClick={() => handleJurisdictionChange('USA')}
-              className={`flex items-center justify-between w-full md:w-64 p-5 rounded-xl border-2 transition-all duration-300 ${
-                jurisdiction === 'USA' 
-                  ? 'border-[#176B45] bg-[#176B45]/5 shadow-sm ring-1 ring-[#176B45]/20' 
-                  : 'border-[#161412]/10 hover:border-[#161412]/30 bg-[#f8f7f4]'
-              }`}
-            >
-              <div className="text-left">
-                <div className="text-xs font-bold text-[#161412]/50 tracking-wider mb-1">TARGET</div>
-                <div className="text-lg font-serif text-[#161412] flex items-center gap-2">
-                  <span className="text-2xl">🇺🇸</span> USA
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            {/* Product Selector */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#161412]/60 mb-2">
+                Select Product Passport
+              </label>
+              {products.length === 0 ? (
+                <div className="bg-[#f8f7f4] border border-[#161412]/10 py-3.5 px-4 rounded-xl text-sm text-[#161412]/60">
+                  No products found. Please create one in Product Passport.
                 </div>
-              </div>
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${jurisdiction === 'USA' ? 'border-[#176B45]' : 'border-[#161412]/20'}`}>
-                {jurisdiction === 'USA' && <div className="w-2.5 h-2.5 rounded-full bg-[#176B45]" />}
-              </div>
-            </button>
-
-            <ArrowRight className="text-[#161412]/20 hidden md:block w-8 h-8" />
-            <div className="text-[#161412]/20 md:hidden rotate-90"><ArrowRight className="w-6 h-6" /></div>
-
-            {/* Germany Option */}
-            <button 
-              onClick={() => handleJurisdictionChange('Germany')}
-              className={`flex items-center justify-between w-full md:w-64 p-5 rounded-xl border-2 transition-all duration-300 ${
-                jurisdiction === 'Germany' 
-                  ? 'border-[#176B45] bg-[#176B45]/5 shadow-sm ring-1 ring-[#176B45]/20' 
-                  : 'border-[#161412]/10 hover:border-[#161412]/30 bg-[#f8f7f4]'
-              }`}
-            >
-              <div className="text-left">
-                <div className="text-xs font-bold text-[#161412]/50 tracking-wider mb-1">TARGET</div>
-                <div className="text-lg font-serif text-[#161412] flex items-center gap-2">
-                  <span className="text-2xl">🇩🇪</span> Germany
+              ) : (
+                <div className="relative">
+                  <select 
+                    value={selectedProductId} 
+                    onChange={(e) => setSelectedProductId(e.target.value)}
+                    className="w-full appearance-none bg-[#f8f7f4] border border-[#161412]/15 rounded-xl py-3.5 pl-4 pr-10 text-[#161412] text-sm focus:outline-none focus:border-[#176B45] focus:ring-1 focus:ring-[#176B45]/50 transition-all cursor-pointer font-medium"
+                  >
+                    {products.map(p => (
+                      <option key={p._id} value={p._id}>{p.name} (Source: India)</option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#161412]/40 pointer-events-none" />
                 </div>
-              </div>
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${jurisdiction === 'Germany' ? 'border-[#176B45]' : 'border-[#161412]/20'}`}>
-                {jurisdiction === 'Germany' && <div className="w-2.5 h-2.5 rounded-full bg-[#176B45]" />}
-              </div>
-            </button>
-          </div>
+              )}
+            </div>
 
-          {/* Product Selector */}
-          <div className="max-w-md mx-auto">
-            <label className="block text-sm font-medium text-[#161412] mb-2 text-center">Select Product from Passport</label>
-            {products.length === 0 ? (
-              <div className="bg-[#f8f7f4] border border-[#161412]/10 p-4 rounded-xl text-sm text-center text-[#161412]/60">
-                No products found. Please create one in Product Passport.
-              </div>
-            ) : (
+            {/* Jurisdiction Selector */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#161412]/60 mb-2">
+                Target Country
+              </label>
               <div className="relative">
                 <select 
-                  value={selectedProductId} 
-                  onChange={(e) => setSelectedProductId(e.target.value)}
+                  value={jurisdiction} 
+                  onChange={(e) => handleJurisdictionChange(e.target.value)}
                   className="w-full appearance-none bg-[#f8f7f4] border border-[#161412]/15 rounded-xl py-3.5 pl-4 pr-10 text-[#161412] text-sm focus:outline-none focus:border-[#176B45] focus:ring-1 focus:ring-[#176B45]/50 transition-all cursor-pointer font-medium"
                 >
-                  {products.map(p => (
-                    <option key={p._id} value={p._id}>{p.name} (Source: India)</option>
-                  ))}
+                  <option value="USA">🇺🇸 United States (USA)</option>
+                  <option value="Germany">🇩🇪 Germany (EU)</option>
+                  <option value="Japan">🇯🇵 Japan</option>
+                  <option value="UK">🇬🇧 United Kingdom</option>
+                  <option value="Australia">🇦🇺 Australia</option>
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#161412]/40 pointer-events-none" />
               </div>
-            )}
+            </div>
+          </div>
 
             {/* Error Message */}
             {error && (
@@ -220,7 +298,6 @@ export default function InternationalLanding() {
                 )}
               </button>
             </div>
-          </div>
         </div>
 
         {/* LOADING STATE */}
@@ -304,12 +381,12 @@ export default function InternationalLanding() {
                     <div className="relative">
                       <div className="absolute -left-[25px] top-1/2 -translate-y-1/2 w-12 h-12 bg-[#faf8f3] rounded-full flex items-center justify-center">
                         <div className="w-8 h-8 bg-white border border-[#176B45]/30 rounded-full flex items-center justify-center shadow-sm text-[#176B45]">
-                          <FileText className="w-4 h-4" />
+                          <ListChecks className="w-4 h-4" />
                         </div>
                       </div>
                       <div className="pl-12">
                         <div className="text-[10px] uppercase font-bold text-[#161412]/50 tracking-wider">REGULATORY CHECK</div>
-                        <div className="text-xs text-[#161412]/60 mt-1">{assessmentResult.checklist.length} requirements</div>
+                        <div className="text-xs text-[#161412]/60 mt-1">{assessmentResult.checklist.length + (assessmentResult.heavy_metal_warning.triggered ? 1 : 0)} requirements identified</div>
                       </div>
                     </div>
 
@@ -321,14 +398,22 @@ export default function InternationalLanding() {
                             ? 'bg-red-50 border-red-200 text-red-600' 
                             : 'bg-yellow-50 border-yellow-200 text-yellow-600'
                         }`}>
-                          <Building2 className="w-4 h-4" />
+                          <Target className="w-4 h-4" />
                         </div>
                       </div>
                       <div className="pl-12">
                         <div className="text-[10px] uppercase font-bold text-[#161412]/50 tracking-wider">MARKET ACCESS</div>
-                        <div className="text-xs font-medium text-[#161412] mt-1">
+                        <div className="text-sm font-bold text-[#161412] mt-1 uppercase">
                           {assessmentResult.heavy_metal_warning.triggered ? 'Critical Actions Needed' : 'Review Required'}
                         </div>
+                        <div className="text-xs text-[#161412]/60 mt-1 leading-relaxed">
+                          {assessmentResult.checklist.length + (assessmentResult.heavy_metal_warning.triggered ? 1 : 0)} checks <br/>
+                          {assessmentResult.checklist.filter(c => c.status === 'action_required').length + (assessmentResult.heavy_metal_warning.triggered ? 1 : 0)} action items <br/>
+                          {assessmentResult.checklist.filter(c => c.status === 'review_required').length} review items
+                        </div>
+                        <button className="mt-3 text-xs font-bold uppercase tracking-wider text-[#176B45] hover:text-[#161412] transition-colors flex items-center gap-1">
+                          View Action Plan <ArrowRight className="w-3 h-3" />
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -339,15 +424,17 @@ export default function InternationalLanding() {
                     <div className="space-y-2">
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-[#161412]/70">Actions Required</span>
-                        <span className="font-bold text-[#161412]">{assessmentResult.checklist.filter(c => c.status === 'action_required').length}</span>
+                        <span className="font-bold text-[#161412]">{assessmentResult.checklist.filter(c => c.status === 'action_required').length + (assessmentResult.heavy_metal_warning.triggered ? 1 : 0)}</span>
                       </div>
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-[#161412]/70">Reviews Required</span>
                         <span className="font-bold text-[#161412]">{assessmentResult.checklist.filter(c => c.status === 'review_required').length}</span>
                       </div>
                       <div className="pt-3 mt-3 border-t border-[#161412]/10 flex justify-between items-center text-sm">
-                        <span className="text-[#161412]/70">Confidence</span>
-                        <span className="font-medium text-[#176B45] uppercase text-xs tracking-wider">{assessmentResult.confidence}</span>
+                        <span className="text-[#161412]/70">Evidence Strength</span>
+                        <span className={`font-medium uppercase text-xs tracking-wider ${assessmentResult.confidence.toLowerCase() === 'high' ? 'text-green-600' : assessmentResult.confidence.toLowerCase() === 'low' ? 'text-red-600' : 'text-yellow-600'}`}>
+                          {assessmentResult.confidence}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -356,23 +443,55 @@ export default function InternationalLanding() {
 
               {/* RIGHT COLUMN: Checklist & Details */}
               <div className="lg:col-span-8 space-y-8">
+
+                {/* Abstention Warning */}
+                {assessmentResult.confidence.toLowerCase() === 'low' && (
+                  <div className="bg-red-50 border border-red-200 rounded-2xl p-6 md:p-8 shadow-sm">
+                    <h3 className="text-lg font-serif text-red-900 mb-2">INSUFFICIENT VERIFIED EVIDENCE</h3>
+                    <p className="text-sm text-red-900/80 leading-relaxed font-medium mb-4">
+                      The available authoritative evidence is insufficient to make a reliable determination for all requirements. The system abstains from definitive legal conclusions.
+                    </p>
+                    <div className="text-xs text-red-800 leading-relaxed bg-white/50 p-4 rounded-xl border border-red-100">
+                      <strong>Missing:</strong> Specific product classification data or comprehensive regulatory precedent. <br/>
+                      <strong>Needed:</strong> Official regulatory consultation or deeper corpus retrieval.
+                    </div>
+                  </div>
+                )}
                 
-                {/* Heavy Metal Warning */}
-                {assessmentResult.heavy_metal_warning.triggered && (
-                  <div className="bg-red-50/50 border border-red-200 rounded-2xl p-6 md:p-8 shadow-sm">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shrink-0 shadow-sm border border-red-100">
-                        <ShieldAlert className="w-6 h-6 text-red-600" />
+                {/* Heavy Metal / Ingredient Safety Check */}
+                {assessmentResult.heavy_metal_warning.triggered ? (
+                  <div className="bg-white rounded-xl border border-red-200 overflow-hidden shadow-sm">
+                    <div className="px-5 py-3 border-b border-red-100 flex items-center justify-between bg-red-50">
+                      <div className="font-serif text-red-900 text-lg">Heavy-Metal / Restricted Substance Review</div>
+                      <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border bg-white text-red-700 border-red-200">
+                        <ShieldAlert className="w-3.5 h-3.5" />
+                        ACTION REQUIRED
                       </div>
-                      <div>
-                        <h3 className="text-lg font-serif text-red-900 mb-2">CRITICAL EXPORT WARNING</h3>
-                        <div className="inline-flex items-center px-2.5 py-0.5 rounded bg-white text-red-700 text-xs font-bold uppercase tracking-widest border border-red-100 mb-4">
-                          {assessmentResult.heavy_metal_warning.flagged_ingredients.join(', ')}
-                        </div>
-                        <p className="text-sm text-red-900/80 leading-relaxed font-medium">
-                          {assessmentResult.heavy_metal_warning.message}
-                        </p>
+                    </div>
+                    <div className="p-5 md:p-6">
+                      <div className="text-sm font-bold text-[#161412] mb-2">Detected ingredient(s):</div>
+                      <div className="inline-flex items-center px-2.5 py-0.5 rounded bg-white text-[#161412] text-xs font-bold uppercase tracking-widest border border-[#161412]/15 mb-4">
+                        {assessmentResult.heavy_metal_warning.flagged_ingredients.join(', ')}
                       </div>
+                      <p className="text-sm text-[#161412]/70 leading-relaxed font-medium mb-6">
+                        Export-market review may require additional safety/testing evidence. {assessmentResult.heavy_metal_warning.message}
+                      </p>
+                      <div className="flex gap-6 pt-4 border-t border-[#161412]/10">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#161412]/40">System Guardrail Triggered</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-xl border border-[#161412]/15 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                    <div className="px-5 py-3 border-b border-[#161412]/5 flex items-center justify-between bg-green-50">
+                      <div className="font-serif text-[#161412] text-lg">Ingredient Safety</div>
+                      <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border bg-white text-green-700 border-green-200">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        COMPLIANT
+                      </div>
+                    </div>
+                    <div className="p-5 md:p-6 text-sm text-[#161412]/70">
+                      No mineral/metal-based ingredient detected from available product data.
                     </div>
                   </div>
                 )}
@@ -384,30 +503,15 @@ export default function InternationalLanding() {
                   </h3>
                   
                   <div className="space-y-4">
-                    {assessmentResult.checklist.map((item, idx) => {
-                      const visual = getStatusVisuals(item.status);
-                      const Icon = visual.icon;
-                      
-                      return (
-                        <div key={idx} className="bg-white rounded-xl border border-[#161412]/15 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                          <div className={`px-5 py-3 border-b border-[#161412]/5 flex items-center justify-between ${visual.bg}`}>
-                            <div className="font-serif text-[#161412] text-lg">{item.area}</div>
-                            <div className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border bg-white ${visual.text} ${visual.border}`}>
-                              <Icon className="w-3.5 h-3.5" />
-                              {visual.label}
-                            </div>
-                          </div>
-                          <div className="p-5 md:p-6">
-                            <div className="text-sm font-medium text-[#161412] mb-3">
-                              {item.requirement}
-                            </div>
-                            <p className="text-sm text-[#161412]/70 leading-relaxed">
-                              {item.detail}
-                            </p>
-                          </div>
-                        </div>
-                      )
-                    })}
+                    {assessmentResult.checklist.map((item, idx) => (
+                      <RequirementCard 
+                        key={idx} 
+                        item={item} 
+                        sources={assessmentResult.sources} 
+                        confidence={assessmentResult.confidence}
+                        getStatusVisuals={getStatusVisuals} 
+                      />
+                    ))}
                   </div>
                 </div>
 
@@ -428,8 +532,39 @@ export default function InternationalLanding() {
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden"
                       >
-                        <div className="p-6 pt-2 border-t border-[#161412]/5 text-sm text-[#161412]/70 leading-relaxed whitespace-pre-wrap bg-[#f8f7f4]/50">
-                          {assessmentResult.rag_reasoning}
+                        <div className="p-6 pt-2 border-t border-[#161412]/5 text-sm text-[#161412]/70 leading-relaxed bg-[#f8f7f4]/50">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                              <div className="text-[10px] font-bold text-[#161412]/50 uppercase tracking-widest mb-2">Product</div>
+                              <ul className="space-y-1.5">
+                                <li><span className="font-medium text-[#161412]">Name:</span> {assessmentResult.product_name}</li>
+                                <li><span className="font-medium text-[#161412]">Source:</span> India</li>
+                              </ul>
+                            </div>
+                            <div>
+                              <div className="text-[10px] font-bold text-[#161412]/50 uppercase tracking-widest mb-2">Target Jurisdiction</div>
+                              <ul className="space-y-1.5">
+                                <li><span className="font-medium text-[#161412]">Country:</span> {assessmentResult.target_country}</li>
+                                <li><span className="font-medium text-[#161412]">Framework:</span> {assessmentResult.target_country === 'USA' ? 'FDA/USA' : 'EU + Germany'}</li>
+                              </ul>
+                            </div>
+                            <div>
+                              <div className="text-[10px] font-bold text-[#161412]/50 uppercase tracking-widest mb-2">Assessment Basis</div>
+                              <ul className="space-y-1.5">
+                                <li><span className="font-medium text-[#161412]">Domain:</span> Export Market Access</li>
+                                <li><span className="font-medium text-[#161412]">Evidence:</span> {assessmentResult.sources.length} relevant sources retrieved</li>
+                              </ul>
+                            </div>
+                            <div>
+                              <div className="text-[10px] font-bold text-[#161412]/50 uppercase tracking-widest mb-2">Evidence Strength</div>
+                              <div className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${assessmentResult.confidence.toLowerCase() === 'high' ? 'bg-green-50 text-green-700 border-green-200' : assessmentResult.confidence.toLowerCase() === 'low' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200'}`}>
+                                {assessmentResult.confidence}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="text-[10px] font-bold text-[#161412]/50 uppercase tracking-widest mb-2 pt-4 border-t border-[#161412]/10">Reasoning</div>
+                          <div className="whitespace-pre-wrap">{assessmentResult.rag_reasoning}</div>
                         </div>
                       </motion.div>
                     )}

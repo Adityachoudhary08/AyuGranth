@@ -23,7 +23,11 @@ async def get_current_user(
     Returns the user document from MongoDB. For MVP demo, returns a dummy user if no token.
     """
     if not token:
-        return {"_id": "000000000000000000000000", "email": "demo@example.com"}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required. Please sign in to continue.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

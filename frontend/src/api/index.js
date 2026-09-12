@@ -42,6 +42,11 @@ export const complianceApi = {
 
 let productsCache = null;
 
+/** Call this on logout to prevent cross-session cache leakage. */
+export function clearProductsCache() {
+  productsCache = null;
+}
+
 export const knowledgeApi = {
   checkTKOverlap: async (data) => apiClient.post('/tk/check', data),
   checkMisappropriation: async (data) => apiClient.post('/tk/misappropriation-check', data),

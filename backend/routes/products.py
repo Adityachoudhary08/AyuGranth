@@ -144,7 +144,7 @@ async def list_products(
     current_user: dict = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
-    """List all products for the current user."""
+    """List all products belonging to the current authenticated user."""
     cursor = db.products.find(
         {"user_id": str(current_user["_id"])},
         {
@@ -157,34 +157,7 @@ async def list_products(
         },
     ).sort("created_at", -1)
     products = await cursor.to_list(length=100)
-    
-    # Auto-provision dummy products for the MVP demo if empty
-    if not products:
-        dummy_products = [
-            {
-                "user_id": str(current_user["_id"]),
-                "name": "Ayush Kwath Extract",
-                "ingredients": ["Tulsi", "Dalchini", "Sunthi", "Krishna Marich"],
-                "intended_use": "Immunity booster",
-                "dosage_form": "Extract",
-                "source_region": "India",
-                "created_at": datetime.utcnow(),
-            },
-            {
-                "user_id": str(current_user["_id"]),
-                "name": "Suvarna Bhasma Complex",
-                "ingredients": ["Swarna Bhasma", "Ashwagandha", "Shatavari"],
-                "intended_use": "Rejuvenation and vitality",
-                "dosage_form": "Powder",
-                "source_region": "India",
-                "created_at": datetime.utcnow(),
-            }
-        ]
-        result = await db.products.insert_many(dummy_products)
-        for doc, inserted_id in zip(dummy_products, result.inserted_ids):
-            doc["_id"] = str(inserted_id)
-        return dummy_products
-    
+
     for product in products:
         product["_id"] = str(product["_id"])
         product.setdefault("ingredients", [])
@@ -197,5 +170,5 @@ async def list_products(
         product.setdefault("new_plant_variety_bred", False)
         product.setdefault("unique_packaging", False)
         product.setdefault("region_specific", False)
-        
+
     return products

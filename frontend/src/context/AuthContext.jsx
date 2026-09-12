@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { authApi } from '../api';
+import { clearProductsCache } from '../api';
 
 const TOKEN_KEY = 'ayugranth_auth_token';
 const USER_KEY = 'ayugranth_auth_user';
@@ -83,6 +84,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
+    clearProductsCache();           // wipe cached passport list for this session
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     setToken(null);
