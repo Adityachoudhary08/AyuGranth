@@ -9,8 +9,15 @@ export const apiClient = axios.create({
   },
 });
 
-// For development, we'll auto-inject a dummy token if an endpoint requires it and fails with 401.
-// In a real app, this would use the auth context.
+// Automatically attach Bearer token from localStorage if available
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('ayugranth_auth_token') || localStorage.getItem('auth_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 apiClient.interceptors.response.use(
   (response) => response.data,
   (error) => {

@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { User, LogOut, LogIn, ChevronDown } from 'lucide-react'
 import { navContainerVariants, navItemVariants } from '../animations/heroAnimations'
+import { useAuth } from '../context/AuthContext'
 
 const LANGUAGES = [
   { code: 'en', label: 'English' },
@@ -27,15 +29,23 @@ export default function Navbar() {
     localStorage.setItem('aayugranth_lang', selectedLang)
   }, [selectedLang])
 
+  const { user, isAuthenticated, logout } = useAuth()
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const userMenuRef = useRef(null)
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (langDropdownRef.current && !langDropdownRef.current.contains(e.target)) {
         setIsLangOpen(false)
       }
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setIsUserMenuOpen(false)
+      }
     }
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         setIsLangOpen(false)
+        setIsUserMenuOpen(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -257,6 +267,80 @@ export default function Navbar() {
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Desktop Auth State */}
+            {isAuthenticated ? (
+              <div ref={userMenuRef} className="relative">
+                <motion.button
+                  type="button"
+                  variants={navItemVariants}
+                  onClick={() => setIsUserMenuOpen((prev) => !prev)}
+                  aria-expanded={isUserMenuOpen}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold tracking-tight bg-white hover:bg-stone-50 border border-[#161412]/20 hover:border-[#161412]/35 text-[#161412] shadow-sm cursor-pointer select-none"
+                >
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#176B45] to-[#2a9d6a] text-white flex items-center justify-center text-[10px] font-bold uppercase shadow-xs">
+                    {user?.full_name ? user.full_name.charAt(0) : user?.email?.charAt(0) || 'U'}
+                  </div>
+                  <span className="max-w-[100px] truncate text-[12.5px] font-bold">
+                    {user?.full_name?.split(' ')[0] || user?.email?.split('@')[0]}
+                  </span>
+                  <ChevronDown className={`w-3.5 h-3.5 opacity-70 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                </motion.button>
+
+                <AnimatePresence>
+                  {isUserMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 4, scale: 0.98 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full mt-2 w-[210px] rounded-2xl p-2 shadow-[0_16px_36px_rgba(0,0,0,0.15)] bg-white border border-[#161412]/15 text-[#161412] z-50 overflow-hidden"
+                    >
+                      <div className="px-3 py-2 border-b border-[#161412]/10 mb-1">
+                        <p className="text-xs font-bold text-[#161412] truncate">{user?.full_name || 'Practitioner'}</p>
+                        <p className="text-[11px] text-[#161412]/60 truncate">{user?.email}</p>
+                        {user?.role && (
+                          <span className="inline-block mt-1 text-[9px] font-bold uppercase tracking-wider bg-[#176B45]/10 text-[#176B45] px-2 py-0.5 rounded-full">
+                            {user.role}
+                          </span>
+                        )}
+                      </div>
+                      <Link
+                        to="/passports"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[#161412] hover:bg-stone-100 transition-colors"
+                      >
+                        <User className="w-3.5 h-3.5 text-[#176B45]" />
+                        My Passports
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          logout()
+                          setIsUserMenuOpen(false)
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        Sign Out
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <motion.div variants={navItemVariants}>
+                <Link
+                  to="/login"
+                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold tracking-tight transition-all duration-200 cursor-pointer select-none bg-[#176B45] hover:bg-[#125537] text-white shadow-[0_2px_10px_rgba(23,107,69,0.25)] hover:shadow-[0_4px_16px_rgba(23,107,69,0.35)] hover:scale-[1.03] active:scale-[0.97]"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Sign In</span>
+                </Link>
+              </motion.div>
+            )}
           </div>
 
           {/* Mobile Quick Toggle & Hamburger */}
@@ -373,6 +457,47 @@ export default function Navbar() {
                   हिन्दी
                 </button>
               </div>
+            </div>
+
+            {/* Mobile Auth Actions */}
+            <div className="pt-3 mt-1 border-t border-white/10 flex flex-col gap-2">
+              {isAuthenticated ? (
+                <div className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/10">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-bold text-white truncate">{user?.full_name || 'Practitioner'}</p>
+                    <p className="text-[10px] text-white/50 truncate">{user?.email}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      logout()
+                      setMobileMenuOpen(false)
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 transition-colors"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold bg-[#176B45] text-white text-center shadow-xs"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>Sign In</span>
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/15 text-white text-center border border-white/10"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
             </div>
           </motion.div>
         )}

@@ -215,3 +215,28 @@ body[data-surface='functional'] .app-main button[type='submit'] {
   box-shadow: 0 8px 18px rgba(23, 107, 69, 0.15);
   font-weight: 600;
 }
+
+.abs-page .eyebrow {
+  color: #849188;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.abs-page .label {
+  color: rgba(23, 33, 29, 0.5);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.35;
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+}
+
+.abs-page .body-copy {
+  color: rgba(23, 33, 29, 0.72);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}

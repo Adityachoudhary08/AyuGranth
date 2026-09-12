@@ -40,6 +40,9 @@ import PriorArtRadar from './pages/ip/workspace/PriorArtRadar.jsx';
 import NoveltySandbox from './pages/ip/workspace/NoveltySandbox.jsx';
 import TKPriorArt from './pages/ip/workspace/TKPriorArt.jsx';
 import InternationalLanding from './pages/international/InternationalLanding.jsx';
+import { AuthProvider } from './context/AuthContext.jsx';
+import LoginPage from './pages/auth/LoginPage.jsx';
+import RegisterPage from './pages/auth/RegisterPage.jsx';
 
 // Placeholder Pages for future public development
 const PlaceholderPage = ({ title }) => (
@@ -54,11 +57,18 @@ const PlaceholderPage = ({ title }) => (
 
 export default function Router() {
   return (
-    <BrowserRouter>
-      <SurfaceController />
-      <Routes>
-        {/* Landing Page (Existing) */}
-        <Route path="/" element={<App />} />
+    <AuthProvider>
+      <BrowserRouter>
+        <SurfaceController />
+        <Routes>
+          {/* Landing Page (Existing) */}
+          <Route path="/" element={<App />} />
+
+          {/* Authentication */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/signup" element={<RegisterPage />} />
+
 
         {/* New Standalone Public Products */}
         <Route path="/ask-aayugranth" element={<AskAayuGranth />} />
@@ -117,7 +127,8 @@ export default function Router() {
           <Route path="/analytics/evaluation" element={<Evaluation />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

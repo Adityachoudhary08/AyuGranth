@@ -81,3 +81,10 @@ export const passportApi = {
 export const analyticsApi = {
   getEvaluationMetrics: async () => apiClient.get('/evaluation/metrics'),
 };
+
+export const authApi = {
+  login: async (credentials) => apiClient.post('/auth/login', credentials),
+  signup: async (userData) => apiClient.post('/auth/signup', userData),
+  getMe: async () => apiClient.get('/auth/me'),
+};
+
