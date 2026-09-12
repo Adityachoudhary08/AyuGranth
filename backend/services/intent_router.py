@@ -16,6 +16,10 @@ import re
 from typing import Dict, Any
 
 # Intent Definitions & Priority Rules
+# Order matters: patterns are checked top-to-bottom; first match wins.
+# ABS is deliberately placed BEFORE TK_ANALYSIS because:
+#   - The ABS engine's boilerplate query always contains "Access and Benefit Sharing considerations"
+#   - Ingredient names like Ashwagandha/Neem must not trigger TK_ANALYSIS for ABS queries
 _INTENT_PATTERNS = [
     (
         "PRODUCT_PASSPORT",
@@ -43,27 +47,9 @@ _INTENT_PATTERNS = [
         "The user is searching for prior-art patent documents or patent similarity.",
     ),
     (
-        "TK_ANALYSIS",
-        [
-            r"\btraditional\s+knowledge\b",
-            r"\btkdl\b",
-            r"\btk\s+analysis\b",
-            r"\bclassical\s+(?:text|treatise|source|literature)s?\b",
-            r"\bsamhita\b",
-            r"\bcharaka\b",
-            r"\bsushruta\b",
-            r"\bashtanga\b",
-            r"\bayurved(?:a|ic)\s+(?:text|reference|knowledge|use)\b",
-            r"\bunani\s+text\b",
-            r"\bsiddha\s+text\b",
-            r"\bethnobotanical\b",
-            r"\bfolk\s+knowledge\b",
-        ],
-        "The user is asking about traditional knowledge, classical texts, or TKDL references.",
-    ),
-    (
         "ABS",
         [
+            # Explicit ABS/BDA terminology
             r"\babs\s+obligations?\b",
             r"\baccess\s+and\s+benefit[\s\-_]*sharing\b",
             r"\bbenefit[\s\-_]*sharing\b",
@@ -75,8 +61,33 @@ _INTENT_PATTERNS = [
             r"\bsbb\b",
             r"\bform\s+(?:i|ii|iii|iv)\b",
             r"\bbiological\s+resources?\s+(?:access|regulation|approval|rules|regulations)\b",
+            # ABS engine boilerplate query patterns — ensures ABS engine queries always route as ABS
+            r"\baccess\s+and\s+benefit\s+sharing\s+considerations\b",
+            r"\babs[/\s]statutory\s+evidence\b",
+            r"\babs\b.*\bjurisdiction\b",
+            r"competent\s+authority.*approval.*intimation.*benefit[\-\s]sharing.*ipr",
         ],
         "The user is inquiring about Access and Benefit Sharing (ABS) obligations or Biological Diversity Act compliance.",
+    ),
+    (
+        "TK_ANALYSIS",
+        [
+            r"\btraditional\s+knowledge\b",
+            r"\btkdl\b",
+            r"\btk\s+analysis\b",
+            r"\bclassical\s+(?:text|treatise|source|literature)s?\b",
+            r"\bsamhita\b",
+            r"\bcharaka\b",
+            r"\bsushruta\b",
+            r"\bashtanga\b",
+            # Requires explicit "text/reference/knowledge/use" context — bare ingredient names excluded
+            r"\bayurved(?:a|ic)\s+(?:text|reference|knowledge|use)\b",
+            r"\bunani\s+text\b",
+            r"\bsiddha\s+text\b",
+            r"\bethnobotanical\b",
+            r"\bfolk\s+knowledge\b",
+        ],
+        "The user is asking about traditional knowledge, classical texts, or TKDL references.",
     ),
     (
         "REGULATORY",

@@ -54,6 +54,15 @@ class Settings(BaseSettings):
     LLM_MODE: str = "cloud"  # "cloud" (Gemini/Claude) or "local" (Ollama/Qwen3)
     LLM_PROVIDER: str = "gemini"  # "gemini", "anthropic", or "ollama"
 
+    # ── ABS-specific pipeline overrides ──────────────────────────────────
+    # Embedding timeout for ABS queries. The general pipeline uses 6s; ABS
+    # uses 12s to avoid false "embedding failed" on the first local embed call.
+    ABS_EMBEDDING_TIMEOUT_S: float = 12.0
+    # Gemini generation timeout for ABS. ABS uses 1 primary attempt with a
+    # short timeout and immediately falls back to evidence-grounded text.
+    ABS_GEMINI_TIMEOUT_S: float = 12.0
+    ABS_GEMINI_MAX_RETRIES: int = 0  # 0 = no retries; fallback fires immediately
+
 
 # Singleton — import `settings` everywhere
 settings = Settings()  # type: ignore[call-arg]

@@ -19,7 +19,7 @@ export default function Topbar() {
 
   const services = [
     { name: 'Regulatory Pathway', href: '/compliance/regulatory', icon: Scale, desc: 'Find Ayush licensing requirements' },
-    { name: 'ABS Compliance', href: '/compliance/abs', icon: ShieldCheck, desc: 'Biological Diversity Act checks' },
+    { name: 'ABS Compliance', href: '/abs', icon: ShieldCheck, desc: 'Biological Diversity Act checks' },
     { name: 'Evaluation Dashboard', href: '/analytics/evaluation', icon: BarChart, desc: 'System benchmark metrics' },
     { name: 'Export Navigator', href: '#', icon: Globe, desc: 'Cross-border compliance' },
   ];
