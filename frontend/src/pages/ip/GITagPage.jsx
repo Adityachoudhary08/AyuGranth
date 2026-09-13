@@ -142,7 +142,7 @@ export default function GITagPage() {
                 <p className="text-sm text-[#161412]/50 font-medium">Results will appear here</p>
                 <p className="text-xs text-[#161412]/40 mt-1 max-w-[200px]">Fill out the details to evaluate Geographical Indication eligibility.</p>
               </div>
-            )}
+            }
 
             {isLoading && <div className="flex-1 bg-white border border-[#161412]/10 rounded-2xl p-6 shadow-sm animate-pulse">
                 <div className="h-6 bg-gray-200 rounded w-1/3 mb-6"></div>
@@ -194,9 +194,11 @@ export default function GITagPage() {
                     </div>
                   </div>
                 </div>
-              </div>}
+              </div>
+            )}
           </div>
         </div>
       </main>
-    </div>;
+    </div>
+  );
 }

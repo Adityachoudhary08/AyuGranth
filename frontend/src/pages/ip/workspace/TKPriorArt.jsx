@@ -115,5 +115,6 @@ export default function TKPriorArt() {
           <section className="rounded-2xl border border-[#161412]/10 bg-[#fbfaf7] p-6 text-xs leading-relaxed text-[#161412]/65"><p className="font-bold uppercase tracking-wider text-[10px] text-[#161412]/75">Evidence & Search Limitations</p>{(result.limitations || []).map((x, i) => <p key={i} className="mt-2">{x}</p>)}<p className="mt-3 border-t border-[#161412]/10 pt-3 italic">{result.disclaimer}</p></section>
         </div>}
       </main>
-    </div>;
+    </div>
+  );
 }

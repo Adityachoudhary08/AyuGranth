@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Shield, Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle2, Leaf, ChevronLeft, BookOpen, FileCheck2, Sparkles } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import LanguageSelector from '../../components/LanguageSelector';
 export default function LoginPage() {
   const {
     t
@@ -44,8 +45,10 @@ export default function LoginPage() {
     setPassword('SecureVaidya2026!');
     setError(null);
   };
-  return <div className="min-h-screen bg-[#FAF8F3] text-[#161412] font-sans flex flex-col justify-between selection:bg-[#176B45] selection:text-white">
-      {/* ── Main Layout (No Navbar) ── */}
+  return <div className="min-h-screen bg-[#FAF8F3] text-[#161412] font-sans flex flex-col justify-between selection:bg-[#176B45] selection:text-white relative">
+      <div className="absolute top-6 right-6 z-50">
+        <LanguageSelector />
+      </div>
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-10 sm:py-16 flex items-center justify-center">
         <div className="w-full grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-16 items-center">
           

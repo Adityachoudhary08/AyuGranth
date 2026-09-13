@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, User, Mail, Lock, Eye, EyeOff, Building2, Briefcase, ArrowRight, AlertCircle, CheckCircle2, ChevronLeft, BookOpen, FileCheck2 } from 'lucide-react';
+import { Shield, User, Mail, Lock, Eye, EyeOff, Building2, Briefcase, ArrowRight, AlertCircle, CheckCircle2, ChevronLeft, BookOpen, FileCheck2, Globe, Search } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import LanguageSelector from '../../components/LanguageSelector';
 const ROLES = ['Ayurvedic Researcher', 'IP Attorney / Patent Agent', 'Herbal & AYUSH Manufacturer', 'Academician / Scholar', 'Regulatory Officer / SBB Member'];
 export default function RegisterPage() {
   const {
@@ -63,7 +64,10 @@ export default function RegisterPage() {
       setLoading(false);
     }
   };
-  return <div className="min-h-screen bg-[#FAF8F3] text-[#161412] font-sans flex flex-col justify-between selection:bg-[#176B45] selection:text-white">
+  return <div className="min-h-screen bg-[#FAF8F3] text-[#161412] font-sans flex flex-col justify-between selection:bg-[#176B45] selection:text-white relative">
+      <div className="absolute top-6 right-6 z-50">
+        <LanguageSelector />
+      </div>
       {/* ── Main Layout (No Navbar) ── */}
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-10 sm:py-16 flex items-center justify-center">
         <div className="w-full grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-16 items-center">

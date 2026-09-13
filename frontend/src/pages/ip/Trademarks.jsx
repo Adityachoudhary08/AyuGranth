@@ -65,7 +65,7 @@ export default function Trademarks() {
           <div className="w-8 h-8 rounded-full border-2 border-[#176B45] border-t-transparent animate-spin mb-4" />
           <p className="text-[#161412]/60 font-medium">Scanning trademark registry...</p>
         </div>
-      )}
+      }
 
       {result && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -113,6 +113,5 @@ export default function Trademarks() {
           )}
         </div>
       )}
-    </div>
-  );
+    </div>;
 }

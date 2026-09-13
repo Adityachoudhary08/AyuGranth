@@ -209,8 +209,7 @@ function IngredientInput({ value, onChange }) {
         />
       </div>
       <p className="mt-1.5 text-[11px] text-[#17211d]/45">Press Enter or comma to add each ingredient. Click the X to remove.</p>
-    </div>
-  );
+    </div>;
 }
 
 /* ─── Premium Toggle Switch ────────────────────────────────────────────── */
@@ -278,7 +277,7 @@ function CollapsibleSection({ icon: Icon, title, subtitle, badge, children, defa
         <div className="border-t border-stone-200 px-5 pb-5 pt-4 space-y-4">
           {children}
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -346,7 +345,8 @@ function PremiumSelect({ label, name, value, onChange, icon: Icon }) {
         <option value="true">Yes</option>
         <option value="false">No</option>
       </select>
-    </label>;
+    </label>
+  );
 }
 
 // ─── Overall Assessment Card (Subtle bordered panel, restrained colors) ────
@@ -676,7 +676,8 @@ export default function ABSPage() {
                 Only the ingredients field is required. Optional context improves the precision of the assessment.
               </p>
             </form>
-          </section>}
+          </section>
+        )}
 
         {/* ─── LOADING (Stage 1) ───────────────────────────────────── */}
         {stage === 1 && (
@@ -692,7 +693,8 @@ export default function ABSPage() {
               <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#176B45] [animation-delay:0.3s]" /> Matching evidence</span>
               <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#176B45] [animation-delay:0.6s]" /> Assessing gaps</span>
             </div>
-          </section>}
+          </section>
+        )}
 
         {/* ─── RESULTS (Stage 2) ───────────────────────────────────── */}
         {stage === 2 && result && <div className="w-full max-w-5xl space-y-7"><div className="flex flex-wrap items-center justify-between gap-4"><div><p className="eyebrow">Assessment complete</p><p className="mt-1 text-sm text-[#17211d]/55">Case-specific screening; not a legal opinion.</p></div><button onClick={resetFlow} className="rounded-lg border border-[#cfdad1] bg-white px-4 py-2 text-xs font-semibold text-[#17211d]/70 transition hover:border-[#176B45] hover:text-[#176B45]">Start over</button></div>
@@ -705,7 +707,8 @@ export default function ABSPage() {
           <div className="flex flex-col items-center gap-4 border-t border-[#dfe6e0] pt-8 text-center"><p className="max-w-2xl text-xs leading-relaxed text-[#17211d]/55">This screening is preliminary information, not legal advice. Confirm the applicable authority and pathway with qualified counsel or the relevant biodiversity authority before access, utilization, commercialization, or IP filing.</p><button onClick={resetFlow} className="inline-flex items-center gap-2 rounded-lg border border-[#cfdad1] bg-white px-5 py-2.5 text-xs font-semibold text-[#17211d]/70 transition hover:border-[#176B45] hover:text-[#176B45]">Run another screening <ArrowRight className="h-3.5 w-3.5" /></button></div>
         </div>}
       </main>
-    </div>;
+    </div>
+  );
 }
 
 
