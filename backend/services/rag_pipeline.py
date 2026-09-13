@@ -82,31 +82,47 @@ def _parse_llm_json(raw_text: str) -> Optional[Dict[str, Any]]:
 def _classify_evidence_type(chunk: Dict[str, Any]) -> str:
     """
     Classify a chunk into distinct evidence categories:
-    - 'prior_art' (patent literature, publication numbers)
+    - 'prior_art' (patent literature, prior-art disclosures, patent decisions, publication numbers)
+    - 'statutory' (Indian Patents Act, patent rules, statutory legal provisions)
     - 'traditional_knowledge' (classical treatises, Samhitas, TKDL, pharmacopeias)
-    - 'abs' (Biological Diversity Act, NBA, SBB, benefit sharing)
+    - 'abs' (Biological Diversity Act, Biological Diversity Rules, NBA, SBB, benefit sharing)
     - 'regulatory' (FSSAI, CDSCO, drug licensing, GMP, heavy metal limits)
-    - 'statutory' (general Acts, patent statutes, legal provisions)
     """
     doc = str(chunk.get("source_document", "")).lower()
+    topic = str(chunk.get("topic_folder", "")).lower()
     law_t = str(chunk.get("law_type", "")).lower()
     src_t = str(chunk.get("source_type", "")).lower()
     pub_no = str(chunk.get("publication_number", "")).strip()
 
-    combined = f"{doc} {law_t} {src_t}"
+    combined = f"{doc} {topic} {law_t} {src_t}"
 
-    if pub_no or "patent" in combined or "prior art" in combined or "ipr" in src_t:
+    # 1. Patent Statutes & Acts (Tier 2 statutory)
+    if any(k in combined for k in [
+        "patents act", "patent act", "patents rules", "patent rules", "indian patent law", "patent law and procedure", "patent examination", "a1970-39", "patents_act", "patents__act", "manual of patent office"
+    ]) and not any(k in doc for k in ["polyherbal", "composition", "compound", "preparation"]):
+        return "statutory"
+
+    # 2. Patent / Prior-Art Disclosures (Tier 1 prior art)
+    if pub_no or src_t == "patent" or any(k in topic for k in ["patent decisions", "prior art"]) or any(k in doc for k in [
+        "polyherbal", "herbal_composition", "herbal_compound", "synergistic", "preparation_atherosclerosis", "immunity_booster"
+    ]) or ("patent" in doc and not any(k in doc for k in ["act", "rules", "guidelines", "manual", "1970", "procedure", "a1970"])):
         return "prior_art"
 
+    if "prior art" in combined or ("patent" in combined and not any(k in combined for k in ["act", "statute", "biodiversity", "abs"])):
+        return "prior_art"
+
+    # 3. Traditional Knowledge
     if any(k in combined for k in [
         "samhita", "charaka", "sushruta", "ashtanga", "tkdl", "traditional knowledge",
         "classical", "ayurveda pharmacopeia", "nighantu", "afi", "api", "formulary"
     ]):
         return "traditional_knowledge"
 
-    if any(k in combined for k in ["abs", "biodiversity", "nagoya", "benefit sharing", "nba", "sbb"]):
+    # 4. ABS / Biodiversity
+    if any(k in combined for k in ["abs", "biodiversity", "biological diversity", "nagoya", "benefit sharing", "benefit-sharing", "nba", "sbb"]):
         return "abs"
 
+    # 5. Regulatory
     if any(k in combined for k in ["fssai", "cdsco", "ayush licen", "drug licen", "gmp", "heavy metal", "regulatory", "compliance"]):
         return "regulatory"
 
@@ -138,13 +154,199 @@ def _source_categories(chunks: List[Dict[str, Any]]) -> Tuple[List[Dict[str, str
     return statutory, classical, patents
 
 
-def _build_evidence_index(chunks: List[Dict[str, Any]]) -> Tuple[str, Dict[str, Dict[str, Any]]]:
+def _curate_patentability_evidence(chunks: List[Dict[str, Any]], target_total: int = 6) -> List[Dict[str, Any]]:
+    """
+    Deterministic composition for PATENTABILITY intent:
+    - Tier 1 (Patents / Prior Art): up to 4 slots (min 1 if available)
+    - Tier 2 (Patent Law / Statutes): up to 1 slot (min 1 if available)
+    - Tier 3 (ABS / Biodiversity): up to 1 slot (supplementary)
+    Reallocates unused slots if a tier has fewer matching documents.
+    Preserves document-level deduplication.
+    """
+    seen_doc_ids = set()
+    tier1_patents = []
+    tier2_patent_law = []
+    tier3_abs = []
+
+    for c in chunks:
+        ev_type = _classify_evidence_type(c)
+        pub_no = str(c.get("publication_number") or "").strip()
+        doc_name = str(c.get("source_document") or "").strip()
+        doc_id = pub_no if pub_no else doc_name
+        if not doc_id:
+            doc_id = str(c.get("chunk_id") or c.get("_id") or "")
+        
+        if doc_id in seen_doc_ids:
+            continue
+            
+        if ev_type == "prior_art":
+            seen_doc_ids.add(doc_id)
+            tier1_patents.append(c)
+        elif ev_type in ("statutory", "traditional_knowledge") and not any(k in doc_name.lower() for k in ["biodiversity", "biological diversity", "abs", "nagoya", "benefit sharing", "benefit-sharing"]):
+            seen_doc_ids.add(doc_id)
+            tier2_patent_law.append(c)
+        elif ev_type == "abs" or any(k in doc_name.lower() for k in ["biodiversity", "biological diversity", "abs", "nagoya", "benefit sharing", "benefit-sharing"]):
+            seen_doc_ids.add(doc_id)
+            tier3_abs.append(c)
+
+    selected = []
+    
+    # 1. Take up to 4 patent documents
+    take_t1 = tier1_patents[:4]
+    selected.extend(take_t1)
+    
+    # 2. Take up to 1 patent law / statutory document
+    take_t2 = tier2_patent_law[:1]
+    selected.extend(take_t2)
+    
+    # 3. Take up to 1 ABS / biodiversity document
+    take_t3 = tier3_abs[:1]
+    selected.extend(take_t3)
+    
+    # Fill remaining slots up to target_total if available
+    rem_slots = target_total - len(selected)
+    if rem_slots > 0:
+        remaining_t1 = [c for c in tier1_patents if c not in selected]
+        for c in remaining_t1[:rem_slots]:
+            selected.append(c)
+            rem_slots -= 1
+            
+    if rem_slots > 0:
+        remaining_t2 = [c for c in tier2_patent_law if c not in selected]
+        for c in remaining_t2[:rem_slots]:
+            selected.append(c)
+            rem_slots -= 1
+            
+    if rem_slots > 0:
+        remaining_t3 = [c for c in tier3_abs if c not in selected]
+        for c in remaining_t3[:rem_slots]:
+            selected.append(c)
+            rem_slots -= 1
+
+    return selected if selected else chunks[:target_total]
+
+
+def _order_chunks_for_patentability(chunks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Construct context for PATENTABILITY intent strictly according to Evidence Hierarchy:
+    - Tier 1: Patent / Prior-Art Evidence (technical disclosures)
+    - Tier 2: Patent Law / Patentability Statutes (Patents Act, Sections 2(1)(ja), 3(d), 3(e), 3(p))
+    - Tier 3: Biodiversity / ABS & Regulatory Compliance (Biological Diversity Act, NBA, separate layer)
+    """
+    tier1 = []
+    tier2 = []
+    tier3 = []
+    for c in chunks:
+        ev_type = _classify_evidence_type(c)
+        doc = str(c.get("source_document", "")).lower()
+        if ev_type == "prior_art":
+            tier1.append(c)
+        elif ev_type in ("statutory", "traditional_knowledge") and not any(k in doc for k in ["biodiversity", "biological diversity", "abs", "nagoya", "benefit sharing", "benefit-sharing"]):
+            tier2.append(c)
+        else:
+            tier3.append(c)
+    return tier1 + tier2 + tier3
+
+
+def _is_patent_law_query(query: str) -> bool:
+    """
+    Detect whether a REGULATORY query explicitly asks about Indian patent law,
+    the Patents Act, or specific statutory patent provisions (e.g. Section 3(p), 3(d), 3(e), 2(1)(ja)).
+    """
+    q = query.lower()
+    patent_law_phrases = [
+        "patents act", "patent act", "indian patents act", "indian patent act",
+        "patent law", "indian patent law", "patent rules", "patents rules",
+        "patent examination", "manual of patent office", "patent manual",
+    ]
+    if any(phrase in q for phrase in patent_law_phrases):
+        return True
+
+    section_patterns = [
+        r"\b(?:section|sec\.?)\s*(?:3\s*\([a-p]\)|2\s*\(\s*1\s*\)\s*\(\s*[a-z]+\s*\)|3\s*[pPdDeE])\b",
+        r"\b(?:section|sec\.?)\s*3\s*\(p\)",
+        r"\b(?:section|sec\.?)\s*3\s*\(d\)",
+        r"\b(?:section|sec\.?)\s*3\s*\(e\)",
+        r"\b(?:section|sec\.?)\s*2\s*\(1\)\s*\(ja\)",
+    ]
+    return any(bool(re.search(pat, q, re.IGNORECASE)) for pat in section_patterns)
+
+
+def _build_evidence_index(
+    chunks: List[Dict[str, Any]],
+    max_chars_per_chunk: int = 450,
+    is_patentability: bool = False
+) -> Tuple[str, Dict[str, Dict[str, Any]]]:
     """
     Build numbered evidence blocks for the Gemini prompt and a lookup map
     from EVIDENCE_N → actual chunk metadata.
+    Compacts excerpt length for the LLM prompt to accelerate synthesis, while preserving full
+    metadata and original chunk_text in the returned evidence objects.
+    When is_patentability=True, orders and marks chunks into Tier 1 (Patents), Tier 2 (Patent Law),
+    and Tier 3 (Biodiversity/ABS).
     """
     context_parts = []
     evidence_map: Dict[str, Dict[str, Any]] = {}
+
+    if is_patentability:
+        ordered_chunks = _order_chunks_for_patentability(chunks)
+        idx = 1
+
+        tier1_list = [c for c in ordered_chunks if _classify_evidence_type(c) == "prior_art"]
+        tier2_list = [c for c in ordered_chunks if _classify_evidence_type(c) in ("statutory", "traditional_knowledge") and not any(k in str(c.get("source_document", "")).lower() for k in ["biodiversity", "biological diversity", "abs", "nagoya", "benefit sharing", "benefit-sharing"])]
+        tier3_list = [c for c in ordered_chunks if c not in tier1_list and c not in tier2_list]
+
+        if tier1_list:
+            context_parts.append("=== TIER 1: PATENT / PRIOR-ART DISCLOSURES (PRIMARY BASIS FOR NOVELTY & INVENTIVE STEP) ===")
+            for c in tier1_list:
+                evidence_id = f"EVIDENCE_{idx}"
+                doc = c.get("source_document", "Patent Document")
+                sec = c.get("section", "General")
+                pub_no = c.get("publication_number", "")
+                raw_txt = c.get("chunk_text", "").strip()
+                txt = (raw_txt[:max_chars_per_chunk].rstrip() + "...") if len(raw_txt) > max_chars_per_chunk else raw_txt
+                pub_info = f" | PubNo: {pub_no}" if pub_no else ""
+                context_parts.append(
+                    f"--- {evidence_id} | TIER 1 (PRIOR ART / PATENT) | Source: {doc}{pub_info} | Section: {sec} ---\n{txt}\n"
+                )
+                evidence_map[evidence_id] = c
+                idx += 1
+        else:
+            context_parts.append("=== TIER 1: PATENT / PRIOR-ART DISCLOSURES ===\n[Patent-specific prior-art evidence was insufficient in the retrieved corpus. State this honestly.]\n")
+
+        if tier2_list:
+            context_parts.append("=== TIER 2: PATENT STATUTES & LEGAL PROVISIONS ===")
+            for c in tier2_list:
+                evidence_id = f"EVIDENCE_{idx}"
+                ev_type = _classify_evidence_type(c)
+                doc = c.get("source_document", "Statutory Source")
+                sec = c.get("section", "General")
+                law_t = c.get("law_type", "")
+                raw_txt = c.get("chunk_text", "").strip()
+                txt = (raw_txt[:max_chars_per_chunk].rstrip() + "...") if len(raw_txt) > max_chars_per_chunk else raw_txt
+                context_parts.append(
+                    f"--- {evidence_id} | TIER 2 (PATENT LAW / STATUTE) | Source: {doc} | Section: {sec} | Law: {law_t} ---\n{txt}\n"
+                )
+                evidence_map[evidence_id] = c
+                idx += 1
+
+        if tier3_list:
+            context_parts.append("=== TIER 3: SEPARATE BIODIVERSITY / ABS COMPLIANCE (REGULATORY LAYER) ===")
+            for c in tier3_list:
+                evidence_id = f"EVIDENCE_{idx}"
+                ev_type = _classify_evidence_type(c)
+                doc = c.get("source_document", "ABS Source")
+                sec = c.get("section", "General")
+                law_t = c.get("law_type", "")
+                raw_txt = c.get("chunk_text", "").strip()
+                txt = (raw_txt[:max_chars_per_chunk].rstrip() + "...") if len(raw_txt) > max_chars_per_chunk else raw_txt
+                context_parts.append(
+                    f"--- {evidence_id} | TIER 3 (ABS / BIODIVERSITY REGULATORY) | Source: {doc} | Section: {sec} | Law: {law_t} ---\n{txt}\n"
+                )
+                evidence_map[evidence_id] = c
+                idx += 1
+
+        return "\n".join(context_parts), evidence_map
 
     for idx, c in enumerate(chunks, start=1):
         evidence_id = f"EVIDENCE_{idx}"
@@ -152,7 +354,8 @@ def _build_evidence_index(chunks: List[Dict[str, Any]]) -> Tuple[str, Dict[str, 
         doc = c.get("source_document", "Statutory Source")
         sec = c.get("section", "General")
         law_t = c.get("law_type", "")
-        txt = c.get("chunk_text", "").strip()
+        raw_txt = c.get("chunk_text", "").strip()
+        txt = (raw_txt[:max_chars_per_chunk].rstrip() + "...") if len(raw_txt) > max_chars_per_chunk else raw_txt
 
         context_parts.append(
             f"--- {evidence_id} | Category: {ev_type.upper()} | Source: {doc} | Section: {sec} | Law: {law_t} ---\n{txt}\n"
@@ -165,107 +368,201 @@ def _build_evidence_index(chunks: List[Dict[str, Any]]) -> Tuple[str, Dict[str, 
 def _get_intent_fallback(intent: str, chunks: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Generate intent-specific fallback when AI generation times out or fails.
-    Never invents conclusions, novelty, patentability, or medical dosages.
+    Accurately reports whether evidence was retrieved or not, and preserves all
+    retrieved documents for user review without fabricating AI conclusions.
     """
     statutory, classical, patents = _source_categories(chunks)
+    has_chunks = bool(chunks)
+    chunk_count = len(chunks)
 
-    fallbacks = {
-        "PATENTABILITY": {
-            "assessment": "Patentability assessment requires further analysis.",
-            "why": "Preliminary evidence-based assessment: The AI synthesis could not be completed from the available evidence. Retrieved statutory and technical provisions are retained below for independent review.",
-            "key_points": [
-                "Preliminary evidence-based assessment — no conclusive patentability or Section 3(p) determination made without synthesis.",
-                "Retrieved corpus documents are available below for manual claim mapping.",
-                "Consult an IP attorney or registered patent agent for formal patentability opinions."
-            ],
-            "confidence_label": "preliminary",
-        },
-        "PRIOR_ART": {
-            "assessment": "Prior-art analysis could not be completed.",
-            "why": "The AI synthesis could not be completed. Retrieved documents for review are listed below. Retrieved documents are not confirmed prior art until verified against specific claim elements.",
-            "key_points": [
-                f"Retrieved {len(patents) if patents else len(chunks)} document(s) for review.",
-                "Documents require comparative claim matching before determining prior-art relevance.",
-                "No novelty destruction or anticipation is confirmed at this stage."
-            ],
-            "confidence_label": "preliminary",
-        },
-        "TK_ANALYSIS": {
-            "assessment": "Traditional knowledge analysis could not be fully completed.",
-            "why": "The AI synthesis could not be completed. Retrieved classical treatise and traditional knowledge evidence are provided below without fabricated interpretation.",
-            "key_points": [
-                f"Retrieved {len(classical) if classical else len(chunks)} classical and treatise reference(s).",
-                "Textual formulations and classical indications are retained as documented in historical references.",
-                "Cross-referencing with TKDL guidelines requires complete manual verification."
-            ],
-            "confidence_label": "preliminary",
-        },
-        "ABS": {
-            "assessment": "ABS assessment could not be fully synthesized from the retrieved evidence.",
-            "why": (
-                "ABS assessment could not be fully synthesized from the retrieved evidence. "
-                "The retrieved ABS/statutory sources are shown below for review. "
-                "No specific approval, exemption, form, authority, or benefit-sharing obligation is asserted "
-                "without sufficient case facts and supporting evidence."
-            ),
-            "key_points": [
-                f"Retrieved {len(chunks)} ABS/statutory passage(s) for independent review.",
-                "No specific authority, form, approval type, or benefit-sharing obligation is asserted without case facts and evidence.",
-                "Consult the applicable biodiversity authority and qualified legal counsel before taking action.",
-            ],
-            "confidence_label": "preliminary",
-        },
-        "REGULATORY": {
-            "assessment": "Regulatory assessment could not be completed.",
-            "why": "The AI synthesis could not be completed. Retrieved regulatory standards, safety limits, and licensing provisions are displayed below.",
-            "key_points": [
-                "Statutory and regulatory corpus references retrieved for your jurisdiction.",
-                "License classification, permissible heavy metal limits, and labeling rules must be verified with licensed authorities.",
-                "No regulatory compliance certificate is implied."
-            ],
-            "confidence_label": "preliminary",
-        },
-        "FORMULATION": {
-            "assessment": "Formulation guidance could not be fully generated.",
-            "why": "The AI synthesis could not be completed. Available ingredient references and known classical uses are displayed below. Dosage and exact ratios cannot be safely generated without complete validation.",
-            "key_points": [
-                "Retrieved known classical ingredient uses and traditional references.",
-                "Dosages and therapeutic combinations must be validated through official pharmacopeias (API/AFI).",
-                "Do not use preliminary notes as authoritative clinical or medical advice."
-            ],
-            "confidence_label": "preliminary",
-        },
-        "PRODUCT_PASSPORT": {
-            "assessment": "Product passport generation could not be completed.",
-            "why": "The AI synthesis could not be completed. Retrieved botanical provenance, quality standards, and regulatory citations are preserved below.",
-            "key_points": [
-                "Botanical origin and compliance provisions retained for passport formulation.",
-                "Supply chain traceability data requires manual batch verification."
-            ],
-            "confidence_label": "preliminary",
-        },
-        "GENERAL_CHAT": {
-            "assessment": "Welcome to AayuGranth Research Intelligence.",
-            "why": "I am AayuGranth, your specialized legal and AYUSH research intelligence engine. I assist with patentability assessment, prior-art search, traditional knowledge analysis, ABS obligations, and regulatory compliance.",
-            "key_points": [
-                "Patentability & Section 3(p) analysis",
-                "Prior art & patent comparison",
-                "Traditional knowledge & classical treatise retrieval",
-                "ABS (Biological Diversity Act) compliance screening",
-                "Regulatory & FSSAI / AYUSH licensing guidance"
-            ],
-            "confidence_label": "high",
-        },
-        "GENERAL_RESEARCH": {
-            "assessment": "AI assessment could not be completed from the available evidence.",
-            "why": "The AI synthesis could not be completed from the available evidence. The retrieved evidence is still available below for your review.",
-            "key_points": [
-                f"Retrieved {len(chunks)} relevant evidence item(s) from the legal and classical corpus.",
-                "All retrieved source documents and excerpts are accessible below."
-            ],
-            "confidence_label": "preliminary",
-        },
-    }
+    if has_chunks:
+        fallbacks = {
+            "PATENTABILITY": {
+                "assessment": "Patentability assessment requires manual review of retrieved corpus.",
+                "why": (
+                    f"AI synthesis was unavailable or timed out. {len(patents)} patent/prior-art disclosure(s) and "
+                    f"{len(statutory)} statutory/ABS provision(s) were successfully retrieved and are retained below for claim mapping."
+                ) if patents else (
+                    f"AI synthesis was unavailable or timed out. {chunk_count} statutory and ABS compliance provision(s) were retrieved and are retained below for claim mapping."
+                ),
+                "key_points": [
+                    f"Retrieved {len(patents)} patent/prior-art document(s) and {len(statutory)} statutory/ABS provision(s) available for review below." if patents else f"Retrieved {chunk_count} statutory and ABS provision(s) for review.",
+                    "Preliminary evidence-based assessment — no conclusive patentability or Section 3(p) determination made without synthesis.",
+                    "Consult an IP attorney or registered patent agent for formal patentability opinions."
+                ],
+                "confidence_label": "preliminary",
+            },
+            "PRIOR_ART": {
+                "assessment": "Prior-art documents retrieved for comparative review.",
+                "why": f"AI synthesis was unavailable or timed out. {chunk_count} retrieved document(s) are listed below for comparative review against claimed elements.",
+                "key_points": [
+                    f"Retrieved {len(patents) if patents else chunk_count} document(s) for review.",
+                    "Documents require comparative claim matching before determining prior-art relevance.",
+                    "No novelty destruction or anticipation is confirmed at this stage."
+                ],
+                "confidence_label": "preliminary",
+            },
+            "TK_ANALYSIS": {
+                "assessment": "Traditional knowledge references retrieved for manual verification.",
+                "why": f"AI synthesis was unavailable or timed out. {chunk_count} classical treatise and traditional knowledge reference(s) are preserved below without automated interpretation.",
+                "key_points": [
+                    f"Retrieved {len(classical) if classical else chunk_count} classical and treatise reference(s).",
+                    "Textual formulations and classical indications are retained as documented in historical references.",
+                    "Cross-referencing with TKDL guidelines requires complete manual verification."
+                ],
+                "confidence_label": "preliminary",
+            },
+            "ABS": {
+                "assessment": "ABS statutory provisions retrieved for independent review.",
+                "why": (
+                    f"AI synthesis was unavailable or timed out. {chunk_count} retrieved ABS/statutory source(s) are shown below for review. "
+                    "No specific approval, exemption, form, authority, or benefit-sharing obligation is asserted "
+                    "without sufficient case facts and supporting evidence."
+                ),
+                "key_points": [
+                    f"Retrieved {chunk_count} ABS/statutory passage(s) for independent review.",
+                    "No specific authority, form, approval type, or benefit-sharing obligation is asserted without case facts and evidence.",
+                    "Consult the applicable biodiversity authority and qualified legal counsel before taking action.",
+                ],
+                "confidence_label": "preliminary",
+            },
+            "REGULATORY": {
+                "assessment": "Regulatory provisions retrieved for compliance review.",
+                "why": f"AI synthesis was unavailable or timed out. {chunk_count} regulatory standard(s), safety limits, and licensing provisions are displayed below.",
+                "key_points": [
+                    f"Retrieved {chunk_count} statutory and regulatory corpus references for your jurisdiction.",
+                    "License classification, permissible heavy metal limits, and labeling rules must be verified with licensed authorities.",
+                    "No regulatory compliance certificate is implied."
+                ],
+                "confidence_label": "preliminary",
+            },
+            "FORMULATION": {
+                "assessment": "Formulation corpus references retrieved for verification.",
+                "why": f"AI synthesis was unavailable or timed out. {chunk_count} ingredient reference(s) and known classical uses are displayed below. Dosage and exact ratios cannot be safely generated without complete validation.",
+                "key_points": [
+                    f"Retrieved {chunk_count} known classical ingredient uses and traditional references.",
+                    "Dosages and therapeutic combinations must be validated through official pharmacopeias (API/AFI).",
+                    "Do not use preliminary notes as authoritative clinical or medical advice."
+                ],
+                "confidence_label": "preliminary",
+            },
+            "PRODUCT_PASSPORT": {
+                "assessment": "Product passport evidence retrieved for batch verification.",
+                "why": f"AI synthesis was unavailable or timed out. {chunk_count} botanical provenance, quality standard(s), and regulatory citation(s) are preserved below.",
+                "key_points": [
+                    f"Retrieved {chunk_count} botanical origin and compliance provision(s) for passport formulation.",
+                    "Supply chain traceability data requires manual batch verification."
+                ],
+                "confidence_label": "preliminary",
+            },
+            "GENERAL_CHAT": {
+                "assessment": "Welcome to AayuGranth Research Intelligence.",
+                "why": "I am AayuGranth, your specialized legal and AYUSH research intelligence engine. I assist with patentability assessment, prior-art search, traditional knowledge analysis, ABS obligations, and regulatory compliance.",
+                "key_points": [
+                    "Patentability & Section 3(p) analysis",
+                    "Prior art & patent comparison",
+                    "Traditional knowledge & classical treatise retrieval",
+                    "ABS (Biological Diversity Act) compliance screening",
+                    "Regulatory & FSSAI / AYUSH licensing guidance"
+                ],
+                "confidence_label": "high",
+            },
+            "GENERAL_RESEARCH": {
+                "assessment": "Evidence items retrieved from legal and classical corpus.",
+                "why": f"AI synthesis was unavailable or timed out. {chunk_count} retrieved evidence item(s) from the legal and classical corpus are retained below for review.",
+                "key_points": [
+                    f"Retrieved {chunk_count} relevant evidence item(s) from the legal and classical corpus.",
+                    "All retrieved source documents and excerpts are accessible below."
+                ],
+                "confidence_label": "preliminary",
+            },
+        }
+    else:
+        fallbacks = {
+            "PATENTABILITY": {
+                "assessment": "No matching patentability or statutory corpus evidence found.",
+                "why": "No sufficiently relevant retrieved evidence was available in the legal corpus to ground a patentability assessment.",
+                "key_points": [
+                    "No direct statutory or prior-art matches found in the corpus for this query.",
+                    "Refine query terms or specify botanical ingredients / patent numbers.",
+                    "Consult an IP attorney for direct search on official patent databases."
+                ],
+                "confidence_label": "low",
+            },
+            "PRIOR_ART": {
+                "assessment": "No matching prior art documents retrieved.",
+                "why": "No direct prior art patent documents or classical corpus matches were found for this query.",
+                "key_points": [
+                    "0 prior art documents retrieved from current index.",
+                    "Refine search query with specific botanical binomials, extraction methods, or patent classifications."
+                ],
+                "confidence_label": "low",
+            },
+            "TK_ANALYSIS": {
+                "assessment": "No matching traditional knowledge references retrieved.",
+                "why": "No classical treatises or traditional knowledge entries matched the query terms in the current corpus.",
+                "key_points": [
+                    "0 traditional knowledge records retrieved.",
+                    "Try Sanskrit or classical Ayurvedic terminology (e.g., botanical binomials or Rasayana formulations)."
+                ],
+                "confidence_label": "low",
+            },
+            "ABS": {
+                "assessment": "No matching ABS provisions retrieved.",
+                "why": "No direct Access and Benefit Sharing statutory provisions matched the provided query terms.",
+                "key_points": [
+                    "0 ABS statutory records retrieved.",
+                    "Specify jurisdiction, biological resource identity, and commercial intent."
+                ],
+                "confidence_label": "low",
+            },
+            "REGULATORY": {
+                "assessment": "No matching regulatory provisions retrieved.",
+                "why": "No direct AYUSH / FSSAI / CDSCO regulatory provisions matched the provided query terms.",
+                "key_points": [
+                    "0 regulatory provisions retrieved.",
+                    "Specify licensing category, product formulation, or quality parameter."
+                ],
+                "confidence_label": "low",
+            },
+            "FORMULATION": {
+                "assessment": "No matching formulation records retrieved.",
+                "why": "No classical formulation or ingredient records were found in the current corpus for this query.",
+                "key_points": [
+                    "0 formulation matches retrieved.",
+                    "Check ingredient spelling or use standard botanical nomenclature."
+                ],
+                "confidence_label": "low",
+            },
+            "PRODUCT_PASSPORT": {
+                "assessment": "No matching product passport data retrieved.",
+                "why": "No botanical provenance or regulatory records matched this product query.",
+                "key_points": [
+                    "0 passport records retrieved."
+                ],
+                "confidence_label": "low",
+            },
+            "GENERAL_CHAT": {
+                "assessment": "Welcome to AayuGranth Research Intelligence.",
+                "why": "I am AayuGranth, your specialized legal and AYUSH research intelligence engine.",
+                "key_points": [
+                    "Patentability & Section 3(p) analysis",
+                    "Prior art & patent comparison",
+                    "Traditional knowledge & classical treatise retrieval",
+                    "ABS compliance screening"
+                ],
+                "confidence_label": "high",
+            },
+            "GENERAL_RESEARCH": {
+                "assessment": "No matching corpus evidence found.",
+                "why": "No sufficiently relevant retrieved evidence was available in the legal and classical corpus to ground an assessment.",
+                "key_points": [
+                    "0 relevant evidence items retrieved from the corpus.",
+                    "Try refining query keywords or specifying botanical names."
+                ],
+                "confidence_label": "low",
+            },
+        }
 
     return fallbacks.get(intent, fallbacks["GENERAL_RESEARCH"])
 
@@ -274,9 +571,24 @@ def _build_intent_prompt_preamble(intent: str) -> str:
     """Return specific analysis instructions tailored to the classified intent."""
     instructions = {
         "PATENTABILITY": (
-            "INTENT: PATENTABILITY ANALYSIS\n"
-            "Focus on evaluating patent eligibility, novelty, inventive step, and Section 3(p) implications "
-            "(traditional knowledge exclusion) based STRICTLY on the retrieved corpus."
+            "INTENT: PATENTABILITY ANALYSIS (ANSWER PATENTABILITY FIRST)\n"
+            "You are evaluating patent eligibility, novelty, inventive step, and statutory exclusions under the Indian Patents Act, 1970.\n\n"
+            "CRITICAL HIERARCHY & ABS SEPARATION:\n"
+            "- TIER 1 (PRIMARY): Patent / Prior-Art Disclosures — Analyze concrete technical features against these disclosures first.\n"
+            "- TIER 2: Patent Law Statutes — Sections 2(1)(ja), 3(d), 3(e), 3(p) only if justified by evidence.\n"
+            "- TIER 3: Biodiversity / ABS Compliance — A SEPARATE regulatory layer. ABS is NOT patent law and is NOT evidence of non-patentability. Never answer a patentability question solely from ABS evidence.\n\n"
+            "MANDATORY STRUCTURE FOR THE RESPONSE (ASSESSMENT & WHY):\n"
+            "1. INVENTION FEATURES: Identify concrete technical features provided by the user (e.g., active extract/botanical, formulation/carrier/liposome, therapeutic indication). Do NOT invent unstated quantities, processes, or data.\n"
+            "2. NOVELTY / PRIOR ART: Compare features against retrieved Tier 1 patent evidence. For each disclosure, state what is disclosed vs what is not shown. Distinguish exact disclosure from partial similarity. Never equate semantic similarity with anticipation. If patent-specific prior art is absent, state: 'Patent-specific prior-art evidence was insufficient in the retrieved corpus.' Never fabricate patent disclosures.\n"
+            "3. INVENTIVE STEP / NON-OBVIOUSNESS (Section 2(1)(ja)): Assess whether the corpus suggests the technical combination. Do NOT equate semantic similarity with obviousness.\n"
+            "4. RELEVANT PATENTABILITY EXCLUSIONS:\n"
+            "   - Section 3(d): New form/use of known substance without enhanced therapeutic efficacy.\n"
+            "   - Section 3(e): Mere admixture/aggregation of components (distinct from Section 2(1)(ja) inventive step).\n"
+            "   - Section 3(p): Traditional knowledge exclusion. DO NOT automatically trigger Section 3(p) merely because an ingredient is Ayurvedic.\n"
+            "5. INDUSTRIAL APPLICABILITY: Brief evaluation based on described technical utility.\n"
+            "6. SEPARATE BIODIVERSITY / ABS COMPLIANCE:\n"
+            "   Clearly label 'Separate Biodiversity / ABS Compliance Consideration'. Explain NBA approval requirements under the Biological Diversity Act as a separate regulatory obligation, NOT lack of novelty or inventive step.\n"
+            "7. PRELIMINARY CONCLUSION: Cautious evidence-based conclusion. Never state 'Likely patentable' or 'Definitely patentable/unpatentable' unless conclusively supported."
         ),
         "PRIOR_ART": (
             "INTENT: PRIOR-ART SEARCH & COMPARISON\n"
@@ -470,9 +782,40 @@ async def run_rag_query(query: str, jurisdiction: Optional[str] = "India", inten
                 "[ABS RETRIEVAL] retrieval_mode=abs_filtered evidence_count=%d (all=%d non_abs_removed=%d)",
                 len(chunks), len(all_chunks), non_abs_removed,
             )
+        elif intent == "PATENTABILITY":
+            # Retrieve wider set (top_k=15) and deterministically curate Tier 1 (patents) + Tier 2 (patent law) + Tier 3 (ABS)
+            all_chunks = await search_similar_chunks(query, top_k=15, dedup_by_document=True)
+            chunks = _curate_patentability_evidence(all_chunks, target_total=6)
+        elif intent == "REGULATORY" and _is_patent_law_query(query):
+            # Pure Indian patent-law/statutory query: prefer Patent Law / Patents Act documents over generic ABS
+            all_chunks = await search_similar_chunks(
+                query,
+                top_k=15,
+                dedup_by_document=True,
+                log_prefix="[PATENT-LAW REGULATORY RETRIEVAL]"
+            )
+            # Filter and prioritize patent-law statutory documents
+            patent_law_chunks = [
+                c for c in all_chunks
+                if _classify_evidence_type(c) == "statutory" and (
+                    any(k in str(c.get("topic_folder", "")).lower() for k in ["patent law", "research policy", "traditional knowledge"]) or
+                    any(k in str(c.get("source_document", "")).lower() for k in ["a1970-39", "patents", "patent", "manual of patent", "section_3p"])
+                )
+            ]
+            if patent_law_chunks:
+                chunks = patent_law_chunks[:6]
+                if len(chunks) < 6:
+                    other_statutory = [
+                        c for c in all_chunks
+                        if c not in chunks and _classify_evidence_type(c) == "statutory"
+                    ]
+                    chunks.extend(other_statutory[:6 - len(chunks)])
+            else:
+                chunks = all_chunks[:6]
         else:
             top_k = 3 if intent == "GENERAL_CHAT" else 6
-            chunks = await search_similar_chunks(query, top_k=top_k)
+            is_patent_intent = intent == "PRIOR_ART"
+            chunks = await search_similar_chunks(query, top_k=top_k, dedup_by_document=is_patent_intent)
         scores = [float(c.get("semantic_similarity", 0.0)) for c in chunks]
         stage_timings["RETRIEVAL"] = round(time.time() - retrieval_start, 3)
 
@@ -566,8 +909,13 @@ async def run_rag_query(query: str, jurisdiction: Optional[str] = "India", inten
         stage_timings["GENERATION"] = round(time.time() - gen_start, 3)
         logger.info("[GENERATION] No chunks retrieved — using intent-aware empty response.")
     else:
+        is_patentability = (intent == "PATENTABILITY")
         # Build context with stable EVIDENCE_N labels (never raw chunk IDs)
-        context_str, evidence_map = _build_evidence_index(chunks)
+        context_str, evidence_map = _build_evidence_index(
+            chunks,
+            max_chars_per_chunk=450,
+            is_patentability=is_patentability
+        )
         evidence_id_list = ", ".join(evidence_map.keys()) if evidence_map else "NONE"
         intent_preamble = _build_intent_prompt_preamble(intent)
 
@@ -611,7 +959,11 @@ STRICT INSTRUCTIONS:
 OUTPUT JSON:"""
 
         # Concise cleaner prompt for retry in case the primary prompt times out
-        clean_context_str, _ = _build_evidence_index(chunks[:3])
+        clean_context_str, _ = _build_evidence_index(
+            chunks[:3],
+            max_chars_per_chunk=250,
+            is_patentability=is_patentability
+        )
         cleaner_prompt = f"""You are AayuGranth. Answer concisely in JSON based on the evidence below.
 USER QUESTION: "{query}"
 EVIDENCE:
@@ -737,8 +1089,8 @@ OUTPUT JSON:"""
         has_sufficient_corpus_evidence=has_sufficient_corpus_evidence
     )
 
-    # If response is fallback or general chat, do not force abstention:
-    # let the user see the intent fallback and retrieved evidence!
+    # If response is fallback, general chat, or patentability/prior-art preliminary review, do not force abstention:
+    # let the user see the intent assessment and retrieved evidence!
     if response_status in ("fallback", "timeout") and chunks:
         should_abstain = False
         conf_label = "preliminary"
@@ -747,6 +1099,11 @@ OUTPUT JSON:"""
         should_abstain = False
         conf_label = "high"
         conf_score = 0.95
+    elif intent in ("PATENTABILITY", "PRIOR_ART", "REGULATORY") and chunks and response_status == "success":
+        should_abstain = False
+        if conf_label == "low":
+            conf_label = "preliminary"
+        conf_score = max(0.55, conf_score)
 
     final_answer = llm_raw_answer
     if should_abstain:
@@ -824,7 +1181,7 @@ OUTPUT JSON:"""
     # If evidence array is empty (due to fallback, timeout, or Gemini not citing indexes),
     # populate directly from normalized retrieved chunks so retrieved evidence is NEVER lost!
     if not evidence and chunks and not should_abstain:
-        for idx, c in enumerate(chunks[:5]):
+        for idx, c in enumerate(chunks):
             ev_type = _classify_evidence_type(c)
             # Intent-aware default relevance label
             if ev_type == "prior_art":

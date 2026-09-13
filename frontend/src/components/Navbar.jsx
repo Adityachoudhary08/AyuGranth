@@ -117,7 +117,6 @@ export default function Navbar() {
     { name: t('nav.myPassports'), href: '/passports', isHash: false },
     { name: t('nav.ipIntelligence'), href: '/ip-intelligence', isHash: false },
     { name: t('nav.absDuties'), href: '/abs', isHash: false },
-    { name: t('nav.regulatoryIntelligence'), href: '/regulatory', isHash: false },
     { name: t('nav.international'), href: '/international', isHash: false },
   ]
 

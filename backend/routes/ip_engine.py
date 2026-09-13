@@ -719,7 +719,7 @@ async def prior_art(request: PriorArtRequest):
     "% patent overlap" or infringement language.
     """
     retrieved_chunks = await search_similar_chunks(
-        request.formulation_description, top_k=request.top_k
+        request.formulation_description, top_k=request.top_k, dedup_by_document=True
     )
     chunks = [chunk for chunk in retrieved_chunks if _is_prior_art_source(chunk)]
     logger.info(
@@ -762,7 +762,7 @@ async def patentability(request: PatentabilityRequest):
     chunks: list[dict[str, Any]] = []
     try:
         retrieved_chunks = await search_similar_chunks(
-            request.formulation_description, top_k=10
+            request.formulation_description, top_k=10, dedup_by_document=True
         )
         chunks = [chunk for chunk in retrieved_chunks if _is_prior_art_source(chunk)]
         logger.info(
