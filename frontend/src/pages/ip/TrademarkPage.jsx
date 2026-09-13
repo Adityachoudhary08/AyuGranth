@@ -31,16 +31,34 @@ export default function TrademarkPage() {
     }
   };
 
-  const getRiskColor = (level) => {
-    if (level === 'high') return 'bg-red-50 text-red-700 border-red-200';
-    if (level === 'moderate') return 'bg-yellow-50 text-yellow-700 border-yellow-200';
-    return 'bg-green-50 text-green-700 border-green-200';
+  const getPostureColor = (posture = '', level = '') => {
+    const p = posture.toLowerCase();
+    const l = level.toLowerCase();
+    if (p.includes('conflict') || l === 'high' || l === 'potential_conflict') {
+      return 'bg-red-50 text-red-800 border-red-200';
+    }
+    if (p.includes('similarity') || l === 'moderate' || l === 'potential_similarity') {
+      return 'bg-amber-50 text-amber-800 border-amber-200';
+    }
+    if (p.includes('descriptive') || l === 'descriptive_flag') {
+      return 'bg-blue-50 text-blue-800 border-blue-200';
+    }
+    return 'bg-emerald-50 text-emerald-800 border-emerald-200';
   };
 
-  const getRiskIcon = (level) => {
-    if (level === 'high') return <ShieldAlert className="w-5 h-5" />;
-    if (level === 'moderate') return <AlertTriangle className="w-5 h-5" />;
-    return <CheckCircle2 className="w-5 h-5" />;
+  const getPostureIcon = (posture = '', level = '') => {
+    const p = posture.toLowerCase();
+    const l = level.toLowerCase();
+    if (p.includes('conflict') || l === 'high' || l === 'potential_conflict') {
+      return <ShieldAlert className="w-5 h-5 text-red-700" />;
+    }
+    if (p.includes('similarity') || l === 'moderate' || l === 'potential_similarity') {
+      return <AlertTriangle className="w-5 h-5 text-amber-700" />;
+    }
+    if (p.includes('descriptive') || l === 'descriptive_flag') {
+      return <AlertTriangle className="w-5 h-5 text-blue-700" />;
+    }
+    return <CheckCircle2 className="w-5 h-5 text-emerald-700" />;
   };
 
   return (
@@ -53,11 +71,11 @@ export default function TrademarkPage() {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#176B45]/10 text-[#176B45] text-xs font-bold uppercase tracking-widest rounded-full mb-4">
             <Search className="w-3.5 h-3.5" />
-            {t('trademark.scanner.badge', 'Conflict Radar')}
+            Conflict Radar
           </div>
           <h1 className="text-4xl md:text-5xl font-serif text-[#161412] mb-4">{t('trademark.scanner.title', 'Trademark Scanner')}</h1>
           <p className="text-[#161412]/60 max-w-xl mx-auto">
-            {t('trademark.scanner.subtitle', 'Perform a preliminary assessment of your proposed brand name against a database of known traditional and proprietary Ayurvedic trademarks.')}
+            Perform a preliminary assessment of your proposed brand name against a database of known traditional and proprietary Ayurvedic trademarks.
           </p>
         </div>
 
@@ -68,7 +86,7 @@ export default function TrademarkPage() {
               type="text"
               value={brandName}
               onChange={(e) => setBrandName(e.target.value)}
-              placeholder={t('trademark.scanner.placeholder', 'Enter brand name to check (e.g., Dabur, Patanjali)')}
+              placeholder="Enter brand name to check (e.g., Dabur, Patanjali)"
               className="w-full bg-transparent border-none pl-4 pr-32 py-3 text-[#161412] focus:outline-none"
             />
             <button
@@ -98,19 +116,20 @@ export default function TrademarkPage() {
 
         {/* Result Area */}
         {result && (
-          <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Summary Card */}
-            <div className="bg-white rounded-2xl border border-[#161412]/15 shadow-sm overflow-hidden mb-6">
+          <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
+            
+            {/* BRAND SCREENING & CLEARANCE POSTURE CARD */}
+            <div className="bg-white rounded-2xl border border-[#161412]/15 shadow-sm overflow-hidden">
               <div className="p-6 md:p-8 border-b border-[#161412]/10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                  <h2 className="text-sm font-bold text-[#161412]/50 uppercase tracking-widest mb-1">{t('trademark.scanner.targetName', 'Target Name')}</h2>
+                  <h2 className="text-sm font-bold text-[#161412]/50 uppercase tracking-widest mb-1">Target Name</h2>
                   <p className="text-2xl font-serif text-[#161412]">{result.brand_name}</p>
                 </div>
                 
-                <div className={cn("px-4 py-3 rounded-xl border flex items-center gap-3", getRiskColor(result.risk_level))}>
-                  {getRiskIcon(result.risk_level)}
+                <div className={cn("px-4 py-3 rounded-xl border flex items-center gap-3", getPostureColor(result.clearance_posture || result.status, result.risk_level))}>
+                  {getPostureIcon(result.clearance_posture || result.status, result.risk_level)}
                   <div>
-                    <div className="text-[10px] uppercase font-bold opacity-70 tracking-widest leading-none mb-1">{t('trademark.scanner.riskLevel', 'Risk Level')}</div>
+                    <div className="text-[10px] uppercase font-bold opacity-70 tracking-widest leading-none mb-1">Risk Level</div>
                     <div className="text-lg font-bold capitalize leading-none">{result.risk_level}</div>
                   </div>
                 </div>
@@ -119,38 +138,72 @@ export default function TrademarkPage() {
               {/* Match Details */}
               <div className="p-6 md:p-8 bg-[#faf8f3]/50">
                 <h3 className="text-sm font-bold text-[#161412] mb-4 flex items-center justify-between">
-                  {t('trademark.scanner.matches', 'Similarity Matches')}
-                  <span className="text-xs font-normal text-[#161412]/50">{t('trademark.scanner.topResults', 'Top {{count}} results', { count: result.matches?.length || 0 })}</span>
+                  Similarity Matches
+                  <span className="text-xs font-normal text-[#161412]/50">Top {result.matches?.length || 0} results</span>
                 </h3>
                 
                 {result.matches && result.matches.length > 0 ? (
                   <div className="space-y-3">
                     {result.matches.map((match, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 bg-white border border-[#161412]/10 rounded-lg">
-                        <span className="font-medium text-[#161412]">{match.existing_mark}</span>
-                        <div className="flex items-center gap-3">
-                          <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                            <div 
-                              className={cn("h-full rounded-full transition-all duration-1000", match.similarity_score >= 85 ? "bg-red-500" : match.similarity_score >= 70 ? "bg-yellow-500" : "bg-green-500")}
-                              style={{ width: `${match.similarity_score}%` }}
-                            />
-                          </div>
-                          <span className="text-xs font-bold text-[#161412]/60 w-10 text-right">{match.similarity_score}%</span>
+                      <div key={idx} className="p-4 bg-stone-50/80 border border-stone-200/80 rounded-xl space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-base text-[#161412]">{match.name || match.existing_mark}</span>
+                          <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-[#176B45]/10 text-[#176B45]">
+                            {match.similarity_signal || `${match.similarity}% similarity`}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-[#161412]/60 pt-1 border-t border-stone-200/50">
+                          <span>Source: <strong className="font-medium text-stone-700">{match.source || 'Indexed trademark dataset'}</strong></span>
+                          <span className="text-[11px] text-stone-500 italic">Screening signal (not legal conflict)</span>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
                   <div className="text-center py-6 text-[#161412]/50 text-sm border border-dashed border-[#161412]/20 rounded-lg bg-white">
-                    {t('trademark.scanner.noMatches', 'No significant matches found in the database.')}
+                    No significant matches found in the database.
                   </div>
                 )}
               </div>
             </div>
 
+            {/* LIMITATIONS SECTION */}
+            {result.limitations && result.limitations.length > 0 && (
+              <div className="bg-white rounded-2xl border border-[#161412]/15 p-6 shadow-sm">
+                <h3 className="text-xs font-bold text-[#176B45] uppercase tracking-widest mb-3">
+                  Limitations & Screening Scope
+                </h3>
+                <ul className="space-y-2">
+                  {result.limitations.map((lim, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-xs sm:text-sm text-stone-700 leading-relaxed">
+                      <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-stone-400 mt-1.5" />
+                      <span>{lim}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* NEXT STEPS SECTION */}
+            {result.next_steps && result.next_steps.length > 0 && (
+              <div className="bg-white rounded-2xl border border-[#161412]/15 p-6 shadow-sm">
+                <h3 className="text-xs font-bold text-[#176B45] uppercase tracking-widest mb-3">
+                  Recommended Next Steps
+                </h3>
+                <ul className="space-y-2">
+                  {result.next_steps.map((step, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-stone-800 leading-relaxed">
+                      <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-[#176B45] mt-1.5" />
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Disclaimer */}
             <div className="flex items-start gap-2 px-4 text-[#161412]/40 text-xs">
-              <span className="font-bold text-[10px] uppercase tracking-wider mt-0.5">{t('common.note', 'Note:')}</span>
+              <span className="font-bold text-[10px] uppercase tracking-wider mt-0.5">Note:</span>
               <p>{result.disclaimer}</p>
             </div>
             

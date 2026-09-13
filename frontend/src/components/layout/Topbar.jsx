@@ -20,10 +20,10 @@ export default function Topbar() {
   }, []);
 
   const services = [
-    { nameKey: 'nav.svcRegulatory', descKey: 'nav.svcRegulatoryDesc', href: '/compliance/regulatory', icon: Scale },
-    { nameKey: 'nav.svcABS',        descKey: 'nav.svcABSDesc',        href: '/compliance/abs',        icon: ShieldCheck },
-    { nameKey: 'nav.svcEvaluation', descKey: 'nav.svcEvaluationDesc', href: '/analytics/evaluation',  icon: BarChart },
-    { nameKey: 'nav.svcExport',     descKey: 'nav.svcExportDesc',     href: '#',                      icon: Globe },
+    { name: 'Regulatory Pathway', href: '/compliance/regulatory', icon: Scale, desc: 'Find Ayush licensing requirements' },
+    { name: 'ABS Compliance', href: '/compliance/abs', icon: ShieldCheck, desc: 'Biological Diversity Act checks' },
+    { name: 'Evaluation Dashboard', href: '/analytics/evaluation', icon: BarChart, desc: 'System benchmark metrics' },
+    { name: 'Export Navigator', href: '#', icon: Globe, desc: 'Cross-border compliance' },
   ];
 
   return (

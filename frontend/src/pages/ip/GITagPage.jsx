@@ -1,6 +1,16 @@
 import { useTranslation } from "react-i18next";
 import { useState } from 'react';
-import { MapPin, Info, ArrowRight, ShieldAlert, CheckCircle2, AlertTriangle, BookOpen } from 'lucide-react';
+import {
+  MapPin,
+  Info,
+  ArrowRight,
+  ShieldAlert,
+  CheckCircle2,
+  AlertTriangle,
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
 import Navbar from '../../components/Navbar';
 import { ipApi } from '../../api';
@@ -17,16 +27,12 @@ export default function GITagPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-  const handleChange = e => {
-    const {
-      name,
-      value,
-      type,
-      checked
-    } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
     }));
   };
   const handleSearch = async e => {
@@ -40,13 +46,17 @@ export default function GITagPage() {
         product_name: formData.product_name,
         ingredients: formData.ingredients.split(',').map(i => i.trim()).filter(Boolean),
         source_region: formData.source_region,
-        region_specific: formData.region_specific
+        region_specific: formData.region_specific,
       };
       const res = await ipApi.checkGI(payload);
       setResult(res);
+      setIsNextStepsOpen(true);
     } catch (err) {
       console.error(err);
-      setError("Failed to connect to the GI Navigator engine. Please try again.");
+      setError(
+        err?.response?.data?.detail ||
+          'Failed to connect to the GI Navigator engine. Please check connection and try again.'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -61,10 +71,12 @@ export default function GITagPage() {
     if (color === 'yellow') return 'bg-yellow-50 border-yellow-200 text-yellow-800';
     return 'bg-green-50 border-green-200 text-green-800';
   };
-  return <div className="min-h-screen bg-[#faf8f3] font-sans pb-20">
+
+  return (
+    <div className="min-h-screen bg-[#faf8f3] font-sans pb-20">
       <Navbar />
 
-      <main className="max-w-4xl mx-auto pt-[140px] px-4 sm:px-6 flex flex-col items-center">
+      <main className="max-w-4xl mx-auto pt-28 px-4 sm:px-6 flex flex-col items-center">
         
         {/* Header Section */}
         <div className="text-center mb-10">
@@ -75,34 +87,45 @@ export default function GITagPage() {
         </div>
 
         <div className="w-full max-w-3xl flex flex-col md:flex-row gap-8">
-          
           {/* Input Form */}
           <div className="w-full md:w-1/2">
             <form onSubmit={handleSearch} className="bg-white p-6 rounded-2xl border border-[#161412]/15 shadow-sm space-y-5">
               <div>
-                <label className="block text-sm font-medium text-[#161412] mb-1.5">{t("gitagpage.productName", "Product Name *")}</label>
-                <input required name="product_name" value={formData.product_name} onChange={handleChange} className="w-full bg-[#f8f7f4] text-[#161412] border border-[#161412]/15 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#176B45] transition-all" placeholder={t("gitagpage.egDarjeelingTeaKanchipuram", "e.g. Darjeeling Tea, Kanchipuram Silk")} />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-[#161412] mb-1.5">{t("gitagpage.keyIngredients", "Key Ingredients")}</label>
-                <textarea name="ingredients" value={formData.ingredients} onChange={handleChange} className="w-full bg-[#f8f7f4] text-[#161412] border border-[#161412]/15 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#176B45] transition-all resize-none" rows={2} placeholder={t("gitagpage.commaseparatedlist", "Comma separated list...")} />
+                <label className="block text-sm font-medium text-[#161412] mb-1.5">Product Name *</label>
+                <input required name="product_name" value={formData.product_name} onChange={handleChange} className="w-full bg-[#f8f7f4] text-[#161412] border border-[#161412]/15 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#176B45] transition-all" placeholder="e.g. Darjeeling Tea, Kanchipuram Silk" />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#161412] mb-1.5">{t("gitagpage.sourceRegion", "Source Region")}</label>
-                <input name="source_region" value={formData.source_region} onChange={handleChange} className="w-full bg-[#f8f7f4] text-[#161412] border border-[#161412]/15 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#176B45] transition-all" placeholder={t("gitagpage.egDarjeelingWestBengal", "e.g. Darjeeling, West Bengal")} />
+                <label className="block text-sm font-medium text-[#161412] mb-1.5">Key Ingredients</label>
+                <textarea name="ingredients" value={formData.ingredients} onChange={handleChange} className="w-full bg-[#f8f7f4] text-[#161412] border border-[#161412]/15 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#176B45] transition-all resize-none" rows={2} placeholder="Comma separated list..." />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#161412] mb-1.5">Source Region</label>
+                <input name="source_region" value={formData.source_region} onChange={handleChange} className="w-full bg-[#f8f7f4] text-[#161412] border border-[#161412]/15 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#176B45] transition-all" placeholder="e.g. Darjeeling, West Bengal" />
               </div>
 
               <div className="flex items-start gap-3 p-3 bg-[#f8f7f4] border border-[#161412]/10 rounded-lg">
                 <input type="checkbox" id="region_specific" name="region_specific" checked={formData.region_specific} onChange={handleChange} className="mt-1 shrink-0 text-[#176B45] focus:ring-[#176B45] rounded border-[#161412]/20" />
-                <label htmlFor={t("gitagpage.regionspecific", "region_specific")} className="text-sm text-[#161412]/80 cursor-pointer">
-                  <span className="font-medium text-[#161412] block">{t("gitagpage.regionSpecificOrigin", "Region Specific Origin")}</span>{t("gitagpage.thisproductsqualityreputation", "This product's quality, reputation, or characteristics are essentially attributable to its geographic origin.")}</label>
+                <label htmlFor="region_specific" className="text-sm text-[#161412]/80 cursor-pointer">
+                  <span className="font-medium text-[#161412] block">Region Specific Origin</span>
+                  This product's quality, reputation, or characteristics are essentially attributable to its geographic origin.
+                </label>
               </div>
 
-              <button type="submit" disabled={isLoading || !formData.product_name.trim()} className="w-full py-3 bg-[#176B45] text-white font-medium rounded-xl hover:bg-[#125537] transition-all disabled:opacity-50 shadow-[0_4px_14px_rgba(23,107,69,0.25)] flex items-center justify-center gap-2">
-                {isLoading ? <>
-                    <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></span>{t("gitagpage.analyzingOrigin", "Analyzing Origin...")}</> : <>{t("gitagpage.checkEligibility", "Check Eligibility")}<ArrowRight className="w-4 h-4" /></>}
+              <button
+                type="submit"
+                disabled={isLoading || !formData.product_name.trim()}
+                className="w-full py-3 bg-[#176B45] text-white font-medium rounded-xl hover:bg-[#125537] transition-all disabled:opacity-50 shadow-[0_4px_14px_rgba(23,107,69,0.25)] flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
+                    Analyzing Origin...
+                  </>
+                ) : (
+                  <>Check Eligibility <ArrowRight className="w-4 h-4" /></>
+                )}
               </button>
             </form>
           </div>
@@ -116,9 +139,10 @@ export default function GITagPage() {
 
             {!result && !error && !isLoading && <div className="flex-1 border-2 border-dashed border-[#161412]/15 rounded-2xl flex flex-col items-center justify-center text-center p-8 bg-[#f8f7f4]/50">
                 <MapPin className="w-10 h-10 text-[#161412]/20 mb-3" />
-                <p className="text-sm text-[#161412]/50 font-medium">{t("gitagpage.resultswillappearhere", "Results will appear here")}</p>
-                <p className="text-xs text-[#161412]/40 mt-1 max-w-[200px]">{t("gitagpage.filloutthedetails", "Fill out the details to evaluate Geographical Indication eligibility.")}</p>
-              </div>}
+                <p className="text-sm text-[#161412]/50 font-medium">Results will appear here</p>
+                <p className="text-xs text-[#161412]/40 mt-1 max-w-[200px]">Fill out the details to evaluate Geographical Indication eligibility.</p>
+              </div>
+            )}
 
             {isLoading && <div className="flex-1 bg-white border border-[#161412]/10 rounded-2xl p-6 shadow-sm animate-pulse">
                 <div className="h-6 bg-gray-200 rounded w-1/3 mb-6"></div>
@@ -130,7 +154,8 @@ export default function GITagPage() {
                 <div className="h-20 bg-gray-100 rounded-xl w-full"></div>
               </div>}
 
-            {result && !isLoading && <div className="flex-1 bg-white rounded-2xl border border-[#161412]/15 shadow-sm overflow-hidden animate-in fade-in slide-in-from-right-4 duration-500">
+            {result && !isLoading && (
+              <div className="flex-1 bg-white rounded-2xl border border-[#161412]/15 shadow-sm overflow-hidden animate-in fade-in slide-in-from-right-4 duration-500">
                 <div className={cn("p-4 border-b flex items-start gap-3", getStatusColor(result.color))}>
                   {getStatusIcon(result.color)}
                   <div>
@@ -140,26 +165,32 @@ export default function GITagPage() {
                 </div>
 
                 <div className="p-6">
+                  {/* Assessment Section */}
                   <div className="mb-6">
                     <h3 className="text-xs font-bold text-[#176B45] uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                      <Info className="w-3.5 h-3.5" />{t("gitagpage.assessment", "Assessment")}</h3>
+                      <Info className="w-3.5 h-3.5" /> Assessment
+                    </h3>
                     <p className="text-sm text-[#161412]/80 leading-relaxed whitespace-pre-wrap">{result.reasoning}</p>
                   </div>
 
+                  {/* Next Steps Accordion */}
                   <div className="mb-6">
                     <h3 className="text-xs font-bold text-[#176B45] uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                      <ArrowRight className="w-3.5 h-3.5" />{t("gitagpage.nextSteps", "Next Steps")}</h3>
+                      <ArrowRight className="w-3.5 h-3.5" /> Next Steps
+                    </h3>
                     <div className="p-3 bg-[#176B45]/5 border border-[#176B45]/15 rounded-lg text-sm text-[#161412] leading-relaxed">
                       {result.next_steps}
                     </div>
                   </div>
 
+                  {/* Sources & Confidence Footer */}
                   <div className="flex items-center justify-between pt-4 border-t border-[#161412]/10">
                     <div className="flex items-center gap-1.5 text-xs text-[#161412]/50 font-medium">
-                      <BookOpen className="w-3.5 h-3.5" /> 
-                      {result.sources?.length ? `${result.sources.length} sources referenced` : "No direct act chunks matched"}
+                      <BookOpen className="w-3.5 h-3.5" />
+                      {result.sources?.length ? `${result.sources.length} sources referenced` : 'No directly matched GI Act evidence retrieved'}
                     </div>
-                    <div className="text-xs font-medium px-2 py-1 bg-gray-100 text-gray-600 rounded">{t("gitagpage.confidence", "Confidence:")}<span className="capitalize">{result.confidence}</span>
+                    <div className="text-xs font-medium px-2 py-1 bg-gray-100 text-gray-600 rounded">
+                      Confidence: <span className="capitalize">{result.confidence}</span>
                     </div>
                   </div>
                 </div>

@@ -63,46 +63,56 @@ export default function Trademarks() {
 
       {isLoading && <div className="py-12 flex flex-col items-center justify-center">
           <div className="w-8 h-8 rounded-full border-2 border-[#176B45] border-t-transparent animate-spin mb-4" />
-          <p className="text-[#161412]/60 font-medium">{t("trademarks.scanningtrademarkregistry", "Scanning trademark registry...")}</p>
-        </div>}
+          <p className="text-[#161412]/60 font-medium">Scanning trademark registry...</p>
+        </div>
+      )}
 
-      {result && <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {result && (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className={cn("p-6 border rounded-xl flex items-center justify-between", getRiskColor(result.conflict_risk))}>
             <div>
               <div className="flex items-center gap-2 mb-1">
                 {getRiskIcon(result.conflict_risk)}
-                <h2 className="text-xl font-serif">{t("trademarks.conflictRisk", "Conflict Risk:")}{result.conflict_risk}</h2>
+                <h2 className="text-xl font-serif">Conflict Risk: {result.conflict_risk}</h2>
               </div>
               <p className="text-sm opacity-90">{result.summary}</p>
             </div>
           </div>
 
-          {result.matches && result.matches.length > 0 && <div className="bg-white border border-[#161412]/10 rounded-xl shadow-sm overflow-hidden">
+          {result.matches && result.matches.length > 0 && (
+            <div className="bg-white border border-[#161412]/10 rounded-xl shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-[#161412]/10 bg-[#f8f7f4]">
-                <h3 className="font-serif text-lg text-[#161412]">{t("trademarks.closestRegisteredMarks", "Closest Registered Marks")}</h3>
+                <h3 className="font-serif text-lg text-[#161412]">Closest Registered Marks</h3>
               </div>
               <div className="divide-y divide-[#161412]/10">
                 {result.matches.map((match, idx) => <div key={idx} className="p-6 flex items-center justify-between hover:bg-[#161412]/5 transition-colors">
                     <div>
                       <h4 className="font-bold text-lg text-[#161412] tracking-wide">{match.mark}</h4>
                       <p className="text-sm text-[#161412]/50 mt-1 flex gap-4">
-                        <span>{t("trademarks.class", "Class:")}{match.class_code}</span>
-                        <span>{t("trademarks.owner", "Owner:")}{match.owner}</span>
-                        <span className={cn("px-2 py-0.5 rounded text-xs font-semibold", match.status === 'Registered' ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700")}>{match.status}</span>
+                        <span>Class: {match.class_code}</span>
+                        <span>Owner: {match.owner}</span>
+                        <span className={cn(
+                          "px-2 py-0.5 rounded text-xs font-semibold",
+                          match.status === 'Registered' ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                        )}>{match.status}</span>
                       </p>
                     </div>
                     <div className="text-right flex flex-col items-end">
                       <span className="text-xl font-serif text-[#176B45]">{(match.similarity_score * 100).toFixed(0)}%</span>
-                      <span className="text-xs text-[#161412]/40 uppercase tracking-wider">{t("trademarks.similarity", "Similarity")}</span>
+                      <span className="text-xs text-[#161412]/40 uppercase tracking-wider">Similarity</span>
                       <div className="w-24 h-1.5 bg-[#161412]/10 rounded-full mt-2">
-                        <div className="h-1.5 rounded-full bg-[#176B45]" style={{
-                  width: `${Math.round(match.similarity_score * 100)}%`
-                }} />
+                        <div 
+                          className="h-1.5 rounded-full bg-[#176B45]" 
+                          style={{ width: `${Math.round(match.similarity_score * 100)}%` }}
+                        />
                       </div>
                     </div>
                   </div>)}
               </div>
-            </div>}
-        </div>}
-    </div>;
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }

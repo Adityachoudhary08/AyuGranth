@@ -201,12 +201,17 @@ def _get_intent_fallback(intent: str, chunks: List[Dict[str, Any]]) -> Dict[str,
             "confidence_label": "preliminary",
         },
         "ABS": {
-            "assessment": "ABS assessment requires further analysis.",
-            "why": "The AI synthesis could not be completed. Retrieved regulatory provisions and biological resource guidelines are displayed below.",
+            "assessment": "ABS assessment could not be fully synthesized from the retrieved evidence.",
+            "why": (
+                "ABS assessment could not be fully synthesized from the retrieved evidence. "
+                "The retrieved ABS/statutory sources are shown below for review. "
+                "No specific approval, exemption, form, authority, or benefit-sharing obligation is asserted "
+                "without sufficient case facts and supporting evidence."
+            ),
             "key_points": [
-                "Biological Diversity Act and Access & Benefit Sharing provisions retrieved for review.",
-                "Commercial utilization and research approvals (Form I / Form III) must be checked with NBA/SBB.",
-                "No exemption or compliance clearance is asserted without full legal review."
+                f"Retrieved {len(chunks)} ABS/statutory passage(s) for independent review.",
+                "No specific authority, form, approval type, or benefit-sharing obligation is asserted without case facts and evidence.",
+                "Consult the applicable biodiversity authority and qualified legal counsel before taking action.",
             ],
             "confidence_label": "preliminary",
         },
@@ -285,9 +290,21 @@ def _build_intent_prompt_preamble(intent: str) -> str:
             "Keep traditional knowledge findings strictly grounded in historical and classical evidence."
         ),
         "ABS": (
-            "INTENT: ACCESS AND BENEFIT SHARING (ABS)\n"
-            "Focus on obligations under the Biological Diversity Act, 2002/2023, National Biodiversity Authority (NBA) "
-            "approval requirements, State Biodiversity Board (SBB) intimations, and benefit sharing calculations."
+            "INTENT: ACCESS AND BENEFIT SHARING (ABS) — EVIDENCE-GROUNDED ANALYSIS\n"
+            "You are analyzing Access and Benefit Sharing using ONLY the supplied case facts and retrieved ABS/statutory evidence.\n\n"
+            "CRITICAL RULES:\n"
+            "- Do NOT infer: applicant status, access method, commercial utilization, research purpose, "
+            "traditional knowledge use, prior approval, exemption, Form I, Form III, NBA jurisdiction, SBB jurisdiction, or benefit-sharing amount.\n"
+            "- Do NOT use general Ayurveda/TK/patent documents as ABS authority unless the retrieved passage ITSELF directly supports the ABS finding.\n"
+            "- A TK or patent document is NOT automatically ABS evidence.\n\n"
+            "DISTINGUISH CLEARLY:\n"
+            "1. ABS relevance (from facts + evidence)\n"
+            "2. Possible pathway (only if evidence supports it)\n"
+            "3. Missing facts (that would be needed)\n"
+            "4. Evidence-supported obligations (reference the EVIDENCE_N id)\n"
+            "5. Unresolved questions (what cannot currently be determined)\n\n"
+            "Every substantive legal finding MUST reference one of the supplied evidence IDs.\n"
+            "If the retrieved evidence does not contain direct ABS law, say so. Do not substitute TK or patent content."
         ),
         "REGULATORY": (
             "INTENT: REGULATORY COMPLIANCE\n"
@@ -380,25 +397,47 @@ async def _invoke_llm_with_retry(
     return None, False, error_type
 
 
-async def run_rag_query(query: str, jurisdiction: Optional[str] = "India") -> Dict[str, Any]:
+async def run_rag_query(query: str, jurisdiction: Optional[str] = "India", intent_override: Optional[str] = None) -> Dict[str, Any]:
     """
     Execute the complete end-to-end RAG pipeline:
     USER QUERY → INTENT ROUTING → RETRIEVAL → EVIDENCE NORMALIZATION → AI SYNTHESIS → VALIDATION → FINAL RESPONSE
+
+    Parameters
+    ----------
+    query : str
+        The user query or synthesised ABS/regulatory query string.
+    jurisdiction : str, optional
+        The jurisdiction for retrieval context (default: "India").
+    intent_override : str, optional
+        If provided, skips intent classification and forces this intent.
+        Use "ABS" from the ABS engine to guarantee ABS routing regardless
+        of ingredient names that might otherwise trigger TK_ANALYSIS.
     """
     total_start = time.time()
-    logger.info("[ASK] Incoming Query: '%s' | Jurisdiction: %s", query[:80], jurisdiction)
+    logger.info("[ASK] Incoming Query: '%s' | Jurisdiction: %s | IntentOverride: %s", query[:80], jurisdiction, intent_override)
 
     stage_timings: Dict[str, float] = {}
 
     # ── STAGE 0: INTENT ROUTING ──────────────────────────────────────────────
     intent_start = time.time()
-    intent_data = classify_intent(query)
-    intent = intent_data.get("intent", "GENERAL_RESEARCH")
+    if intent_override:
+        # Caller has explicitly set the intent — skip classification entirely
+        intent = intent_override.upper()
+        intent_data = {
+            "intent": intent,
+            "confidence": 1.0,
+            "reason": f"Intent override applied by caller: {intent_override}",
+        }
+        logger.info("[INTENT ROUTER] Intent forced to '%s' via override (skipping classification)", intent)
+    else:
+        intent_data = classify_intent(query)
+        intent = intent_data.get("intent", "GENERAL_RESEARCH")
     stage_timings["INTENT_ROUTING"] = round(time.time() - intent_start, 4)
     logger.info(
-        "[INTENT ROUTER] Classified query as '%s' (conf=%.2f, reason='%s') in %.3fs",
+        "[INTENT ROUTER] Final intent='%s' (conf=%.2f, reason='%s') in %.3fs",
         intent, intent_data.get("confidence", 0.0), intent_data.get("reason", ""), stage_timings["INTENT_ROUTING"]
     )
+
 
     # ── STAGE 1: RETRIEVAL & EMBEDDINGS ──────────────────────────────────────
     retrieval_start = time.time()
@@ -406,14 +445,44 @@ async def run_rag_query(query: str, jurisdiction: Optional[str] = "India") -> Di
     scores: List[float] = []
 
     try:
-        # General chat doesn't strictly need deep corpus retrieval, but we pull a few for context
-        top_k = 3 if intent == "GENERAL_CHAT" else 6
-        chunks = await search_similar_chunks(query, top_k=top_k)
+        # For ABS intent, use a longer embedding timeout and prefer ABS-relevant chunks
+        if intent == "ABS":
+            top_k = 10  # wider retrieval so we can filter non-ABS post-retrieval
+            abs_embedding_timeout = getattr(settings, "ABS_EMBEDDING_TIMEOUT_S", 12.0)
+            all_chunks = await search_similar_chunks(
+                query,
+                top_k=top_k,
+                embedding_timeout_s=abs_embedding_timeout,
+                log_prefix="[ABS RETRIEVAL]",
+            )
+            # ABS evidence boundary: reject prior_art and traditional_knowledge chunks
+            # (a TK or patent document is NOT automatically ABS evidence)
+            abs_chunks = [c for c in all_chunks if _classify_evidence_type(c) not in ("prior_art", "traditional_knowledge")]
+            non_abs_removed = len(all_chunks) - len(abs_chunks)
+            if non_abs_removed > 0:
+                logger.info(
+                    "[ABS RETRIEVAL] Boundary filter removed %d non-ABS chunk(s) (prior_art/TK). ABS evidence_count=%d",
+                    non_abs_removed, len(abs_chunks),
+                )
+            # ABS must NEVER reintroduce prior_art, traditional_knowledge, or unrelated documents
+            chunks = abs_chunks
+            logger.info(
+                "[ABS RETRIEVAL] retrieval_mode=abs_filtered evidence_count=%d (all=%d non_abs_removed=%d)",
+                len(chunks), len(all_chunks), non_abs_removed,
+            )
+        else:
+            top_k = 3 if intent == "GENERAL_CHAT" else 6
+            chunks = await search_similar_chunks(query, top_k=top_k)
         scores = [float(c.get("semantic_similarity", 0.0)) for c in chunks]
         stage_timings["RETRIEVAL"] = round(time.time() - retrieval_start, 3)
 
-        chunk_logs = [f"[{c.get('source_document', '')[:25]} | Sec: {c.get('section')} | Sim: {c.get('semantic_similarity')}]" for c in chunks[:3]]
-        logger.info("[RETRIEVAL] Found %d chunks in %.2fs: %s", len(chunks), stage_timings["RETRIEVAL"], chunk_logs)
+        chunk_logs = [
+            f"[{c.get('source_document', '')[:30]} | source_type={c.get('source_type','?')} | Sec: {c.get('section')} | Sim: {c.get('semantic_similarity'):.4f}]"
+            for c in chunks[:6]
+        ]
+        logger.info("[RETRIEVAL] Found %d chunks in %.2fs. Top results:", len(chunks), stage_timings["RETRIEVAL"])
+        for cl in chunk_logs:
+            logger.info("  %s", cl)
     except Exception as e:
         stage_timings["RETRIEVAL"] = round(time.time() - retrieval_start, 3)
         logger.error("[RETRIEVAL FAILED] Stage exception: %s", e)
@@ -558,12 +627,28 @@ SCHEMA:
 }}
 OUTPUT JSON:"""
 
-        raw_text, success, error_detail = await _invoke_llm_with_retry(
-            prompt=full_prompt,
-            cleaner_prompt=cleaner_prompt,
-            max_retries=settings.GEMINI_MAX_RETRIES,
-            timeout_s=settings.GEMINI_TIMEOUT_S,
-        )
+        # For ABS: use shorter timeout and 0 retries for fast turnaround
+        if intent == "ABS":
+            abs_timeout = getattr(settings, "ABS_GEMINI_TIMEOUT_S", 12.0)
+            abs_retries = getattr(settings, "ABS_GEMINI_MAX_RETRIES", 0)
+            logger.info("[ABS GENERATION] attempt=1 timeout=%.1fs max_retries=%d", abs_timeout, abs_retries)
+            raw_text, success, error_detail = await _invoke_llm_with_retry(
+                prompt=full_prompt,
+                cleaner_prompt=cleaner_prompt,
+                max_retries=abs_retries,
+                timeout_s=abs_timeout,
+            )
+            if success:
+                logger.info("[ABS GENERATION SUCCESS] Gemini returned structured response")
+            else:
+                logger.info("[ABS GENERATION FALLBACK] reason=%s", error_detail)
+        else:
+            raw_text, success, error_detail = await _invoke_llm_with_retry(
+                prompt=full_prompt,
+                cleaner_prompt=cleaner_prompt,
+                max_retries=settings.GEMINI_MAX_RETRIES,
+                timeout_s=settings.GEMINI_TIMEOUT_S,
+            )
 
         if success and raw_text:
             gemini_raw_text = raw_text

@@ -66,6 +66,8 @@ async def search_similar_chunks(
     *,
     source_type_filter: str | None = None,
     top_k: int = 10,
+    embedding_timeout_s: float = 6.0,
+    log_prefix: str = "[RETRIEVAL]",
 ) -> list[dict[str, Any]]:
     """
     Embed *description*, run ``$vectorSearch`` on ``legal_chunks``,
@@ -85,15 +87,27 @@ async def search_similar_chunks(
         (e.g. ``"classical_text"`` for TK checks).
     top_k : int
         Maximum number of results.
+    embedding_timeout_s : float
+        Timeout for the embedding call.  General pipeline uses 6s;
+        ABS engine passes 12s (configured in ABS_EMBEDDING_TIMEOUT_S).
+    log_prefix : str
+        Log prefix for retrieval diagnostics (default "[RETRIEVAL]").
     """
     import asyncio, re
     db = get_db()
-    
+    embedding_success = False
+    retrieval_mode = "none"
+
     # 1. Generate embedding for query
     try:
-        query_vector = await asyncio.wait_for(asyncio.to_thread(embed_text, description), timeout=6.0)
+        query_vector = await asyncio.wait_for(
+            asyncio.to_thread(embed_text, description),
+            timeout=embedding_timeout_s,
+        )
+        embedding_success = True
+        logger.info("%s embedding_success=true timeout=%.1fs", log_prefix, embedding_timeout_s)
     except Exception as e:
-        logger.warning("Embedding generation timed out or failed: %s", e)
+        logger.warning("%s embedding_success=false timeout=%.1fs error=%s", log_prefix, embedding_timeout_s, e)
         query_vector = None
 
     raw_chunks = []
@@ -136,12 +150,16 @@ async def search_similar_chunks(
         try:
             cursor = db.legal_chunks.aggregate(pipeline)
             raw_chunks = await cursor.to_list(length=top_k)
+            if raw_chunks:
+                retrieval_mode = "vector"
         except Exception as e:
-            logger.warning("$vectorSearch failed or not configured on Atlas: %s", e)
+            logger.warning("%s $vectorSearch failed or not configured on Atlas: %s", log_prefix, e)
             raw_chunks = []
 
     # 3. Keyword-filtered candidate retrieval + in-memory cosine similarity
     if not raw_chunks:
+        retrieval_mode = "keyword"
+        logger.info("%s retrieval_mode=keyword (vector empty or failed)", log_prefix)
         try:
             query_conditions = []
             if source_type_filter:
@@ -237,5 +255,8 @@ async def search_similar_chunks(
             }
         )
 
+    logger.info(
+        "%s retrieval_mode=%s embedding_success=%s evidence_count=%d",
+        log_prefix, retrieval_mode, embedding_success, len(results),
+    )
     return results
-
