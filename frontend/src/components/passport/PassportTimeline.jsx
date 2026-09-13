@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { Clock, History, CheckCircle2 } from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
+import { translatePassportData, translatePassportStatus } from '../../lib/passportI18n';
+
 export default function PassportTimeline({
   history = [],
   lastAnalyzed = '10 Sep 2026',
@@ -39,16 +41,16 @@ export default function PassportTimeline({
                   {item.date}
                 </span>
                 {item.status && <span className="px-2 py-0.2 rounded text-[9.5px] font-mono font-bold uppercase bg-amber-50 text-amber-900 border border-amber-200">
-                    {item.status}
+                    {translatePassportStatus(item.status, t)}
                   </span>}
               </div>
 
               <h4 className="font-serif text-sm font-semibold text-[#161412]">
-                {item.event}
+                {translatePassportData(item.event, t)}
               </h4>
 
               {item.detail && <p className="text-xs text-[#161412]/70 leading-relaxed">
-                  {item.detail}
+                  {translatePassportData(item.detail, t)}
                 </p>}
             </div>
           </div>)}

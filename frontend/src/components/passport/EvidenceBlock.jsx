@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next";
 import { useState } from 'react';
 import { BookOpen, Scale, FileText, CheckCircle2, ChevronRight, Info } from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
+import { translatePassportStatus } from '../../lib/passportI18n';
+
 export default function EvidenceBlock({
   source = 'Ayurvedic Pharmacopoeia of India (API)',
   document = 'Classical & Statutory Legal Corpus',
@@ -34,7 +36,7 @@ export default function EvidenceBlock({
 
         <div className="flex items-center gap-2">
           <span className={cn("px-2 py-0.5 rounded text-[10px] font-mono font-bold border", getStrengthColor(strength))}>
-            {strength}{t("evidenceblock.strength", "Strength")}</span>
+            {translatePassportStatus(strength, t)} {t("evidenceblock.strength", "Strength")}</span>
           <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#161412]/5 text-[#161412]/60 border border-[#161412]/10">
             {jurisdiction}
           </span>
@@ -58,7 +60,7 @@ export default function EvidenceBlock({
 
       {/* Bottom Actions */}
       <div className="mt-3.5 pt-3 border-t border-[#161412]/10 flex items-center justify-between gap-2 text-xs">
-        <span className="text-[10px] font-mono text-[#161412]/50">{t("evidenceblock.status", "Status:")}{status}
+        <span className="text-[10px] font-mono text-[#161412]/50">{t("evidenceblock.status", "Status:")} {translatePassportStatus(status, t)}
         </span>
 
         {whyThisResult && onOpenWhy && <button type="button" onClick={() => onOpenWhy(whyThisResult)} className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#176B45] hover:text-[#125537] transition-colors cursor-pointer">

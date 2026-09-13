@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { AlertCircle, CheckCircle2, ShieldCheck, TriangleAlert } from 'lucide-react';
 import { passportApi } from '../api';
+import { translatePassportStatus, translatePassportData } from '../lib/passportI18n';
+
 const statusStyles = {
   green: 'border-[#176B45]/25 bg-[#176B45]/5 text-[#176B45]',
   yellow: 'border-amber-200 bg-amber-50 text-amber-900',
@@ -69,7 +71,7 @@ export default function PublicPassportPage() {
         <section className="bg-white border border-[#161412]/10 rounded-2xl p-6 sm:p-8 shadow-sm">
           <p className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-[#8C6D46]">{t("publicpassportpage.authenticitysummary", "Authenticity summary")}</p>
           <h1 className="font-serif text-3xl sm:text-4xl mt-2">{summary.product_name}</h1>
-          <p className="font-serif italic text-sm text-[#161412]/65 mt-1">{summary.category}</p>
+          <p className="font-serif italic text-sm text-[#161412]/65 mt-1">{translatePassportData(summary.category, t)}</p>
 
           <dl className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-8 pt-5 border-t border-[#161412]/10">
             <div>
@@ -90,13 +92,13 @@ export default function PublicPassportPage() {
         <section>
           <div className="flex items-center justify-between gap-4 mb-3">
             <h2 className="font-serif text-2xl">{t("publicpassportpage.domainstatus", "Domain status")}</h2>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-800">{summary.overall_status}</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-800">{translatePassportStatus(summary.overall_status, t)}</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {summary.domain_statuses.map(domain => <div key={domain.label} className={`flex items-center justify-between gap-3 rounded-xl border px-4 py-3 ${statusStyles[domain.color] || statusStyles.yellow}`}>
-                <span className="text-sm font-semibold">{domain.label}</span>
+                <span className="text-sm font-semibold">{translatePassportData(domain.label, t)}</span>
                 <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider">
-                  <StatusIcon color={domain.color} /> {domain.status}
+                  <StatusIcon color={domain.color} /> {translatePassportStatus(domain.status, t)}
                 </span>
               </div>)}
           </div>

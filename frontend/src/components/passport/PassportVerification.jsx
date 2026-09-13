@@ -60,14 +60,14 @@ export default function PassportVerification({
             <div>
               <span className="text-[9px] font-mono uppercase tracking-wider text-[#161412]/50 block mb-0.5">{t("passportverification.eVIDENCECITED", "EVIDENCE CITED")}</span>
               <span className="font-bold text-[#176B45]">
-                {evidenceCount}{t("passportverification.sources", "Sources")}</span>
+                {evidenceCount} {t("passportverification.sources", "Sources")}</span>
             </div>
           </div>
 
           <div className="pt-2 flex items-center gap-3">
             <button type="button" onClick={handleCopyLink} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#161412]/20 hover:border-[#176B45]/50 text-xs font-semibold text-[#161412] rounded-lg transition-all shadow-2xs cursor-pointer">
               {copied ? <Check className="w-3.5 h-3.5 text-green-700" /> : <Copy className="w-3.5 h-3.5 text-[#176B45]" />}
-              <span>{copied ? 'Link Copied' : 'Copy Verification Link'}</span>
+              <span>{copied ? t('productPassport.ui.linkCopied', 'Link Copied') : t('productPassport.ui.copyVerificationLink', 'Copy Verification Link')}</span>
             </button>
           </div>
         </div>

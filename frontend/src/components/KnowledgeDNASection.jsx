@@ -1,93 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-const STAGES = [
-  {
-    id: '01',
-    topRight: {
-      folio: 'FOLIO NO. 01 // BLUEPRINT',
-      title: 'Botanical Genome & Taxonomy',
-      description: 'Codifying 2,500+ classical medicinal plant profiles into structured, machine-verifiable prior-art records.',
-      statusTag: 'TAXONOMY ACTIVE',
-    },
-    leftCenter: {
-      eyebrow: 'THE KNOWLEDGE DNA',
-      titleLine1: 'Ancient Knowledge,',
-      titleLine2: 'Structured for Protection.',
-      description:
-        'For three millennia, Ayurvedic treatises codified the medicinal signatures of indigenous flora. We transform this ancestral science into global defensive prior art.',
-      badges: [
-        { label: 'Charaka & Sushruta Concordance', icon: '✦' },
-        { label: '2,500+ Documented Flora', icon: '❖' },
-      ],
-    },
-    bottomRight: {
-      category: 'TKDL PROTOCOL // FOUNDATION',
-      quote:
-        '“Traditional medicine is not abstract folklore; it is rigorous botanical empirical science encoded across centuries.”',
-      status: 'CODEX VERIFIED',
-      metric: '3,200+ CLASSICAL FORMULATIONS',
-    },
-  },
-  {
-    id: '02',
-    topRight: {
-      folio: 'FOLIO NO. 02 // DEFENSIVE PRIOR ART',
-      title: 'International Patent Concordance',
-      description: 'Direct bridging with WIPO & USPTO International Patent Classification (IPC/CPC) to prevent illicit biopiracy.',
-      statusTag: 'PREEMPTIVE SHIELD',
-    },
-    leftCenter: {
-      eyebrow: 'THE KNOWLEDGE DNA',
-      titleLine1: 'Defending Heritage,',
-      titleLine2: 'Preempting Monopoly.',
-      description:
-        'When multinational patents claimed sovereign Indian remedies like Turmeric, Neem, and Ashwagandha, TKDL prior-art evidence compelled global patent offices to revoke exploitative claims.',
-      badges: [
-        { label: '435+ Patents Revoked or Amended', icon: '✦' },
-        { label: 'WIPO Defensive Search Integration', icon: '❖' },
-      ],
-    },
-    bottomRight: {
-      category: 'DEFENSIVE AUDIT // IPC MAPPING',
-      quote:
-        '“Every documented base pair establishes irrevocable public domain prior art, stripping predatory patent filings of novelty before grant.”',
-      status: 'SHIELD ACTIVE',
-      metric: 'DEFENSIVE PRIOR-ART ACCESS',
-    },
-  },
-  {
-    id: '03',
-    topRight: {
-      folio: 'FOLIO NO. 03 // SOVEREIGN RESILIENCE',
-      title: 'Digital Sovereignty & Nagoya Protocol',
-      description: 'Safeguarding tribal biodiversity, community custodianship, and equitable benefit-sharing protocols.',
-      statusTag: 'SOVEREIGN TRUST',
-    },
-    leftCenter: {
-      eyebrow: 'THE KNOWLEDGE DNA',
-      titleLine1: 'Living Science,',
-      titleLine2: 'Sovereign Legacy.',
-      description:
-        'Traditional knowledge is an evolving, living science. We ensure that modern bioprospectors respect indigenous stewardship and sovereign custodianship for generations to come.',
-      badges: [
-        { label: 'Nagoya Protocol Compliance', icon: '✦' },
-        { label: 'Cryptographic Proof of Heritage', icon: '❖' },
-      ],
-    },
-    bottomRight: {
-      category: 'PERMANENT REPOSITORY // COMMONS',
-      quote:
-        '“Protecting the botanical genetic commons so future generations inherit both the cure and the sovereign right to heal.”',
-      status: 'COMMONS SECURED',
-      metric: 'IMMUTABLE HERITAGE ARCHIVE',
-    },
-  },
-]
-
 export default function KnowledgeDNASection() {
+  const { t } = useTranslation()
   const containerRef = useRef(null)
   const stickyRef = useRef(null)
   const canvasContainerRef = useRef(null)
@@ -97,6 +15,84 @@ export default function KnowledgeDNASection() {
 
   // Current narrative stage (0, 1, or 2) driven by scroll progress
   const [stageIndex, setStageIndex] = useState(0)
+
+  const STAGES = [
+    {
+      id: '01',
+      topRight: {
+        folio: t('landing.dna.stage1.folio'),
+        title: t('landing.dna.stage1.topTitle'),
+        description: t('landing.dna.stage1.topDesc'),
+        statusTag: 'TAXONOMY ACTIVE',
+      },
+      leftCenter: {
+        eyebrow: t('landing.dna.eyebrow'),
+        titleLine1: t('landing.dna.stage1.titleLine1'),
+        titleLine2: t('landing.dna.stage1.titleLine2'),
+        description: t('landing.dna.stage1.mainDesc'),
+        badges: [
+          { label: t('landing.dna.stage1.badge1'), icon: '✦' },
+          { label: t('landing.dna.stage1.badge2'), icon: '❖' },
+        ],
+      },
+      bottomRight: {
+        category: t('landing.dna.stage1.bottomCategory'),
+        quote: t('landing.dna.stage1.bottomQuote'),
+        status: t('landing.dna.stage1.bottomStatus'),
+        metric: t('landing.dna.stage1.bottomMetric'),
+      },
+    },
+    {
+      id: '02',
+      topRight: {
+        folio: t('landing.dna.stage2.folio'),
+        title: t('landing.dna.stage2.topTitle'),
+        description: t('landing.dna.stage2.topDesc'),
+        statusTag: 'PREEMPTIVE SHIELD',
+      },
+      leftCenter: {
+        eyebrow: t('landing.dna.eyebrow'),
+        titleLine1: t('landing.dna.stage2.titleLine1'),
+        titleLine2: t('landing.dna.stage2.titleLine2'),
+        description: t('landing.dna.stage2.mainDesc'),
+        badges: [
+          { label: t('landing.dna.stage2.badge1'), icon: '✦' },
+          { label: t('landing.dna.stage2.badge2'), icon: '❖' },
+        ],
+      },
+      bottomRight: {
+        category: t('landing.dna.stage2.bottomCategory'),
+        quote: t('landing.dna.stage2.bottomQuote'),
+        status: t('landing.dna.stage2.bottomStatus'),
+        metric: t('landing.dna.stage2.bottomMetric'),
+      },
+    },
+    {
+      id: '03',
+      topRight: {
+        folio: t('landing.dna.stage3.folio'),
+        title: t('landing.dna.stage3.topTitle'),
+        description: t('landing.dna.stage3.topDesc'),
+        statusTag: 'SOVEREIGN TRUST',
+      },
+      leftCenter: {
+        eyebrow: t('landing.dna.eyebrow'),
+        titleLine1: t('landing.dna.stage3.titleLine1'),
+        titleLine2: t('landing.dna.stage3.titleLine2'),
+        description: t('landing.dna.stage3.mainDesc'),
+        badges: [
+          { label: t('landing.dna.stage3.badge1'), icon: '✦' },
+          { label: t('landing.dna.stage3.badge2'), icon: '❖' },
+        ],
+      },
+      bottomRight: {
+        category: t('landing.dna.stage3.bottomCategory'),
+        quote: t('landing.dna.stage3.bottomQuote'),
+        status: t('landing.dna.stage3.bottomStatus'),
+        metric: t('landing.dna.stage3.bottomMetric'),
+      },
+    },
+  ]
 
   useEffect(() => {
     const container = containerRef.current
@@ -336,7 +332,9 @@ export default function KnowledgeDNASection() {
               {/* Metric Footer */}
               <div className="mt-2 pt-1.5 flex items-center justify-between text-[9px] sm:text-[10px] font-mono text-[#8a8275]">
                 <span>{currentData.bottomRight.metric}</span>
-                <span className="text-[#176B45] font-semibold tracking-wider">DEFENSE ACTIVE</span>
+                <span className="text-[#176B45] font-semibold tracking-wider">
+                  {t('landing.dna.defenseActive')}
+                </span>
               </div>
             </motion.div>
           </AnimatePresence>
@@ -345,9 +343,10 @@ export default function KnowledgeDNASection() {
         {/* Bottom Left Minimal Progress Folio */}
         <div className="absolute bottom-5 sm:bottom-8 left-3 sm:left-6 md:left-8 lg:left-10 z-10 pointer-events-none hidden sm:flex items-center gap-2.5 text-[9.5px] font-mono text-[#787168] tracking-widest uppercase">
           <span className="w-1.5 h-1.5 rounded-full border border-[#176B45]" />
-          <span>SCROLL TO UNWIND HERITAGE CODE · <span ref={progressLabelRef}>0%</span></span>
+          <span>{t('landing.dna.scrollHint')}<span ref={progressLabelRef}>0%</span></span>
         </div>
       </div>
     </section>
   )
 }
+
