@@ -64,6 +64,9 @@ class Settings(BaseSettings):
     ABS_GEMINI_TIMEOUT_S: float = 12.0
     ABS_GEMINI_MAX_RETRIES: int = 0  # 0 = no retries; fallback fires immediately
 
+    # ── Traditional Knowledge (TK) prior-art settings ───────────────────
+    TK_MIN_SIMILARITY: float = 0.46
+
 
 # Singleton — import `settings` everywhere
 settings = Settings()  # type: ignore[call-arg]
