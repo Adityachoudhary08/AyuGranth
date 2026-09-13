@@ -83,54 +83,88 @@ export default function Trademarks() {
       {isLoading && (
         <div className="py-12 flex flex-col items-center justify-center">
           <div className="w-8 h-8 rounded-full border-2 border-[#176B45] border-t-transparent animate-spin mb-4" />
-          <p className="text-[#161412]/60 font-medium">Scanning trademark registry...</p>
+          <p className="text-[#161412]/60 font-medium">Scanning indexed trademark dataset...</p>
         </div>
       )}
 
       {result && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className={cn("p-6 border rounded-xl flex items-center justify-between", getRiskColor(result.conflict_risk))}>
+          <div className={cn("p-6 border rounded-xl flex items-center justify-between", getRiskColor(result.conflict_risk || result.clearance_posture))}>
             <div>
               <div className="flex items-center gap-2 mb-1">
-                {getRiskIcon(result.conflict_risk)}
-                <h2 className="text-xl font-serif">Conflict Risk: {result.conflict_risk}</h2>
+                {getRiskIcon(result.conflict_risk || result.clearance_posture)}
+                <h2 className="text-xl font-serif">Clearance Posture: {result.clearance_posture || result.conflict_risk}</h2>
               </div>
               <p className="text-sm opacity-90">{result.summary}</p>
             </div>
           </div>
 
-          {result.matches && result.matches.length > 0 && (
+          {result.term_analysis && (
+            <div className="p-4 bg-blue-50/80 border border-blue-200 rounded-xl text-xs sm:text-sm text-blue-900 leading-relaxed">
+              <strong className="block mb-1 text-blue-800 uppercase tracking-wider text-[10px]">Descriptive / Generic Term Flag</strong>
+              <p>{result.term_analysis}</p>
+            </div>
+          )}
+
+          {result.matches && result.matches.length > 0 ? (
             <div className="bg-white border border-[#161412]/10 rounded-xl shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-[#161412]/10 bg-[#f8f7f4]">
-                <h3 className="font-serif text-lg text-[#161412]">Closest Registered Marks</h3>
+                <h3 className="font-serif text-lg text-[#161412]">Closest Indexed Candidates (Screening Signals)</h3>
               </div>
               <div className="divide-y divide-[#161412]/10">
                 {result.matches.map((match, idx) => (
                   <div key={idx} className="p-6 flex items-center justify-between hover:bg-[#161412]/5 transition-colors">
                     <div>
-                      <h4 className="font-bold text-lg text-[#161412] tracking-wide">{match.mark}</h4>
-                      <p className="text-sm text-[#161412]/50 mt-1 flex gap-4">
-                        <span>Class: {match.class_code}</span>
-                        <span>Owner: {match.owner}</span>
-                        <span className={cn(
-                          "px-2 py-0.5 rounded text-xs font-semibold",
-                          match.status === 'Registered' ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
-                        )}>{match.status}</span>
+                      <h4 className="font-bold text-lg text-[#161412] tracking-wide">{match.name || match.mark}</h4>
+                      <p className="text-xs text-[#161412]/60 mt-1 flex gap-4">
+                        <span>Source: <strong>{match.source || 'Indexed trademark dataset'}</strong></span>
+                        <span className="italic">{match.similarity_signal || 'Screening signal'}</span>
                       </p>
                     </div>
                     <div className="text-right flex flex-col items-end">
-                      <span className="text-xl font-serif text-[#176B45]">{(match.similarity_score * 100).toFixed(0)}%</span>
-                      <span className="text-xs text-[#161412]/40 uppercase tracking-wider">Similarity</span>
-                      <div className="w-24 h-1.5 bg-[#161412]/10 rounded-full mt-2">
-                        <div 
-                          className="h-1.5 rounded-full bg-[#176B45]" 
-                          style={{ width: `${Math.round(match.similarity_score * 100)}%` }}
-                        />
-                      </div>
+                      <span className="text-xl font-serif text-[#176B45]">{match.similarity || match.similarity_score}%</span>
+                      <span className="text-[10px] text-[#161412]/50 uppercase tracking-wider">Similarity Signal</span>
                     </div>
                   </div>
                 ))}
               </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 px-4 bg-white border border-dashed border-[#161412]/20 rounded-xl">
+              <h3 className="font-bold text-stone-800 text-base">No Similar Candidate Found in Indexed Dataset</h3>
+              <p className="text-xs text-[#161412]/60 mt-1 max-w-md mx-auto">
+                This screening signal does not establish trademark availability or registrability.
+              </p>
+            </div>
+          )}
+
+          {/* Limitations */}
+          {result.limitations && result.limitations.length > 0 && (
+            <div className="bg-white border border-[#161412]/10 rounded-xl p-6 shadow-sm">
+              <h4 className="text-xs font-bold text-[#176B45] uppercase tracking-widest mb-3">Limitations & Screening Scope</h4>
+              <ul className="space-y-1.5">
+                {result.limitations.map((lim, idx) => (
+                  <li key={idx} className="text-xs text-stone-700 flex items-start gap-2">
+                    <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-stone-400 mt-1.5" />
+                    <span>{lim}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Next Steps */}
+          {result.next_steps && result.next_steps.length > 0 && (
+            <div className="bg-white border border-[#161412]/10 rounded-xl p-6 shadow-sm">
+              <h4 className="text-xs font-bold text-[#176B45] uppercase tracking-widest mb-3">Recommended Next Steps</h4>
+              <ul className="space-y-1.5">
+                {result.next_steps.map((step, idx) => (
+                  <li key={idx} className="text-xs text-stone-800 flex items-start gap-2">
+                    <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-[#176B45] mt-1.5" />
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
