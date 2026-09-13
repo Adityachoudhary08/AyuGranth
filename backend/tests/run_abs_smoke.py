@@ -16,7 +16,7 @@ sys.modules["services.rag_pipeline"] = rag_stub
 from routes import abs_engine
 
 
-async def fake_rag(query, jurisdiction=None):
+async def fake_rag(query, jurisdiction=None, **kwargs):
     return {
         "answer": "The retrieved statutory passage discusses authority and disclosure in a conditional context.",
         "assessment": "ABS considerations may apply; the pathway requires additional facts.",
@@ -45,7 +45,7 @@ async def fake_rag(query, jurisdiction=None):
     }
 
 
-async def fake_rag_with_ip_evidence(query, jurisdiction=None):
+async def fake_rag_with_ip_evidence(query, jurisdiction=None, **kwargs):
     """Richer RAG result that includes IP-activity-relevant evidence."""
     return {
         "answer": "The screening indicates patent-related disclosure may be required under Section 6 of the Biological Diversity Act.",
@@ -165,7 +165,7 @@ async def main():
 
     # ── TEST E: No supporting evidence ───────────────────────────────
     print("\n[TEST E] No evidence retrieved")
-    async def empty_rag(query, jurisdiction=None):
+    async def empty_rag(query, jurisdiction=None, **kwargs):
         return {"evidence": [], "abstained": True, "confidence": 0.0, "confidence_label": "low"}
     abs_engine.run_rag_query = empty_rag
     insufficient = await abs_engine._assess(abs_engine.ABSScreenRequest(

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import App from './App.jsx';
 import AppShell from './components/layout/AppShell.jsx';
@@ -15,7 +15,7 @@ import Trademarks from './pages/ip/Trademarks.jsx';
 
 // Compliance (Dashboard flow)
 import Regulatory from './pages/compliance/Regulatory.jsx';
-import ABS from './pages/compliance/ABS.jsx';
+// ABS: single implementation at /abs (ABSPage.jsx). /compliance/abs redirects there.
 
 // Knowledge (Dashboard flow)
 import TKOverlap from './pages/knowledge/TKOverlap.jsx';
@@ -135,7 +135,7 @@ export default function Router() {
 
             {/* Compliance */}
             <Route path="/compliance/regulatory" element={<Regulatory />} />
-            <Route path="/compliance/abs" element={<ABS />} />
+            <Route path="/compliance/abs" element={<Navigate to="/abs" replace />} />
 
             {/* Knowledge */}
             <Route path="/knowledge/traditional" element={<TKOverlap />} />
