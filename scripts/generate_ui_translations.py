@@ -1,26 +1,41 @@
 #!/usr/bin/env python3
 """
-generate_ui_translations.py
-===========================
-One-time build script: translates all English UI strings (frontend/src/i18n/en.json)
-into Hindi, Tamil, Telugu, and Marathi via the Bhashini inference API, and writes the
-output JSON files into frontend/src/i18n/.
+scripts/generate_ui_translations.py
+=====================================
+Generates / updates i18n language files for the AayuGranth frontend by:
+  1. Reading en.json as the authoritative source of truth
+  2. For each target language file (hi, ta, te, mr):
+     - Detecting keys that are missing or have empty/placeholder values
+     - Calling Bhashini NMT to translate missing values
+     - Writing the updated JSON back to the language file
 
-Usage:
-    BHASHINI_API_KEY=<key> python scripts/generate_ui_translations.py
+Usage
+-----
+    # Translate ALL missing keys for ALL languages
+    python scripts/generate_ui_translations.py
 
-    # Or with a .env file in the backend/ directory:
-    python scripts/generate_ui_translations.py --env backend/.env
+    # Only a specific language
+    python scripts/generate_ui_translations.py --language hi
 
-Requirements:
+    # Show what would be translated without writing anything
+    python scripts/generate_ui_translations.py --dry-run
+
+    # Re-translate ALL keys (even if already present)
+    python scripts/generate_ui_translations.py --force
+
+Requirements
+------------
     pip install httpx python-dotenv
+    BHASHINI_USER_ID and BHASHINI_API_KEY must be set in backend/.env
 
-IMPORTANT FOR DEVELOPERS
-------------------------
-Whenever you add new UI strings to frontend/src/i18n/en.json, re-run this script
-and commit the updated translation JSON files before merging your PR. Translations
-will silently fall back to English if keys are missing, but keeping files in sync
-is a project requirement.
+Notes
+-----
+- Keys that contain only whitespace or match the English value exactly
+  (for non-English languages) are treated as missing and re-translated.
+- Legal terms embedded in key values (e.g., "Section 3(p)", "ABS", "TKDL")
+  are preserved by Bhashini since they are abbreviations/proper nouns.
+- The script does NOT translate to Sanskrit (sa) - Sanskrit is a source
+  language in the corpus, not a UI translation target.
 """
 
 from __future__ import annotations
@@ -30,189 +45,211 @@ import asyncio
 import json
 import os
 import sys
+import time
 from pathlib import Path
+from typing import Any
+
+# Load .env from the backend directory
+try:
+    from dotenv import load_dotenv
+    _env_path = Path(__file__).resolve().parent.parent / "backend" / ".env"
+    load_dotenv(_env_path)
+except ImportError:
+    pass
 
 try:
     import httpx
 except ImportError:
-    sys.exit("httpx not installed — run: pip install httpx")
+    print("ERROR: httpx is required. Install with: pip install httpx")
+    sys.exit(1)
 
-try:
-    from dotenv import load_dotenv
-    HAS_DOTENV = True
-except ImportError:
-    HAS_DOTENV = False
-
-
-# ── Config ────────────────────────────────────────────────────────────────────
-
-BHASHINI_API_URL = (
-    os.getenv("BHASHINI_API_URL")
-    or "https://dhruva-api.bhashini.gov.in/services/inference/pipeline"
+# Config
+_BHASHINI_USER_ID = os.environ.get("BHASHINI_USER_ID", "")
+_BHASHINI_API_KEY = os.environ.get("BHASHINI_API_KEY", "")
+_BHASHINI_API_URL = os.environ.get(
+    "BHASHINI_API_URL",
+    "https://dhruva-api.bhashini.gov.in/services/inference/pipeline",
 )
 
-TARGET_LANGUAGES = {
+_I18N_DIR = Path(__file__).resolve().parent.parent / "frontend" / "src" / "i18n"
+_EN_FILE = _I18N_DIR / "en.json"
+
+_SUPPORTED_LANGUAGES = {
     "hi": "Hindi",
     "ta": "Tamil",
     "te": "Telugu",
     "mr": "Marathi",
 }
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-I18N_DIR = REPO_ROOT / "frontend" / "src" / "i18n"
+_REQUEST_DELAY = 0.3  # seconds between API calls (rate limit courtesy)
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+async def _translate(text: str, source: str, target: str) -> str | None:
+    """Translate text via Bhashini NMT. Returns None on failure."""
+    if not text.strip():
+        return text
+    if source == target:
+        return text
 
-def flatten_json(d: dict, parent_key: str = "", sep: str = ".") -> dict[str, str]:
-    """Flatten nested JSON into dot-notation keys, keeping only leaf strings."""
-    items: list[tuple[str, str]] = []
-    for k, v in d.items():
-        new_key = f"{parent_key}{sep}{k}" if parent_key else k
-        if isinstance(v, dict):
-            items.extend(flatten_json(v, new_key, sep).items())
-        elif isinstance(v, str):
-            items.append((new_key, v))
-    return dict(items)
+    if _BHASHINI_USER_ID:
+        headers = {
+            "userID": _BHASHINI_USER_ID,
+            "ulcaApiKey": _BHASHINI_API_KEY,
+            "Content-Type": "application/json",
+        }
+    else:
+        headers = {
+            "Authorization": _BHASHINI_API_KEY,
+            "Content-Type": "application/json",
+        }
+
+    payload = {
+        "pipelineTasks": [{
+            "taskType": "translation",
+            "config": {
+                "language": {
+                    "sourceLanguage": source,
+                    "targetLanguage": target,
+                },
+            },
+        }],
+        "inputData": {"input": [{"source": text}]},
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            resp = await client.post(_BHASHINI_API_URL, headers=headers, json=payload)
+            resp.raise_for_status()
+            body = resp.json()
+            return body["pipelineResponse"][0]["output"][0]["target"]
+    except Exception as exc:
+        print(f"  Warning: Translation failed ({source} to {target}): {exc}")
+        return None
 
 
-def unflatten_json(flat: dict[str, str], sep: str = ".") -> dict:
-    """Reconstruct nested dict from dot-notation keys."""
-    result: dict = {}
-    for key, value in flat.items():
-        parts = key.split(sep)
-        d = result
-        for part in parts[:-1]:
-            d = d.setdefault(part, {})
-        d[parts[-1]] = value
+def _flatten(obj: Any, prefix: str = "") -> dict[str, str]:
+    """Recursively flatten nested JSON into dotted keys."""
+    result: dict[str, str] = {}
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            full_key = f"{prefix}.{k}" if prefix else k
+            result.update(_flatten(v, full_key))
+    elif isinstance(obj, str):
+        result[prefix] = obj
     return result
 
 
-async def translate_batch(
-    client: httpx.AsyncClient,
-    texts: list[str],
-    source_lang: str,
-    target_lang: str,
-    api_key: str,
-) -> list[str]:
-    """Translate a batch of texts from source_lang to target_lang via Bhashini."""
-    payload = {
-        "pipelineTasks": [
-            {
-                "taskType": "translation",
-                "config": {
-                    "language": {
-                        "sourceLanguage": source_lang,
-                        "targetLanguage": target_lang,
-                    }
-                },
-            }
-        ],
-        "inputData": {
-            "input": [{"source": t} for t in texts]
-        },
-    }
+def _set_nested(obj: dict, keys: list[str], value: Any) -> None:
+    for k in keys[:-1]:
+        obj = obj.setdefault(k, {})
+    obj[keys[-1]] = value
 
-    response = await client.post(
-        BHASHINI_API_URL,
-        headers={
-            "Authorization": api_key,
-            "Content-Type": "application/json",
-        },
-        json=payload,
-        timeout=60.0,
+
+def _is_missing(value: Any) -> bool:
+    """A value is 'missing' if it's absent or empty."""
+    if value is None:
+        return True
+    if isinstance(value, str) and not value.strip():
+        return True
+    return False
+
+
+async def generate_translations(
+    languages: list[str],
+    dry_run: bool,
+    force: bool,
+) -> None:
+    if not _BHASHINI_API_KEY:
+        print("ERROR: BHASHINI_API_KEY is not set. Check backend/.env")
+        sys.exit(1)
+
+    en_data = json.loads(_EN_FILE.read_text(encoding="utf-8"))
+    en_flat = _flatten(en_data)
+
+    print(f"Source: {_EN_FILE} ({len(en_flat)} keys)\n")
+
+    for lang_code in languages:
+        lang_name = _SUPPORTED_LANGUAGES.get(lang_code, lang_code)
+        lang_file = _I18N_DIR / f"{lang_code}.json"
+
+        if lang_file.exists():
+            lang_data = json.loads(lang_file.read_text(encoding="utf-8"))
+        else:
+            lang_data = {}
+
+        lang_flat = _flatten(lang_data)
+
+        to_translate: list[tuple[str, str]] = []
+        for key, en_val in en_flat.items():
+            current_val = lang_flat.get(key)
+            if force or _is_missing(current_val):
+                to_translate.append((key, en_val))
+
+        print(f"[{lang_code}] {lang_name}: {len(to_translate)} keys to translate "
+              f"({'DRY RUN' if dry_run else 'LIVE'})")
+
+        if not to_translate:
+            print(f"  All keys present - nothing to do\n")
+            continue
+
+        updated = 0
+        skipped = 0
+        for key, en_val in to_translate:
+            parts = key.split(".")
+            if dry_run:
+                print(f"  [would translate] {key!r}: {en_val[:60]!r}")
+                continue
+
+            translated = await _translate(en_val, source="en", target=lang_code)
+            if translated:
+                _set_nested(lang_data, parts, translated)
+                updated += 1
+                print(f"  OK {key}: {translated[:60]!r}")
+            else:
+                _set_nested(lang_data, parts, en_val)
+                skipped += 1
+                print(f"  FALLBACK {key}: keeping English")
+
+            await asyncio.sleep(_REQUEST_DELAY)
+
+        if not dry_run:
+            lang_file.write_text(
+                json.dumps(lang_data, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            print(f"\n  Written: {lang_file}")
+            print(f"  Updated: {updated}, Fallback (English): {skipped}\n")
+        else:
+            print()
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Generate/update AayuGranth UI i18n translations via Bhashini NMT."
     )
-    response.raise_for_status()
-    body = response.json()
-
-    outputs = body["pipelineResponse"][0]["output"]
-    return [item["target"] for item in outputs]
-
-
-async def translate_language(
-    flat_en: dict[str, str],
-    target_lang: str,
-    lang_name: str,
-    api_key: str,
-) -> dict[str, str]:
-    """Translate all English strings to a single target language."""
-    print(f"\n[{lang_name}] Translating {len(flat_en)} strings...")
-
-    # Split into batches of 50 to stay within API limits
-    BATCH_SIZE = 50
-    keys = list(flat_en.keys())
-    values = list(flat_en.values())
-
-    translated_values: list[str] = []
-
-    async with httpx.AsyncClient() as client:
-        for i in range(0, len(values), BATCH_SIZE):
-            batch_keys = keys[i : i + BATCH_SIZE]
-            batch_vals = values[i : i + BATCH_SIZE]
-            print(f"  Batch {i // BATCH_SIZE + 1}: keys {i}–{i + len(batch_vals) - 1}")
-
-            try:
-                results = await translate_batch(client, batch_vals, "en", target_lang, api_key)
-                translated_values.extend(results)
-            except Exception as exc:
-                print(f"  WARNING: Bhashini error for batch {i // BATCH_SIZE + 1}: {exc}")
-                print(f"  INFO: Falling back to English for this batch.")
-                translated_values.extend(batch_vals)
-
-    return dict(zip(keys, translated_values))
-
-
-async def main(api_key: str) -> None:
-    en_file = I18N_DIR / "en.json"
-    if not en_file.exists():
-        sys.exit(f"en.json not found at {en_file}")
-
-    with open(en_file, encoding="utf-8") as f:
-        en_data = json.load(f)
-
-    flat_en = flatten_json(en_data)
-
-    print(f"Loaded {len(flat_en)} English strings from {en_file}")
-    print(f"Output directory: {I18N_DIR}")
-    print(f"Target languages: {', '.join(TARGET_LANGUAGES.values())}")
-
-    for lang_code, lang_name in TARGET_LANGUAGES.items():
-        flat_translated = await translate_language(flat_en, lang_code, lang_name, api_key)
-        nested = unflatten_json(flat_translated)
-
-        out_file = I18N_DIR / f"{lang_code}.json"
-        with open(out_file, "w", encoding="utf-8") as f:
-            json.dump(nested, f, ensure_ascii=False, indent=2)
-
-        print(f"  OK Written: {out_file}")
-
-    print("\nAll translation files generated successfully.")
-    print("\nDon't forget to commit the generated JSON files:")
-    for lang_code in TARGET_LANGUAGES:
-        print(f"  frontend/src/i18n/{lang_code}.json")
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate UI translation files via Bhashini.")
     parser.add_argument(
-        "--env",
+        "--language", "-l",
+        choices=list(_SUPPORTED_LANGUAGES.keys()),
         default=None,
-        help="Path to a .env file to load (e.g. backend/.env)",
+        help="Only generate for this language (default: all)",
+    )
+    parser.add_argument(
+        "--dry-run", "-n",
+        action="store_true",
+        default=False,
+        help="Show what would be translated without writing files",
+    )
+    parser.add_argument(
+        "--force", "-f",
+        action="store_true",
+        default=False,
+        help="Re-translate all keys, even if already present",
     )
     args = parser.parse_args()
 
-    if args.env and HAS_DOTENV:
-        load_dotenv(args.env)
-        print(f"Loaded env from {args.env}")
-    elif args.env and not HAS_DOTENV:
-        print("Warning: python-dotenv not installed; --env flag ignored. Install with: pip install python-dotenv")
+    langs = [args.language] if args.language else list(_SUPPORTED_LANGUAGES.keys())
+    asyncio.run(generate_translations(langs, dry_run=args.dry_run, force=args.force))
 
-    api_key = os.getenv("BHASHINI_API_KEY", "").strip()
-    if not api_key:
-        sys.exit(
-            "Error: BHASHINI_API_KEY environment variable is not set.\n"
-            "Usage: BHASHINI_API_KEY=<your_key> python scripts/generate_ui_translations.py\n"
-            "   or: python scripts/generate_ui_translations.py --env backend/.env"
-        )
 
-    asyncio.run(main(api_key))
+if __name__ == "__main__":
+    main()

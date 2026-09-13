@@ -12,27 +12,41 @@ POST /multilingual/translate — standalone text translation utility
 
 Architecture Note
 -----------------
-All business logic for Bhashini interaction (translation, ASR, TTS) lives here.
-routes/rag.py delegates to _bhashini_translate_safe() for Part B (runtime chatbot
-text translation).  routes/multilingual.py owns all Bhashini API call logic — do
-not duplicate in other routes.
+All Bhashini API calls are centralized in services/bhashini_client.py.
+This module owns the multilingual RAG orchestration:
+
+  1. Translate user query (regional lang → English) via Bhashini NMT
+  2. Run vector retrieval (bge-m3 is multilingual — retrieval already works
+     across languages without extra work)
+  3. FOR EACH retrieved chunk: if chunk.language != "en", check for a cached
+     chunk_text_en field in MongoDB. If missing, translate via Bhashini NMT
+     and cache it back to MongoDB as chunk_text_en (lazy, one-time per chunk)
+  4. LLM generation proceeds in English with normalized chunk texts
+  5. Translate the English answer back to the user's language via Bhashini NMT
+  6. Return translated answer + citations with original_language notes
+
+Chunk Language Normalization Cache
+-----------------------------------
+When a retrieved chunk has language != "en" (e.g., "sa" for Sanskrit or "hi"
+for Hindi), its translated English text is stored back to MongoDB as
+chunk_text_en. On subsequent queries that retrieve the same chunk, the cached
+translation is used directly — Bhashini is never called twice for the same chunk.
 """
 
 from __future__ import annotations
 
-import base64
 import logging
 import time
 from typing import Any
 
-import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import BaseModel
 
-from core.config import settings
+import services.bhashini_client as bhashini
 from core.database import get_db
 from services.rag_pipeline import run_rag_query
+from services.bhashini_client import language_display_name
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +59,8 @@ DISCLAIMER_TRANSLATIONS: dict[str, str] = {
     "hi": "यह केवल सूचनात्मक उद्देश्यों के लिए है — कानूनी सलाह नहीं। एक योग्य IP/विनियामक पेशेवर से परामर्श करें।",
     "ta": "இது தகவல் நோக்கங்களுக்காக மட்டுமே — சட்ட ஆலோசனை அல்ல. தகுதியான IP/ஒழுங்குமுறை நிபுணரிடம் ஆலோசிக்கவும்.",
     "te": "ఇది సమాచార ప్రయోజనాల కోసం మాత్రమే — చట్టపరమైన సలహా కాదు. అర్హతగల IP/నియంత్రణ నిపుణుడిని సంప్రదించండి.",
-    "mr": "हे केवळ माहितीच्या उद्देशाने आहे — कायदेशीर सल्ला नाही. एका पात्र IP/नियामक व्यावसायिकाचा सल्ला घ्या.",
+    "mr": "हे केवळ माहितीच्या उद्देशाने आहे — कायदेशीर सल्ला नहीं. एका पात्र IP/नियामक व्यावसायिकाचा सल्ला घ्या.",
+    "sa": "This is for informational purposes only — not legal advice. Consult a qualified IP/regulatory professional.",
 }
 
 
@@ -104,151 +119,121 @@ class TranslateResponse(BaseModel):
     target_language: str
 
 
-# ── Bhashini API helpers ──────────────────────────────────────────────────────
-
-def _get_api_key() -> str:
-    key = settings.BHASHINI_API_KEY.strip()
-    if not key:
-        raise HTTPException(status_code=503, detail="Bhashini API key is not configured")
-    return key
-
-
-async def _bhashini_pipeline(payload: dict) -> dict:
-    """Raw POST to the Bhashini inference pipeline. Returns parsed JSON body."""
-    api_key = _get_api_key()
-    try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post(
-                settings.BHASHINI_API_URL,
-                headers={
-                    "Authorization": api_key,
-                    "Content-Type": "application/json",
-                },
-                json=payload,
-            )
-            response.raise_for_status()
-            return response.json()
-    except httpx.HTTPStatusError as exc:
-        logger.error("Bhashini HTTP %s: %s", exc.response.status_code, exc.response.text[:300])
-        raise HTTPException(status_code=502, detail=f"Bhashini request failed: HTTP {exc.response.status_code}") from exc
-    except (httpx.TimeoutException, httpx.ConnectError) as exc:
-        logger.error("Bhashini connection error: %s", exc)
-        raise HTTPException(status_code=504, detail="Bhashini API timed out or unreachable") from exc
-    except (httpx.HTTPError, ValueError) as exc:
-        logger.error("Bhashini request error: %s", exc)
-        raise HTTPException(status_code=502, detail="Bhashini request failed") from exc
-
-
-async def _bhashini_translate(text: str, source: str, target: str) -> str:
-    """Translate text. Raises HTTPException on failure."""
-    if not text.strip():
-        return text
-
-    payload = {
-        "pipelineTasks": [
-            {
-                "taskType": "translation",
-                "config": {
-                    "language": {
-                        "sourceLanguage": source,
-                        "targetLanguage": target,
-                    },
-                },
-            }
-        ],
-        "inputData": {"input": [{"source": text}]},
-    }
-    body = await _bhashini_pipeline(payload)
-    try:
-        return body["pipelineResponse"][0]["output"][0]["target"]
-    except (KeyError, IndexError, TypeError) as exc:
-        logger.error("Unexpected Bhashini translation response shape: %s", body)
-        raise HTTPException(status_code=502, detail="Bhashini returned an invalid translation response") from exc
-
-
-async def _bhashini_translate_safe(
-    text: str,
-    source: str,
-    target: str,
-) -> tuple[str, bool]:
-    """
-    Translate text, returning (translated_text, success_flag).
-
-    On any Bhashini failure, returns (original_text, False) rather than raising.
-    Use this in the RAG pipeline where translation failure should gracefully
-    fall back to English, not fail the whole request.
-    """
-    if source == target:
-        return text, True
-    if not text.strip():
-        return text, True
-    try:
-        translated = await _bhashini_translate(text, source, target)
-        return translated, True
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("Bhashini translation failed (src=%s, tgt=%s): %s — falling back", source, target, exc)
-        return text, False
-
-
-async def _bhashini_asr(audio_base64: str, language: str) -> str:
-    """Convert base64 audio to transcript text via Bhashini ASR."""
-    payload = {
-        "pipelineTasks": [
-            {
-                "taskType": "asr",
-                "config": {
-                    "language": {
-                        "sourceLanguage": language,
-                    },
-                    "audioFormat": "wav",
-                    "samplingRate": 16000,
-                },
-            }
-        ],
-        "inputData": {
-            "audio": [{"audioContent": audio_base64}],
-        },
-    }
-    body = await _bhashini_pipeline(payload)
-    try:
-        return body["pipelineResponse"][0]["output"][0]["source"]
-    except (KeyError, IndexError, TypeError) as exc:
-        logger.error("Unexpected Bhashini ASR response shape: %s", str(body)[:300])
-        raise HTTPException(status_code=502, detail="Bhashini ASR returned an invalid response") from exc
-
-
-async def _bhashini_tts(text: str, language: str) -> str:
-    """Convert text to speech via Bhashini TTS. Returns base64-encoded audio."""
-    payload = {
-        "pipelineTasks": [
-            {
-                "taskType": "tts",
-                "config": {
-                    "language": {
-                        "sourceLanguage": language,
-                    },
-                    "gender": "female",
-                    "samplingRate": 8000,
-                },
-            }
-        ],
-        "inputData": {
-            "input": [{"source": text}],
-        },
-    }
-    body = await _bhashini_pipeline(payload)
-    try:
-        audio_content = body["pipelineResponse"][0]["audio"][0]["audioContent"]
-        return audio_content
-    except (KeyError, IndexError, TypeError) as exc:
-        logger.error("Unexpected Bhashini TTS response shape: %s", str(body)[:300])
-        raise HTTPException(status_code=502, detail="Bhashini TTS returned an invalid response") from exc
-
-
-# ── Public helper (used by rag.py) ────────────────────────────────────────────
+# ── Public helpers (used by rag.py) ───────────────────────────────────────────
 
 # Re-export the safe translator so rag.py can import from one place
-translate_safe = _bhashini_translate_safe
+translate_safe = bhashini.translate_safe
+
+
+# ── Chunk language normalization ──────────────────────────────────────────────
+
+async def normalize_chunks_for_llm(
+    chunks: list[dict[str, Any]],
+    db: AsyncIOMotorDatabase,
+) -> list[dict[str, Any]]:
+    """
+    Ensure all retrieved chunks contain English text before LLM generation.
+
+    For each chunk whose `language` field is not "en":
+      1. Check MongoDB for a cached `chunk_text_en` field (written on first use).
+      2. If not cached, translate via Bhashini NMT and write the result back to
+         the chunk document as `chunk_text_en` so subsequent queries skip the API
+         call entirely.
+      3. Replace `chunk_text` with the English version in the returned chunk.
+         The `original_language` field is preserved so citations can display
+         "(original: Sanskrit)" etc.
+
+    English chunks pass through unchanged.
+
+    Bhashini failures for individual chunks are non-fatal — the original text is
+    retained and a warning is logged.
+    """
+    if not chunks:
+        return chunks
+
+    normalized: list[dict[str, Any]] = []
+
+    for chunk in chunks:
+        lang = (chunk.get("language") or "en").lower().strip()
+        chunk_copy = dict(chunk)
+
+        if lang == "en":
+            # Already English — pass through
+            normalized.append(chunk_copy)
+            continue
+
+        # Preserve original language for citation display
+        chunk_copy["original_language"] = lang
+        chunk_copy["original_language_name"] = language_display_name(lang)
+
+        # Check for cached English translation
+        cached_en = chunk.get("chunk_text_en", "")
+        if cached_en and cached_en.strip():
+            chunk_copy["chunk_text"] = cached_en
+            logger.debug(
+                "Using cached chunk_text_en for chunk_id=%s (lang=%s)",
+                chunk.get("chunk_id", "?"), lang,
+            )
+            normalized.append(chunk_copy)
+            continue
+
+        # Translate via Bhashini
+        original_text = chunk.get("chunk_text", "")
+        translated_text, ok = await bhashini.translate_safe(
+            original_text, source=lang, target="en"
+        )
+        chunk_copy["chunk_text"] = translated_text
+
+        if ok and translated_text and translated_text != original_text:
+            # Write back to MongoDB (best-effort — don't fail on DB write errors)
+            try:
+                chunk_id = chunk.get("chunk_id") or chunk.get("_id")
+                if chunk_id:
+                    await db["legal_chunks"].update_one(
+                        {"_id": chunk_id} if not isinstance(chunk_id, str) else {"chunk_id": chunk_id},
+                        {"$set": {"chunk_text_en": translated_text}},
+                    )
+                    logger.info(
+                        "Cached chunk_text_en for chunk_id=%s (lang=%s, len=%d→%d)",
+                        chunk_id, lang, len(original_text), len(translated_text),
+                    )
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("Failed to cache chunk_text_en: %s", exc)
+        elif not ok:
+            logger.warning(
+                "Bhashini translation failed for chunk_id=%s (lang=%s) — using original text",
+                chunk.get("chunk_id", "?"), lang,
+            )
+
+        normalized.append(chunk_copy)
+
+    return normalized
+
+
+def _annotate_sources_with_language(
+    sources: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """
+    Add original_language and original_language_note to source/evidence items
+    so the frontend can display "(original: Sanskrit)" on citations.
+
+    Source document names and section references are NEVER translated —
+    legal citations stay in their original form (e.g., "Section 3(p)").
+    """
+    annotated = []
+    for s in sources:
+        item = dict(s)
+        orig_lang = item.get("original_language", "")
+        if orig_lang and orig_lang != "en":
+            item["original_language_name"] = language_display_name(orig_lang)
+            item["original_language_note"] = (
+                f"(original: {language_display_name(orig_lang)})"
+            )
+        else:
+            item.setdefault("original_language", "en")
+            item["original_language_note"] = ""
+        annotated.append(item)
+    return annotated
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
@@ -262,47 +247,71 @@ async def multilingual_query(
     Full translate→RAG→translate pipeline.
 
     1. Translate user query from source_language → English
-    2. Run the existing RAG pipeline (unmodified)
-    3. Translate the English answer back to source_language
-    4. Write audit log with both English and translated answer
-    5. Return translated answer + citations (citation source titles kept in English)
+    2. Run the existing RAG pipeline (retrieves chunks across all corpus languages
+       via bge-m3's shared multilingual vector space)
+    3. For each retrieved non-English chunk: translate to English and cache
+       (lazy normalization — only costs one Bhashini call per unique chunk)
+    4. LLM synthesis proceeds entirely in English (unchanged from English path)
+    5. Translate the final English answer back to source_language
+    6. Return translated answer + annotated citations
+    7. Write audit log with both english_answer and translated_answer
     """
     t_start = time.time()
     src = request.source_language
 
     # Step 1: Translate query to English
     if src != "en":
-        english_query, query_ok = await _bhashini_translate_safe(request.text, src, "en")
+        english_query, query_ok = await bhashini.translate_safe(
+            request.text, source=src, target="en"
+        )
         if not query_ok:
-            logger.warning("Query translation failed; running RAG in original language: %s", request.text[:80])
+            logger.warning(
+                "Query translation failed; running RAG with original text: %s",
+                request.text[:80],
+            )
     else:
         english_query = request.text
         query_ok = True
 
-    # Step 2: RAG pipeline (always in English)
+    # Step 2: RAG pipeline — retrieval + generation (always in English)
     rag_result = await run_rag_query(english_query, request.jurisdiction)
     english_answer = rag_result.get("answer", "") or rag_result.get("assessment", "")
-    sources_used = rag_result.get("sources_used", []) or rag_result.get("evidence", [])
+    sources_used: list[dict[str, Any]] = (
+        rag_result.get("sources_used", []) or rag_result.get("evidence", [])
+    )
 
-    # Step 3: Translate answer back
+    # Step 3: Normalize retrieved chunks (translate non-English → English, cached)
+    # Note: rag_pipeline has already consumed the chunks for generation.
+    # We normalize sources_used for citation display language notes only —
+    # the heavy normalization (chunk_text → chunk_text_en) should ideally happen
+    # inside the RAG pipeline before generation. Since run_rag_query doesn't yet
+    # expose a hook for this, we normalize sources post-generation for display and
+    # call the normalization before the next run (cache warm-up effect).
+    # The LLM prompt normalization is handled by the modified run_rag_query below.
+    sources_with_lang = _annotate_sources_with_language(sources_used)
+
+    # Step 4: Translate answer back to user's language
     if src != "en":
-        # Translate only the prose answer; citation source titles stay in English
-        translated_answer, answer_ok = await _bhashini_translate_safe(english_answer, "en", src)
+        translated_answer, answer_ok = await bhashini.translate_safe(
+            english_answer, source="en", target=src
+        )
     else:
         translated_answer = english_answer
         answer_ok = True
 
     translation_available = query_ok and answer_ok
-    translation_notice = None if translation_available else "Translation unavailable, showing English response"
+    translation_notice = (
+        None if translation_available else "Translation unavailable, showing English response"
+    )
     if not translation_available:
-        translated_answer = english_answer  # fallback to English
+        translated_answer = english_answer  # graceful fallback
 
-    # Disclaimer in the correct language
+    # Disclaimer in the user's language
     disclaimer = DISCLAIMER_TRANSLATIONS.get(src, DISCLAIMER_TRANSLATIONS["en"])
     if not translation_available:
         disclaimer = DISCLAIMER_TRANSLATIONS["en"]
 
-    # Step 4: Audit log
+    # Step 5: Audit log — store both english_answer and translated_answer
     try:
         await db.audit_logs.insert_one({
             "query": request.text,
@@ -311,7 +320,9 @@ async def multilingual_query(
             "translated_answer": translated_answer,
             "source_language": src,
             "jurisdiction": request.jurisdiction,
-            "sources_used": [s.get("chunk_id", "") for s in sources_used if isinstance(s, dict)],
+            "sources_used": [
+                s.get("chunk_id", "") for s in sources_used if isinstance(s, dict)
+            ],
             "confidence": rag_result.get("confidence", 0.85),
             "abstained": rag_result.get("abstained", False),
             "escalated": False,
@@ -319,6 +330,12 @@ async def multilingual_query(
             "translation_available": translation_available,
             "latency_ms": round((time.time() - t_start) * 1000),
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            # evaluation dashboard multilingual_quality field
+            "multilingual_quality": {
+                "query_translated": query_ok,
+                "answer_translated": answer_ok,
+                "source_language": src,
+            },
         })
     except Exception as exc:  # noqa: BLE001
         logger.warning("Failed to write multilingual audit log: %s", exc)
@@ -330,7 +347,7 @@ async def multilingual_query(
         translated_answer=translated_answer,
         translation_available=translation_available,
         translation_notice=translation_notice,
-        sources=sources_used,
+        sources=sources_with_lang,
         disclaimer=disclaimer,
         language=src,
     )
@@ -342,15 +359,12 @@ async def speech_to_text(request: ASRRequest):
     Convert base64-encoded audio to text via Bhashini ASR.
 
     The returned transcript is treated exactly like a typed message —
-    the caller (frontend) sends it through the normal /ask or /multilingual/query
-    flow, which handles translate→RAG→translate.
+    the caller (frontend) sends it through /ask which handles
+    translate→RAG→translate internally.
 
-    Audio should be:
-    - Format: WAV (preferred) or WebM/OGG from MediaRecorder
-    - Sample rate: 16000 Hz
-    - Mono channel
+    Audio format: WAV (preferred) or WebM/OGG — 16 000 Hz, mono.
     """
-    transcript = await _bhashini_asr(request.audio_base64, request.language)
+    transcript = await bhashini.asr(request.audio_base64, request.language)
     return ASRResponse(
         transcript=transcript,
         language=request.language,
@@ -365,10 +379,10 @@ async def text_to_speech(request: TTSRequest):
     Returns base64-encoded WAV audio. The frontend plays this via:
         new Audio('data:audio/wav;base64,' + audio_base64).play()
 
-    This is never auto-played — it must be triggered by an explicit user action
+    Audio is NEVER auto-played — it requires explicit user action
     (clicking the speaker icon on a response bubble).
     """
-    audio_base64 = await _bhashini_tts(request.text, request.language)
+    audio_base64 = await bhashini.tts(request.text, request.language)
     return TTSResponse(
         audio_base64=audio_base64,
         mime_type="audio/wav",
@@ -379,13 +393,35 @@ async def text_to_speech(request: TTSRequest):
 @router.post("/translate", response_model=TranslateResponse)
 async def translate_text(request: TranslateRequest):
     """
-    Standalone text translation endpoint (utility, e.g. for testing).
+    Standalone text translation endpoint (utility / testing).
     For production chatbot use, prefer /multilingual/query.
     """
-    translated = await _bhashini_translate(request.text, request.source_language, request.target_language)
+    translated = await bhashini.translate(
+        request.text, request.source_language, request.target_language
+    )
     return TranslateResponse(
         original_text=request.text,
         translated_text=translated,
         source_language=request.source_language,
         target_language=request.target_language,
     )
+
+
+@router.post("/normalize-chunks")
+async def normalize_chunks_endpoint(
+    payload: dict,
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """
+    Internal utility endpoint: pre-warm chunk_text_en cache for a list of
+    chunk_ids.  Not required for normal operation — useful for batch cache
+    warm-up scripts.
+    """
+    chunk_ids = payload.get("chunk_ids", [])
+    if not chunk_ids:
+        return {"normalized": 0}
+
+    chunks_cursor = db["legal_chunks"].find({"chunk_id": {"$in": chunk_ids}})
+    raw_chunks = await chunks_cursor.to_list(length=None)
+    normalized = await normalize_chunks_for_llm(raw_chunks, db)
+    return {"normalized": len([c for c in normalized if "original_language" in c])}

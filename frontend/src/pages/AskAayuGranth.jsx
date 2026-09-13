@@ -466,28 +466,57 @@ export default function AskAayuGranth() {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         audioChunksRef.current = [];
 
-        // Convert to base64
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-          const base64Audio = reader.result.split(',')[1];
-          setIsTranscribing(true);
-          try {
-            const result = await multilingualApi.asr({ audio_base64: base64Audio, language });
-            const transcript = result?.transcript || '';
-            if (transcript.trim()) {
-              setInput(transcript);
-              if (textareaRef.current) {
-                textareaRef.current.focus();
-                resizeComposer(textareaRef.current);
+        setIsTranscribing(true);
+        try {
+          // Convert WebM blob to ArrayBuffer
+          const arrayBuffer = await audioBlob.arrayBuffer();
+          // Decode audio data using an AudioContext
+          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+          
+          // Re-encode to 16kHz mono WAV PCM for Bhashini ASR
+          const wavBlob = await audioBufferToWav(audioBuffer, 16000);
+          
+          const reader = new FileReader();
+          reader.onloadend = async () => {
+            const base64Audio = reader.result.split(',')[1];
+            try {
+              const result = await multilingualApi.asr({ audio_base64: base64Audio, language });
+              const transcript = result?.transcript || '';
+              if (transcript.trim()) {
+                setInput(transcript);
+                if (textareaRef.current) {
+                  textareaRef.current.focus();
+                  resizeComposer(textareaRef.current);
+                }
+                // Auto-submit after successful transcription
+                setTimeout(() => handleSubmit(null, transcript), 100);
+              } else {
+                console.warn('ASR returned empty transcript');
+                setMessages((prev) => [
+                  ...prev,
+                  { id: `err-${Date.now()}`, role: 'assistant', content: t('chat.asrEmpty', 'Could not hear any words clearly. Please try speaking again.'), isError: true, timestamp: formatTimestamp() }
+                ]);
               }
+            } catch (err) {
+              console.error('ASR error:', err);
+              setMessages((prev) => [
+                ...prev,
+                { id: `err-${Date.now()}`, role: 'assistant', content: t('chat.asrError', 'Voice transcription failed. Please try again or type your message.'), isError: true, timestamp: formatTimestamp() }
+              ]);
+            } finally {
+              setIsTranscribing(false);
             }
-          } catch (err) {
-            console.error('ASR error:', err);
-          } finally {
-            setIsTranscribing(false);
-          }
-        };
-        reader.readAsDataURL(audioBlob);
+          };
+          reader.readAsDataURL(wavBlob);
+        } catch (err) {
+          console.error('Audio processing error:', err);
+          setMessages((prev) => [
+            ...prev,
+            { id: `err-${Date.now()}`, role: 'assistant', content: t('chat.audioError', 'Could not process the audio recording. Please try again.'), isError: true, timestamp: formatTimestamp() }
+          ]);
+          setIsTranscribing(false);
+        }
       };
 
       mediaRecorder.start(250); // collect chunks every 250ms
@@ -641,7 +670,7 @@ export default function AskAayuGranth() {
                         </div>
                         <span className="font-mono text-[10.5px] opacity-60">{t('chat.verifiedAssistant')}</span>
                       </div>
-                      <p className="text-sm sm:text-[15px] leading-relaxed">{msg.content}</p>
+                      <p className="text-sm sm:text-[15px] leading-relaxed">{getInitialGreeting()}</p>
                       <div className="pt-2.5 border-t border-inherit/30 flex items-center justify-between text-[11px] font-mono opacity-70">
                         <span>{t('chat.disclaimer')}</span>
                         <span>{msg.timestamp}</span>
@@ -1028,15 +1057,43 @@ export default function AskAayuGranth() {
             </button>
           </form>
 
-          {/* Recording progress bar / Visualizer */}
+          {/* Waveform Visualizer — animated bars that scale with real microphone volume */}
           {isRecording && (
             <div className="px-2">
-              <div className="h-1 bg-[#176B45]/10 rounded-full overflow-hidden flex items-center">
-                <div
-                  className="h-full bg-red-500 rounded-full transition-all duration-75 ease-out"
-                  style={{ width: `${Math.min(100, (volume / 255) * 100 * 3 + 5)}%` }}
-                />
+              <div className="flex items-center justify-center gap-[3px] h-8 py-1">
+                {[0.4, 0.65, 0.9, 1.0, 0.9, 0.65, 0.4, 0.3].map((scale, i) => {
+                  const barHeight = Math.max(
+                    4,
+                    Math.min(28, (volume / 255) * 28 * scale + 4)
+                  );
+                  return (
+                    <div
+                      key={i}
+                      className="w-[3px] rounded-full bg-red-500 transition-all duration-75 ease-out"
+                      style={{
+                        height: `${barHeight}px`,
+                        opacity: 0.7 + (volume / 255) * 0.3,
+                      }}
+                    />
+                  );
+                })}
+                <span className="ml-3 text-[10px] font-mono text-red-500 font-semibold animate-pulse">
+                  {t('chat.recording')}
+                </span>
               </div>
+            </div>
+          )}
+
+          {/* Transcribing + Processing state below the input box */}
+          {isTranscribing && (
+            <div className={cn(
+              'flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-mono',
+              isDarkMode
+                ? 'bg-[#14201A] border-[#176B45]/40 text-emerald-300'
+                : 'bg-[#176B45]/8 border-[#176B45]/25 text-[#176B45]'
+            )}>
+              <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+              <span className="animate-pulse">{t('chat.transcribing')}</span>
             </div>
           )}
 
@@ -1049,4 +1106,53 @@ export default function AskAayuGranth() {
       </footer>
     </div>
   );
+}
+
+// ── Web Audio Helper: convert decoded AudioBuffer to WAV blob ───────────────
+function audioBufferToWav(buffer, targetSampleRate = 16000) {
+  return new Promise((resolve) => {
+    const offlineCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(
+      1,
+      buffer.duration * targetSampleRate,
+      targetSampleRate
+    );
+    const source = offlineCtx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(offlineCtx.destination);
+    source.start();
+    
+    offlineCtx.startRendering().then((renderedBuffer) => {
+      const channelData = renderedBuffer.getChannelData(0);
+      const dataLength = channelData.length * 2;
+      const arrayBuffer = new ArrayBuffer(44 + dataLength);
+      const view = new DataView(arrayBuffer);
+
+      const writeString = (view, offset, string) => {
+        for (let i = 0; i < string.length; i++) {
+          view.setUint8(offset + i, string.charCodeAt(i));
+        }
+      };
+
+      writeString(view, 0, 'RIFF');
+      view.setUint32(4, 36 + dataLength, true);
+      writeString(view, 8, 'WAVE');
+      writeString(view, 12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true); // PCM format
+      view.setUint16(22, 1, true); // Mono channel
+      view.setUint32(24, targetSampleRate, true);
+      view.setUint32(28, targetSampleRate * 2, true); // Byte rate
+      view.setUint16(32, 2, true); // Block align
+      view.setUint16(34, 16, true); // Bits per sample
+      writeString(view, 36, 'data');
+      view.setUint32(40, dataLength, true);
+
+      let offset = 44;
+      for (let i = 0; i < channelData.length; i++, offset += 2) {
+        let s = Math.max(-1, Math.min(1, channelData[i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      }
+      resolve(new Blob([view], { type: 'audio/wav' }));
+    });
+  });
 }
