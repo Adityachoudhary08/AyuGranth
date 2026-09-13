@@ -33,6 +33,7 @@ import TrademarkPage from './pages/ip/TrademarkPage.jsx';
 import GITagPage from './pages/ip/GITagPage.jsx';
 import ABSPage from './pages/compliance/ABSPage.jsx';
 import IPIntelligenceLanding from './pages/ip/workspace/IPIntelligenceLanding.jsx';
+import PatentIntelligence from './pages/ip/workspace/PatentIntelligence.jsx';
 import PatentabilityTool from './pages/ip/workspace/PatentabilityTool.jsx';
 import PriorArtRadar from './pages/ip/workspace/PriorArtRadar.jsx';
 import NoveltySandbox from './pages/ip/workspace/NoveltySandbox.jsx';
@@ -106,9 +107,10 @@ export default function Router() {
           <Route path="/patent-passport-legacy" element={<P><ProductPassport /></P>} />
 
           {/* IP & Compliance tools */}
-          <Route path="/patentability" element={<P><PatentabilityTool /></P>} />
+          <Route path="/patent-intelligence" element={<Navigate to="/ip-intelligence/patent-intelligence" replace />} />
+          <Route path="/patentability" element={<Navigate to="/ip-intelligence/patent-intelligence" replace />} />
           <Route path="/traditional-knowledge" element={<P><TKPriorArt /></P>} />
-          <Route path="/prior-art" element={<P><PriorArtRadar /></P>} />
+          <Route path="/prior-art" element={<Navigate to="/ip-intelligence/patent-intelligence" replace />} />
           <Route path="/abs" element={<P><ABSPage /></P>} />
           <Route path="/regulatory" element={<P><PlaceholderPage title="Regulatory Intelligence" /></P>} />
           <Route path="/international" element={<P><InternationalLanding /></P>} />
@@ -117,8 +119,9 @@ export default function Router() {
 
           {/* IP Intelligence Workspace */}
           <Route path="/ip-intelligence" element={<P><IPIntelligenceLanding /></P>} />
-          <Route path="/ip-intelligence/patentability" element={<P><PatentabilityTool /></P>} />
-          <Route path="/ip-intelligence/prior-art" element={<P><PriorArtRadar /></P>} />
+          <Route path="/ip-intelligence/patent-intelligence" element={<P><PatentIntelligence /></P>} />
+          <Route path="/ip-intelligence/patentability" element={<Navigate to="/ip-intelligence/patent-intelligence" replace />} />
+          <Route path="/ip-intelligence/prior-art" element={<Navigate to="/ip-intelligence/patent-intelligence" replace />} />
           <Route path="/ip-intelligence/novelty" element={<P><NoveltySandbox /></P>} />
           <Route path="/ip-intelligence/tk" element={<P><TKPriorArt /></P>} />
 

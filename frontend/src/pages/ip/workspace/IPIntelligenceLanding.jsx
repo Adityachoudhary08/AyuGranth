@@ -17,20 +17,12 @@ import Navbar from '../../../components/Navbar';
 export default function IPIntelligenceLanding() {
   const coreTools = [
     {
-      id: 'patentability',
-      title: 'Patentability',
-      description: 'Assess whether your formulation may be patentable under Sections 3(p) and 3(d).',
+      id: 'patent-intelligence',
+      title: 'Patent Intelligence',
+      description: 'Search prior art, compare invention features, and evaluate preliminary patentability in one unified workflow.',
       icon: ShieldCheck,
-      href: '/ip-intelligence/patentability',
+      href: '/ip-intelligence/patent-intelligence',
       color: 'bg-emerald-50 text-emerald-700',
-    },
-    {
-      id: 'prior-art',
-      title: 'Prior-Art Radar',
-      description: 'Find semantically similar patents and existing formulations to assess novelty risks.',
-      icon: Search,
-      href: '/ip-intelligence/prior-art',
-      color: 'bg-blue-50 text-blue-700',
     },
     {
       id: 'novelty',
@@ -75,7 +67,7 @@ export default function IPIntelligenceLanding() {
             Understand your product's <br className="hidden md:block"/> IP landscape.
           </h1>
           <p className="text-[#161412]/60 max-w-2xl text-lg leading-relaxed">
-            Use AI-powered patentability assessment, prior-art search, novelty analysis, 
+            Use AI-powered patent intelligence, prior-art search, novelty analysis, 
             and traditional-knowledge screening to understand the IP position of your Ayurvedic formulation.
           </p>
         </div>
@@ -84,7 +76,7 @@ export default function IPIntelligenceLanding() {
         <div className="mb-20">
           <div className="mb-8 border-b border-[#161412]/10 pb-4">
             <h2 className="text-2xl font-serif text-[#161412] mb-2">Core IP Intelligence</h2>
-            <p className="text-sm text-[#161412]/60">Four AI-powered tools for evaluating novelty, patentability and existing knowledge.</p>
+            <p className="text-sm text-[#161412]/60">Three AI-powered tools for evaluating novelty, patentability, and existing knowledge.</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

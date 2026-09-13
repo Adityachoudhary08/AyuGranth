@@ -61,10 +61,36 @@ def similarity_to_relevance(score: float) -> str:
 # ── Vector-search wrapper ────────────────────────────────────────────────
 
 
+STOPWORDS = {
+    "what", "when", "where", "which", "with", "from", "that", "this", "these", "those",
+    "have", "been", "about", "under", "does", "will", "would", "could", "should",
+    "and", "the", "for", "are", "comprising", "comprises", "comprise", "prepared",
+    "using", "formulation", "formulated", "composition", "extract", "extracts",
+    "improved", "such", "into", "than", "also", "each", "other", "more"
+}
+
+BOTANICAL_SYNONYMS: dict[str, list[str]] = {
+    "ashwagandha": ["withania", "somnifera"],
+    "turmeric": ["curcuma", "longa", "curcumin"],
+    "neem": ["azadirachta", "indica"],
+    "tulsi": ["ocimum", "sanctum"],
+    "boswellia": ["shallaki", "serrata"],
+    "guggul": ["commiphora", "mukul"],
+    "guggulu": ["commiphora", "mukul"],
+    "ginger": ["zingiber", "officinale"],
+    "brahmi": ["bacopa", "monnieri"],
+    "amla": ["emblica", "officinalis", "phyllanthus"],
+    "haritaki": ["terminalia", "chebula"],
+    "bibhitaki": ["terminalia", "bellerica"],
+    "triphala": ["haritaki", "bibhitaki", "amalaki"],
+}
+
+
 async def search_similar_chunks(
     description: str,
     *,
     source_type_filter: str | None = None,
+    domain_filter: str | None = None,
     top_k: int = 10,
     embedding_timeout_s: float = 6.0,
     log_prefix: str = "[RETRIEVAL]",
@@ -84,7 +110,9 @@ async def search_similar_chunks(
         Free-text formulation / ingredient description to compare.
     source_type_filter : str, optional
         If provided, restricts results to this ``source_type``
-        (e.g. ``"classical_text"`` for TK checks).
+        (e.g. ``"classical_tk"`` for TK checks).
+    domain_filter : str, optional
+        Domain to prioritize (e.g. ``"patent"`` for prior art searches).
     top_k : int
         Maximum number of results.
     embedding_timeout_s : float
@@ -111,10 +139,19 @@ async def search_similar_chunks(
         query_vector = None
 
     raw_chunks = []
-    
-    # Extract salient keywords from query (min length 3, excluding stopwords)
-    stopwords = {"what", "when", "where", "which", "with", "from", "that", "this", "these", "those", "have", "been", "about", "under", "does", "will", "would", "could", "should"}
-    words = [w for w in re.findall(r'[a-zA-Z0-9_-]+', description.lower()) if len(w) >= 3 and w not in stopwords]
+    is_patent_domain = (domain_filter == "patent" or source_type_filter in {"patent", "prior_art"})
+
+    # Extract substantive keywords from query (min length 3, excluding stopwords)
+    words = [w for w in re.findall(r'[a-zA-Z0-9_-]+', description.lower()) if len(w) >= 3 and w not in STOPWORDS]
+    words = list(dict.fromkeys(words))
+
+    # Expand with known botanical synonyms to match Latin binomials in patent documents
+    expanded_words = list(words)
+    for w in words:
+        if w in BOTANICAL_SYNONYMS:
+            for syn in BOTANICAL_SYNONYMS[w]:
+                if syn not in expanded_words:
+                    expanded_words.append(syn)
     
     # 2. Try Atlas $vectorSearch if vector is available
     if query_vector:
@@ -137,12 +174,13 @@ async def search_similar_chunks(
                     "section": 1,
                     "jurisdiction": 1,
                     "source_type": 1,
+                    "topic_folder": 1,
                     "score": {"$meta": "vectorSearchScore"},
                 }
             },
         ]
 
-        if source_type_filter:
+        if source_type_filter and source_type_filter not in {"patent", "prior_art"}:
             pipeline[0]["$vectorSearch"]["filter"] = {
                 "source_type": source_type_filter,
             }
@@ -162,11 +200,20 @@ async def search_similar_chunks(
         logger.info("%s retrieval_mode=keyword (vector empty or failed)", log_prefix)
         try:
             query_conditions = []
-            if source_type_filter:
+            if source_type_filter and source_type_filter not in {"patent", "prior_art"}:
                 query_conditions.append({"source_type": source_type_filter})
-                
-            if words:
-                keyword_pattern = "|".join(words[:8])
+
+            if is_patent_domain:
+                query_conditions.append({
+                    "$or": [
+                        {"law_type": "Patent Decisions and Prior Art"},
+                        {"topic_folder": "Patent Decisions and Prior Art"},
+                        {"source_document": {"$regex": "patent|prior art", "$options": "i"}},
+                    ]
+                })
+
+            if expanded_words:
+                keyword_pattern = "|".join(expanded_words[:12])
                 query_conditions.append({
                     "$or": [
                         {"chunk_text": {"$regex": keyword_pattern, "$options": "i"}},
@@ -176,23 +223,34 @@ async def search_similar_chunks(
                         {"topic_folder": {"$regex": keyword_pattern, "$options": "i"}}
                     ]
                 })
-                
+
             filter_query = {"$and": query_conditions} if query_conditions else {}
-            
+
             cand_cursor = db.legal_chunks.find(
                 filter_query,
-                {"chunk_text": 1, "source_document": 1, "law_type": 1, "section": 1, "jurisdiction": 1, "source_type": 1, "embedding": 1}
+                {"chunk_text": 1, "source_document": 1, "law_type": 1, "section": 1, "jurisdiction": 1, "source_type": 1, "topic_folder": 1, "embedding": 1}
             ).limit(120)
             candidates = await cand_cursor.to_list(length=120)
-            
-            # If no keyword matches, fetch a diverse sample of statutory chunks for embedding comparison
+
+            # If no keyword matches, fetch a domain-appropriate sample
             if not candidates and query_vector:
+                fallback_filter = (
+                    {
+                        "$or": [
+                            {"law_type": "Patent Decisions and Prior Art"},
+                            {"topic_folder": "Patent Decisions and Prior Art"},
+                            {"source_document": {"$regex": "patent", "$options": "i"}},
+                        ]
+                    }
+                    if is_patent_domain
+                    else ({"source_type": source_type_filter} if source_type_filter else {})
+                )
                 cand_cursor = db.legal_chunks.find(
-                    {},
-                    {"chunk_text": 1, "source_document": 1, "law_type": 1, "section": 1, "jurisdiction": 1, "source_type": 1, "embedding": 1}
+                    fallback_filter,
+                    {"chunk_text": 1, "source_document": 1, "law_type": 1, "section": 1, "jurisdiction": 1, "source_type": 1, "topic_folder": 1, "embedding": 1}
                 ).limit(100)
                 candidates = await cand_cursor.to_list(length=100)
-            
+
             if candidates and query_vector:
                 valid_cands = [c for c in candidates if c.get("embedding") and len(c.get("embedding", [])) == len(query_vector)]
                 if valid_cands:
@@ -210,7 +268,7 @@ async def search_similar_chunks(
     # Atlas vector filters depend on the configured index definition. Enforce
     # the domain boundary again in application code so a TK query can never
     # leak ABS, regulatory, or other evidence types into its result set.
-    if source_type_filter:
+    if source_type_filter and source_type_filter not in {"patent", "prior_art"}:
         before_filter = len(raw_chunks)
         raw_chunks = [
             chunk for chunk in raw_chunks
@@ -226,18 +284,18 @@ async def search_similar_chunks(
     # Deduplicate and format results
     seen_keys = set()
     results: list[dict[str, Any]] = []
-    
+
     for chunk in raw_chunks:
         cid = str(chunk.get("_id", ""))
         doc = chunk.get("source_document", "")
         sec = chunk.get("section") or ""
         txt = chunk.get("chunk_text", "")
         dedup_key = f"{doc}::{sec}::{txt[:60]}"
-        
+
         if dedup_key in seen_keys:
             continue
         seen_keys.add(dedup_key)
-        
+
         # NEVER fabricate similarity scores - use true computed score
         sim_score = float(chunk.get("score", 0.0))
         results.append(
@@ -249,6 +307,7 @@ async def search_similar_chunks(
                 "section": sec if sec else None,
                 "jurisdiction": chunk.get("jurisdiction", "India"),
                 "source_type": chunk.get("source_type", "statute"),
+                "topic_folder": chunk.get("topic_folder", ""),
                 # ── Genuine scores & labels ───────
                 "semantic_similarity": round(sim_score, 4),
                 "prior_art_relevance": similarity_to_relevance(sim_score),
