@@ -78,10 +78,10 @@ export default function IntelligenceOverview({
 
                 <div className="mb-2">
                   <span className={cn("inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider border mb-2", c.badgeBg)}>
-                    {c.status}
+                    {t(c.status, c.status)}
                   </span>
                   <p className="text-xs text-[#161412]/80 leading-relaxed line-clamp-3">
-                    {c.summary}
+                    {t(c.summary, c.summary)}
                   </p>
                 </div>
               </div>

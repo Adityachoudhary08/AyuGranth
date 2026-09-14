@@ -40,16 +40,16 @@ export default function IPSection({
       <div className="bg-[#FAF6EC] border border-[#d8cbb7] rounded-xl p-5">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
           <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8C6D46]">{t("ipsection.pATENTABILITYSIGNAL", "PATENTABILITY SIGNAL")}</span>
-          <span className="px-2.5 py-0.5 rounded font-mono text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">{t("ipsection.confidence", "Confidence:")}{confidence}
+          <span className="px-2.5 py-0.5 rounded font-mono text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">{t("ipsection.confidence", "Confidence:")}{t(confidence, confidence)}
           </span>
         </div>
 
         <h4 className="font-serif text-base sm:text-lg font-bold text-[#161412] leading-snug mb-2">
-          {posture}
+          {t(posture, posture)}
         </h4>
 
         <p className="text-xs sm:text-sm text-[#161412]/80 leading-relaxed">
-          {reasoning}
+          {t(reasoning, reasoning)}
         </p>
       </div>
 
@@ -59,7 +59,7 @@ export default function IPSection({
         <div className="space-y-2">
           {risks.map((risk, idx) => <div key={idx} className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50/50 border border-amber-200/60 text-xs">
               <ShieldAlert className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-              <span className="text-[#161412]/90 leading-relaxed font-medium">{risk}</span>
+              <span className="text-[#161412]/90 leading-relaxed font-medium">{t(risk, risk)}</span>
             </div>)}
         </div>
       </div>
@@ -68,7 +68,7 @@ export default function IPSection({
       <div className="p-4 rounded-xl bg-[#FAF8F3] border border-[#161412]/10 text-xs">
         <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8C6D46] block mb-1">{t("ipsection.trademarkClass5Branding", "Trademark & Class 5 Branding Bounds")}</span>
         <p className="text-[#161412]/80 leading-relaxed">
-          {trademarkConsiderations}
+          {t(trademarkConsiderations, trademarkConsiderations)}
         </p>
       </div>
 

@@ -50,14 +50,14 @@ export default function BiodiversitySection({
           </div>
 
           <p className="text-[#161412]/85 leading-relaxed">
-            {absSummary}
+            {t(absSummary, absSummary)}
           </p>
 
           {absObligations.length > 0 && <div className="border-t border-[#161412]/10 pt-2.5 space-y-1.5">
               <span className="text-[9.5px] font-mono uppercase tracking-wider text-[#161412]/50 font-semibold block">{t("biodiversitysection.statutoryObligations", "Statutory Obligations:")}</span>
               {absObligations.map((ob, idx) => <div key={idx} className="flex items-start gap-2">
                   <span className="text-emerald-700 font-bold">•</span>
-                  <span className="text-[#161412]/90 leading-snug">{ob}</span>
+                  <span className="text-[#161412]/90 leading-snug">{t(ob, ob)}</span>
                 </div>)}
             </div>}
         </div>
@@ -67,12 +67,12 @@ export default function BiodiversitySection({
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#176B45]">{t("biodiversitysection.traditionalKnowledgeOverlap", "Traditional Knowledge Overlap")}</span>
             <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-[#176B45]/10 text-[#176B45] border border-[#176B45]/20">
-              {tkOverlapStatus}
+              {t(tkOverlapStatus, tkOverlapStatus)}
             </span>
           </div>
 
           <p className="text-[#161412]/85 leading-relaxed">
-            {tkSummary}
+            {t(tkSummary, tkSummary)}
           </p>
 
           <div className="border-t border-[#161412]/10 pt-2.5">
@@ -80,7 +80,7 @@ export default function BiodiversitySection({
             <ul className="space-y-1 text-[#161412]/90 font-serif">
               {classicalReferences.map((ref, idx) => <li key={idx} className="flex items-center gap-2">
                   <BookOpen className="w-3.5 h-3.5 text-[#8C6D46] shrink-0" />
-                  <span>{ref}</span>
+                  <span>{t(ref, ref)}</span>
                 </li>)}
             </ul>
           </div>

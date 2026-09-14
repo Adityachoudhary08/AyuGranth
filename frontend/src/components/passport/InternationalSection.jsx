@@ -42,33 +42,33 @@ export default function InternationalSection({
         <div>
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#8C6D46] font-bold block mb-1">{t("internationalsection.tRADECORRIDOR", "TRADE CORRIDOR")}</span>
           <div className="font-serif text-lg sm:text-xl font-bold text-[#161412] flex items-center gap-2">
-            <span>{origin}</span>
+            <span>{t(origin, origin)}</span>
             <span className="text-[#176B45]">→</span>
-            <span className="text-[#176B45]">{targetCountry}</span>
+            <span className="text-[#176B45]">{t(targetCountry, targetCountry)}</span>
           </div>
         </div>
 
         <div className="sm:text-right">
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#161412]/50 block mb-1">{t("internationalsection.destinationStatus", "Destination Status")}</span>
           <span className="inline-block px-3 py-1 bg-amber-100 text-amber-900 border border-amber-300 rounded font-mono text-[11px] font-bold uppercase tracking-wider">
-            {status}
+            {t(status, status)}
           </span>
         </div>
       </div>
 
       {/* Summary Narrative */}
       <p className="text-xs sm:text-sm text-[#161412]/80 leading-relaxed">
-        {summary}
+        {t(summary, summary)}
       </p>
 
       {/* Requirements Checklist */}
       <div>
-        <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#161412]/80 mb-3">{t("internationalsection.destinationMarketRequirements", "Destination Market Requirements (")}{targetCountry})
+        <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#161412]/80 mb-3">{t("internationalsection.destinationMarketRequirements", "Destination Market Requirements (")}{t(targetCountry, targetCountry)})
         </h4>
         <div className="space-y-2">
           {requirements.map((req, idx) => <div key={idx} className="flex items-start gap-2.5 p-3 rounded-xl bg-[#FAF8F3]/80 border border-[#161412]/10 text-xs">
               <CheckCircle2 className="w-4 h-4 text-[#176B45] shrink-0 mt-0.5" />
-              <span className="text-[#161412]/90 leading-relaxed font-medium">{req}</span>
+              <span className="text-[#161412]/90 leading-relaxed font-medium">{t(req, req)}</span>
             </div>)}
         </div>
       </div>
@@ -79,7 +79,7 @@ export default function InternationalSection({
           <ul className="space-y-1 text-amber-950">
             {missingInfo.map((item, idx) => <li key={idx} className="flex items-start gap-2">
                 <span className="text-amber-700 font-bold">!</span>
-                <span>{item}</span>
+                <span>{t(item, item)}</span>
               </li>)}
           </ul>
         </div>}

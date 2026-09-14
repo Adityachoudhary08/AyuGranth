@@ -103,7 +103,7 @@ export default function ProductPassportCard({
                 {productName.toUpperCase()}
               </h2>
               <p className="font-serif italic text-xs sm:text-sm text-[#161412]/70 mt-0.5">
-                {productCategory}
+                {t(productCategory, productCategory)}
               </p>
             </div>
 
@@ -120,7 +120,7 @@ export default function ProductPassportCard({
                 <span className="text-[9px] font-mono uppercase tracking-wider text-[#161412]/50 block mb-0.5">{t("productpassportcard.jURISDICTION", "JURISDICTION")}</span>
                 <span className="font-medium text-xs sm:text-sm text-[#176B45] flex items-center gap-1">
                   <Globe className="w-3.5 h-3.5 shrink-0" />
-                  <span>{originJurisdiction} → {targetMarket}</span>
+                  <span>{t(originJurisdiction, originJurisdiction)} → {t(targetMarket, targetMarket)}</span>
                 </span>
               </div>
             </div>
@@ -145,7 +145,7 @@ export default function ProductPassportCard({
             <span className={cn("inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-mono text-[10.5px] font-bold uppercase tracking-wider border", statusInfo.bg)}>
               <span className={cn("w-1.5 h-1.5 rounded-full", statusInfo.dot)} />
               <StatusIcon className="w-3.5 h-3.5" />
-              <span>{statusInfo.label}</span>
+              <span>{t(statusInfo.label, statusInfo.label)}</span>
             </span>
           </div>
 

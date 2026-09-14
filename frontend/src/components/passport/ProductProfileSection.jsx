@@ -8,12 +8,12 @@ export default function ProductProfileSection({
   const {
     t
   } = useTranslation();
-  const notAvailable = 'Not available in current analysis';
+  const notAvailable = t("productprofilesection.notAvailable", "Not available in current analysis");
   const name = product.name || notAvailable;
   const category = product.category || notAvailable;
   const dosage = product.dosageForm || product.dosage_form || notAvailable;
   const ingredients = Array.isArray(product.ingredients) && product.ingredients.length > 0 ? product.ingredients.join(', ') : product.ingredients || notAvailable;
-  const botanicalNames = Array.isArray(product.botanicalNames) && product.botanicalNames.length > 0 ? product.botanicalNames.join(', ') : product.botanicalNames || 'Taxonomical identification pending';
+  const botanicalNames = Array.isArray(product.botanicalNames) && product.botanicalNames.length > 0 ? product.botanicalNames.join(', ') : product.botanicalNames || t("productprofilesection.taxonomicalIdentificationPending", "Taxonomical identification pending");
   const origin = product.ingredientOrigin || product.countryOfOrigin || product.source_region || notAvailable;
   const intendedUse = product.intendedUse || product.intended_use || notAvailable;
   const manufacturing = product.manufacturingMethod || product.manufacturing_process || notAvailable;
@@ -41,7 +41,7 @@ export default function ProductProfileSection({
         <div>
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#8C6D46] block mb-1">{t("productprofilesection.categoryClassification", "Category / Classification")}</span>
           <span className="font-medium text-[#161412] block">
-            {category}
+            {t(category, category)}
           </span>
         </div>
 
@@ -49,7 +49,7 @@ export default function ProductProfileSection({
         <div>
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#8C6D46] block mb-1">{t("productprofilesection.dosageForm", "Dosage Form")}</span>
           <span className="font-medium text-[#161412] block">
-            {dosage}
+            {t(dosage, dosage)}
           </span>
         </div>
 
@@ -57,7 +57,7 @@ export default function ProductProfileSection({
         <div>
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#8C6D46] block mb-1">{t("productprofilesection.originSourcingRegion", "Origin / Sourcing Region")}</span>
           <span className="font-medium text-[#161412] block">
-            {origin}
+            {t(origin, origin)}
           </span>
         </div>
 
@@ -65,7 +65,7 @@ export default function ProductProfileSection({
         <div className="sm:col-span-2">
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#8C6D46] block mb-1">{t("productprofilesection.keyIngredients", "Key Ingredients")}</span>
           <p className="font-medium text-[#161412] leading-relaxed">
-            {ingredients}
+            {t(ingredients, ingredients)}
           </p>
         </div>
 
@@ -81,7 +81,7 @@ export default function ProductProfileSection({
         <div className="sm:col-span-2">
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#8C6D46] block mb-1">{t("productprofilesection.manufacturingMethod", "Manufacturing Method")}</span>
           <p className="font-medium text-[#161412] leading-relaxed">
-            {manufacturing}
+            {t(manufacturing, manufacturing)}
           </p>
         </div>
 
@@ -97,7 +97,7 @@ export default function ProductProfileSection({
         <div className="sm:col-span-2">
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#8C6D46] block mb-1">{t("productprofilesection.intendedUse", "Intended Use")}</span>
           <p className="font-medium text-[#161412] leading-relaxed">
-            {intendedUse}
+            {t(intendedUse, intendedUse)}
           </p>
         </div>
 
@@ -105,7 +105,7 @@ export default function ProductProfileSection({
         <div className="sm:col-span-2">
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#8C6D46] block mb-1">{t("productprofilesection.targetMarket", "Target Market")}</span>
           <span className="font-medium text-[#176B45]">
-            {targetMarket}
+            {t(targetMarket, targetMarket)}
           </span>
         </div>
       </div>

@@ -42,16 +42,16 @@ export default function RegulatorySection({
         <div className="bg-[#FAF8F3] border border-[#161412]/10 rounded-xl p-4">
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#8C6D46] block mb-1">{t("regulatorysection.statutoryClassification", "Statutory Classification")}</span>
           <span className="font-serif text-base font-bold text-[#161412] block">
-            {classification}
+            {t(classification, classification)}
           </span>
-          <span className="text-[11px] text-[#161412]/60 block mt-1">{t("regulatorysection.jurisdiction", "Jurisdiction:")}{jurisdiction}
+          <span className="text-[11px] text-[#161412]/60 block mt-1">{t("regulatorysection.jurisdiction", "Jurisdiction:")}{t(jurisdiction, jurisdiction)}
           </span>
         </div>
 
         <div className="bg-[#FAF8F3] border border-[#161412]/10 rounded-xl p-4">
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#176B45] block mb-1">{t("regulatorysection.primaryRegulatoryPathway", "Primary Regulatory Pathway")}</span>
           <span className="font-serif text-base font-bold text-[#176B45] block">
-            {pathway}
+            {t(pathway, pathway)}
           </span>
           <span className="text-[11px] text-[#161412]/60 block mt-1">{t("regulatorysection.governingAuthorityStateAYUSH", "Governing Authority: State AYUSH Licensing Authority / CDSCO")}</span>
         </div>
@@ -63,7 +63,7 @@ export default function RegulatorySection({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           {requirements.map((req, idx) => <div key={idx} className="flex items-start gap-2.5 p-3 rounded-xl bg-[#FAF8F3]/70 border border-[#161412]/10 text-xs">
               <CheckCircle2 className="w-4 h-4 text-[#176B45] shrink-0 mt-0.5" />
-              <span className="text-[#161412]/90 leading-relaxed">{req}</span>
+              <span className="text-[#161412]/90 leading-relaxed">{t(req, req)}</span>
             </div>)}
         </div>
       </div>
@@ -73,7 +73,7 @@ export default function RegulatorySection({
         <div className="p-4 rounded-xl border border-[#8C6D46]/25 bg-[#8C6D46]/5">
           <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8C6D46] block mb-1">{t("regulatorysection.healthClaimsConsideration", "Health Claims Consideration")}</span>
           <p className="text-[#161412] leading-relaxed">
-            {claimsConsideration}
+            {t(claimsConsideration, claimsConsideration)}
           </p>
         </div>
 
@@ -82,7 +82,7 @@ export default function RegulatorySection({
           <ul className="space-y-1 text-amber-950">
             {openIssues.map((issue, idx) => <li key={idx} className="flex items-start gap-1.5">
                 <span className="font-bold text-amber-700">•</span>
-                <span>{issue}</span>
+                <span>{t(issue, issue)}</span>
               </li>)}
           </ul>
         </div>
