@@ -42,6 +42,8 @@ class SimilarityResult(BaseModel):
     section: str | None = None
     semantic_similarity: float
     prior_art_relevance: str  # "High" / "Moderate" / "Low"
+    source_type_label: str | None = None
+    relevant_chunk_count: int | None = None
 
 
 class PriorArtResponse(BaseModel):
@@ -105,6 +107,8 @@ class PriorArtComparison(BaseModel):
     excerpt: str
     comparisons: list[FeatureComparisonItem] = []
     overall_overlap_summary: str
+    source_type_label: str | None = None
+    relevant_chunk_count: int | None = None
 
 
 class NoveltyAssessment(BaseModel):
@@ -155,6 +159,8 @@ class PriorArtEvidence(BaseModel):
     excerpt: str
     why_it_matters: str
     url: str | None = None
+    source_type_label: str | None = None
+    relevant_chunk_count: int | None = None
 
 
 class PatentabilityResponse(BaseModel):
@@ -201,7 +207,7 @@ class PatentabilityResponse(BaseModel):
 _STOPWORDS_GENUS = {
     "The", "This", "That", "These", "Those", "An", "A", "Said", "Such",
     "Each", "All", "When", "If", "In", "On", "At", "By", "For", "With",
-    "Under", "From", "Both", "Either", "Neither"
+    "Under", "From", "Both", "Either", "Neither", "Ayurvedic", "Novel"
 }
 
 _STOPWORDS_EPITHET = {
@@ -226,6 +232,48 @@ _KNOWN_BOTANICALS_VERBATIM = [
 ]
 
 
+_NEGATED_FEATURE_CONTEXT = re.compile(
+    r"\b(?:does\s+not\s+(?:specify|contain|use|include)|not\s+using|without(?:\s+any)?|free\s+of|no)\b",
+    re.IGNORECASE,
+)
+
+
+def _is_negated_feature_match(text: str, match: re.Match[str]) -> bool:
+    """Return True when a feature is explicitly absent in its sentence/clause."""
+    clause_start = max(
+        text.rfind(".", 0, match.start()),
+        text.rfind(";", 0, match.start()),
+        text.rfind("\n", 0, match.start()),
+    ) + 1
+    return bool(_NEGATED_FEATURE_CONTEXT.search(text[clause_start:match.start()]))
+
+
+def _first_positive_match(pattern: str, text: str) -> re.Match[str] | None:
+    """Find the first feature occurrence that is not explicitly negated."""
+    return next(
+        (match for match in re.finditer(pattern, text, re.IGNORECASE) if not _is_negated_feature_match(text, match)),
+        None,
+    )
+
+
+def _patentability_search_description(text: str) -> str:
+    """Exclude explicitly negated botanical names from the retrieval query."""
+    negated_spans = [
+        match.span()
+        for match in re.finditer(
+            r"\b[A-Z][a-z]+\s+[a-z]+(?:\s+(?:var\.|subsp\.)\s+[a-z]+)?\b",
+            text,
+        )
+        if _is_negated_feature_match(text, match)
+    ]
+    if not negated_spans:
+        return text
+    query = text
+    for start, end in reversed(negated_spans):
+        query = query[:start] + query[end:]
+    return query
+
+
 def parse_invention_features(text: str, category: str | None = None) -> InventionFeatures:
     """
     Parses user-provided formulation text strictly preserving verbatim terminology.
@@ -239,6 +287,8 @@ def parse_invention_features(text: str, category: str | None = None) -> Inventio
 
     # 1. Pattern A: Genus species (Common Name)
     for m in re.finditer(r"\b([A-Z][a-z]+ [a-z]+)\s*\(([^)]+)\)", text):
+        if _is_negated_feature_match(text, m):
+            continue
         binomial = m.group(1).strip()
         common = m.group(2).strip()
         parts = binomial.split()
@@ -248,6 +298,8 @@ def parse_invention_features(text: str, category: str | None = None) -> Inventio
 
     # 2. Pattern B: Common Name (Genus species) -> canonical: Genus species (Common Name)
     for m in re.finditer(r"\b([A-Za-z]+)\s*\(([A-Z][a-z]+ [a-z]+)\)", text):
+        if _is_negated_feature_match(text, m):
+            continue
         common = m.group(1).strip()
         binomial = m.group(2).strip()
         parts = binomial.split()
@@ -259,6 +311,8 @@ def parse_invention_features(text: str, category: str | None = None) -> Inventio
 
     # 3. Binomials not already consumed in parenthetical combos
     for m in re.finditer(r"\b([A-Z][a-z]+ [a-z]+(?:\s+(?:var\.|subsp\.)\s+[a-z]+)?)\b", text):
+        if _is_negated_feature_match(text, m):
+            continue
         if any(m.start() >= s[0] and m.end() <= s[1] for s in consumed_spans):
             continue
         cand = m.group(1).strip()
@@ -273,6 +327,8 @@ def parse_invention_features(text: str, category: str | None = None) -> Inventio
     for herb in _KNOWN_BOTANICALS_VERBATIM:
         pattern = r"\b" + re.escape(herb) + r"\b"
         for m in re.finditer(pattern, text, re.IGNORECASE):
+            if _is_negated_feature_match(text, m):
+                continue
             if any(m.start() >= s[0] and m.end() <= s[1] for s in consumed_spans):
                 continue
             cand = m.group(0)
@@ -281,59 +337,70 @@ def parse_invention_features(text: str, category: str | None = None) -> Inventio
                 consumed_spans.append(m.span())
 
     # 5. Extract Plant Parts
-    part_matches = re.findall(
-        r"\b(rhizome|rhizomes|resin|resins|gum|gum resin|root|roots|bark|barks|leaves|leaf|seed|seeds|fruit|fruits|flower|flowers|aerial parts|stem|stems|wood|exudate|bulb|bulbs|tuber|tubers|whole plant)\b",
-        text,
-        re.IGNORECASE,
-    )
-    plant_parts = list(dict.fromkeys(p.lower() for p in part_matches))
+    part_pattern = r"\b(rhizome|rhizomes|resin|resins|gum|gum resin|root|roots|bark|barks|leaves|leaf|seed|seeds|fruit|fruits|flower|flowers|aerial parts|stem|stems|wood|exudate|bulb|bulbs|tuber|tubers|whole plant)\b"
+    plant_parts = list(dict.fromkeys(
+        match.group(1).lower()
+        for match in re.finditer(part_pattern, text, re.IGNORECASE)
+        if not _is_negated_feature_match(text, match)
+    ))
 
     # 6. Extract Ratios and Quantitative Specifications
-    ratio_matches = re.findall(
-        r"\b(\d+(?:\.\d+)?\s*:\s*\d+(?:\.\d+)?(?:\s*:\s*\d+(?:\.\d+)?)?(?:\s*(?:weight\s+ratio|w/w|v/v|ratio))?|\d+(?:\.\d+)?%\s*(?:w/w|v/v|wt/wt)?|\d+(?:\.\d+)?%\s+[a-zA-Z0-9\-]+)\b",
-        text,
-        re.IGNORECASE,
+    ratio_pattern = (
+        r"\b(\d+(?:\.\d+)?\s*:\s*\d+(?:\.\d+)?(?:\s*:\s*\d+(?:\.\d+)?)?(?:\s*(?:weight\s+ratio|w/w|v/v|ratio))?|"
+        r"\d+(?:\.\d+)?%\s*(?:w/w|v/v|wt/wt))\b"
     )
-    ratios = list(dict.fromkeys(r.strip() for r in ratio_matches))
+    ratios = list(dict.fromkeys(
+        match.group(1).strip()
+        for match in re.finditer(ratio_pattern, text, re.IGNORECASE)
+        if not _is_negated_feature_match(text, match)
+    ))
 
     # 7. Extract Extraction Methods & Solvents
-    ext_matches = re.findall(
+    extraction_pattern = (
         r"\b(\d+%\s+[a-zA-Z0-9\-]+(?:\s+[a-zA-Z0-9\-]+)?\s+extraction|"
         r"[a-zA-Z0-9\-]+(?:\s+[a-zA-Z0-9\-]+)?\s+extraction|"
-        r"\b(?:standardized\s+|standardised\s+)?(?:aqueous|hydro-alcoholic|hydroalcoholic|alcoholic|ethanolic|methanolic|supercritical(?:\s+co2)?|subcritical|solvent|maceration|soxhlet|decoction)\s+extract(?:ion)?)\b",
-        text,
-        re.IGNORECASE,
+        r"\b(?:standardized\s+|standardised\s+)?(?:aqueous|hydro-alcoholic|hydroalcoholic|alcoholic|ethanolic|methanolic|supercritical(?:\s+co2)?|subcritical|solvent|maceration|soxhlet|decoction)\s+extract(?:ion)?)\b"
     )
     extraction_methods = list(
         dict.fromkeys(
-            e.strip() for e in ext_matches if e.strip() and e.strip().lower() != "extract"
+            match.group(1).strip()
+            for match in re.finditer(extraction_pattern, text, re.IGNORECASE)
+            if not _is_negated_feature_match(text, match)
+            and match.group(1).strip().lower() != "extract"
         )
     )
 
-    solvents: list[str] = []
-    solvent_match = re.search(
-        r"\b(\d+%\s+(?:ethanol-water|hydro-alcoholic|hydroalcoholic|ethanol|methanol|alcohol|acetone|aqueous))\b",
-        text,
-        re.IGNORECASE,
-    )
-    if solvent_match:
-        solvents.append(solvent_match.group(1).strip())
+    solvent_pattern = r"\b(\d+%\s+(?:ethanol-water|hydro-alcoholic|hydroalcoholic|ethanol|methanol|alcohol|acetone|aqueous))\b"
+    solvents = list(dict.fromkeys(
+        match.group(1).strip()
+        for match in re.finditer(solvent_pattern, text, re.IGNORECASE)
+        if not _is_negated_feature_match(text, match)
+    ))
 
     # 8. Extract Delivery System (specialized carriers only)
-    delivery_match = re.search(
+    delivery_match = _first_positive_match(
         r"\b([a-zA-Z0-9\-]+(?:-based)?\s+(?:topical\s+|oral\s+|transdermal\s+)?[a-zA-Z0-9\-]*\s*(?:delivery system|carrier system|carrier|vesicular system|nanocarrier|emulsion system|lipid system|liposomal system))\b",
         text,
-        re.IGNORECASE,
     )
     delivery_system = delivery_match.group(0).strip() if delivery_match else None
+    if not delivery_system:
+        carrier_match = _first_positive_match(
+            r"\b(nanoemulsion(?:\s+encapsulation)?|nanoparticle(?:\s+encapsulation)?|"
+            r"liposom(?:al|e)(?:\s+encapsulation)?|niosom(?:al|e)(?:\s+encapsulation)?)\b",
+            text,
+        )
+        delivery_system = carrier_match.group(0).strip() if carrier_match else None
 
     # 9. Extract Particle Size
-    psize_match = re.search(
-        r"\b((?:approximately\s+|approx\.\s+|around\s+|~\s*)?\d+(?:\.\d+)?\s*(?:nm|µm|um|microns|micrometers|nanometers))\b",
+    psize_match = _first_positive_match(
+        r"(?<![A-Za-z0-9])(?:"
+        r"(\d+(?:\.\d+)?\s*(?:[-–—]|\bto\b)\s*\d+(?:\.\d+)?\s*(?:nm|µm|um|microns|micrometers|nanometers))"
+        r"|((?:(?:below|under|less\s+than|above|over|greater\s+than|at\s+least|at\s+most|up\s+to)\s+|"
+        r"(?:<=|>=|≤|≥|<|>)\s*)?\d+(?:\.\d+)?\s*(?:nm|µm|um|microns|micrometers|nanometers))"
+        r")\b",
         text,
-        re.IGNORECASE,
     )
-    particle_size = psize_match.group(0).strip() if psize_match else None
+    particle_size = next((group.strip() for group in psize_match.groups() if group), None) if psize_match else None
 
     # 10. Extract Intended Use / Indication
     use_match = re.search(
@@ -351,16 +418,28 @@ def parse_invention_features(text: str, category: str | None = None) -> Inventio
     )
     dosage_application = app_match.group(0).strip() if app_match else None
 
-    # 12. Extract Formulation Type / Format (e.g., carbomer-based topical gel, cream, etc.)
+    # 12. Extract Formulation Type / Format (e.g., Ayurvedic oral formulation).
+    # Dosage forms remain formulation data and never enter ``ingredients``.
     form_match = re.search(
-        r"\b([a-zA-Z0-9\-]+(?:-based)?\s+(?:topical|oral|transdermal|injectable|parenteral)?\s*(?:herbal|botanical|phytochemical|polyherbal|ayurvedic)?\s*(?:gel|cream|ointment|lotion|serum|paste|matrix|tablet|capsule|syrup|decoction|oil|formulation|composition|preparation))\b",
+        r"\b((?:ayurvedic\s+)?(?:topical\s+|oral\s+|transdermal\s+|injectable\s+|parenteral\s+)?"
+        r"(?:herbal\s+|botanical\s+|phytochemical\s+|polyherbal\s+)?"
+        r"(?:gel|cream|ointment|lotion|serum|paste|matrix|tablet|capsule|syrup|decoction|oil|formulation|composition|preparation))\b",
         text,
         re.IGNORECASE,
     )
     formulation_type = form_match.group(0).strip() if form_match else None
+    dosage_form_match = re.search(
+        r"\b(orally\s+disintegrating\s+tablet|disintegrating\s+tablet|tablet|capsule|gel|cream|ointment|lotion|serum|syrup)\b",
+        text,
+        re.IGNORECASE,
+    )
 
     # 13. Extract pH or other technical parameters
     other_tech: list[str] = []
+    if dosage_form_match and dosage_form_match.group(0).strip().lower() not in {
+        (formulation_type or "").lower()
+    }:
+        other_tech.append(f"Dosage form: {dosage_form_match.group(0).strip()}")
     ph_match = re.search(
         r"\b(pH\s*(?:of\s*)?\d+(?:\.\d+)?(?:\s*[-–—to]\s*\d+(?:\.\d+)?)?)\b",
         text,
@@ -394,6 +473,11 @@ def parse_invention_features(text: str, category: str | None = None) -> Inventio
 
 
 # ── Feature Comparison Generator ──────────────────────────────────────────
+
+
+def _comparison_evidence_excerpt(chunk: dict[str, Any]) -> str:
+    """Return the exact evidence scope rendered above a feature comparison."""
+    return str(chunk.get("chunk_text", ""))[:320].strip()
 
 
 def _compare_features_to_chunk(
@@ -468,14 +552,19 @@ def _compare_features_to_chunk(
         )
 
     # 4. Extraction Method / Solvent
-    if features.extraction_methods:
-        user_ext_str = ", ".join(features.extraction_methods)
-        matched_ext = [e for e in features.extraction_methods if e.lower() in text]
+    if features.extraction_methods or features.solvents:
+        required_extraction_features = [*features.extraction_methods, *features.solvents]
+        user_ext_str = ", ".join(required_extraction_features)
+        matched_ext = [item for item in required_extraction_features if item.lower() in text]
         has_generic_ext = "extraction" in text or "extract" in text
-        if matched_ext:
+        if len(matched_ext) == len(required_extraction_features):
             status = "exact"
             discl = ", ".join(matched_ext)
-            notes = "Discloses matching extraction methodology."
+            notes = "Discloses the supplied extraction method and solvent parameters."
+        elif matched_ext:
+            status = "partial"
+            discl = ", ".join(matched_ext)
+            notes = "Discloses only part of the supplied extraction method or solvent parameters."
         elif has_generic_ext:
             status = "partial"
             discl = "Discloses extraction in general without claimed parameters"
@@ -524,16 +613,16 @@ def _compare_features_to_chunk(
     # 6. Particle Size
     if features.particle_size:
         user_psize = features.particle_size
-        has_exact = bool(re.search(r"\b150\s*nm\b", text))
+        has_exact = user_psize.lower() in text
         has_nano = "nm" in text or "nano" in text
         if has_exact:
             status = "exact"
-            discl = "Discloses ~150 nm particle size"
+            discl = user_psize
             notes = "Discloses matching particle size."
         elif has_nano:
             status = "partial"
             discl = "Discloses nanoscale range generally"
-            notes = "Discloses nanoparticle formulation without 150 nm specification."
+            notes = "Discloses nanoscale material without the supplied particle-size constraint."
         else:
             status = "not_found"
             discl = "Not disclosed"
@@ -594,6 +683,7 @@ def _compare_features_to_chunk(
 def build_ip_map(
     max_similarity: float,
     overall_relevance: str,
+    section_3d_triggered: bool = False,
     category: str | None = None,
     region_specific: bool = False,
     unique_packaging: bool = False,
@@ -622,18 +712,25 @@ def build_ip_map(
             "note": "Significant semantic similarity to indexed prior art detected; requires detailed novelty analysis.",
         })
     elif overall_relevance == "Moderate":
+        moderate_note = (
+            "Further evaluation should focus on inventive step and Section 3(e) mere-admixture considerations. "
+            "Section 3(d) is not clearly triggered based on the supplied features."
+            if not section_3d_triggered
+            else "Further evaluation should focus on inventive step and Section 3(e) mere-admixture considerations; "
+            "comparative efficacy evidence may be relevant if Section 3(d) applies to the claimed delivery feature."
+        )
         ip_map.append({
             "regime": "Patent",
             "status": "potentially eligible with evidence",
             "color": "yellow",
-            "note": "Moderate overlap — requires experimental proof of unexpected synergy (Section 3(e)) and efficacy (Section 3(d)).",
+            "note": moderate_note,
         })
     else:
         ip_map.append({
             "regime": "Patent",
             "status": "further clearance required",
             "color": "green",
-            "note": "Low similarity in local corpus — comprehensive search across InPASS, WIPO, and TKDL needed before filing.",
+            "note": "Low similarity in the indexed corpus — additional verification against relevant Indian and international patent databases and the CSIR-TKDL database is recommended.",
         })
 
     # 2. Trademark
@@ -682,12 +779,70 @@ def _is_prior_art_source(chunk: dict[str, Any]) -> bool:
     """Return True only for records explicitly identifiable as patent prior art."""
     source_type = str(chunk.get("source_type", "")).lower()
     document = str(chunk.get("source_document", "")).lower()
+    law_type = str(chunk.get("law_type", "")).lower()
+    topic_folder = str(chunk.get("topic_folder", "")).lower()
     publication_number = str(chunk.get("publication_number", "")).strip()
     return (
         source_type in {"patent", "patent_document", "prior_art", "ipr"}
         or bool(publication_number)
         or "patent" in document
         or "prior art" in document
+        or "patent" in law_type
+        or "prior art" in law_type
+        or "patent" in topic_folder
+        or "prior art" in topic_folder
+    )
+
+
+def _source_type_label(chunk: dict[str, Any]) -> str:
+    """Return a presentation-safe source label without changing stored metadata."""
+    if _is_prior_art_source(chunk):
+        return "Patent / Prior Art"
+
+    source_type = str(chunk.get("source_type", "")).lower()
+    law_type = str(chunk.get("law_type", "")).lower()
+    topic_folder = str(chunk.get("topic_folder", "")).lower()
+    source_context = " ".join((source_type, law_type, topic_folder))
+    if any(marker in source_context for marker in ("traditional", "classical", "tk")):
+        return "Traditional Knowledge"
+    if any(marker in source_context for marker in ("regulatory", "guidance", "guideline")):
+        return "Regulatory Guidance"
+    return "Statute"
+
+
+def _document_key(chunk: dict[str, Any]) -> str:
+    """Produce a stable document-level grouping key for presentation only."""
+    publication_number = str(chunk.get("publication_number", "")).strip()
+    if publication_number:
+        return f"publication:{publication_number.casefold()}"
+    document_id = str(chunk.get("document_id", "")).strip()
+    if document_id:
+        return f"document:{document_id.casefold()}"
+    document = str(chunk.get("source_document", "")).strip()
+    return f"source:{document.casefold()}"
+
+
+def _deduplicate_prior_art_documents(chunks: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Keep the highest-scoring chunk per source while retaining its chunk count.
+
+    Retrieval stays chunk-level; only patentability presentation and assessment
+    consume this document-level view.
+    """
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for chunk in chunks:
+        grouped.setdefault(_document_key(chunk), []).append(chunk)
+
+    documents: list[dict[str, Any]] = []
+    for group in grouped.values():
+        strongest = max(group, key=lambda item: float(item.get("semantic_similarity", 0.0)))
+        document = dict(strongest)
+        document["relevant_chunk_count"] = len(group)
+        document["source_type_label"] = _source_type_label(document)
+        documents.append(document)
+    return sorted(
+        documents,
+        key=lambda item: float(item.get("semantic_similarity", 0.0)),
+        reverse=True,
     )
 
 
@@ -700,12 +855,16 @@ def _check_sec3d_trigger(text: str, features: InventionFeatures) -> bool:
       - altered bioavailability enhancement claims
     Routine formulation formats (carbomer gel, cream, ointment, pH, standard extraction) do NOT trigger Section 3(d).
     """
-    raw = text.lower()
-    has_nano = bool(re.search(r"\b(nano|nanoparticle|nanocrystal|nanoscale|liposom|niosom|dendrimer|vesic)\b", raw))
-    has_deriv = bool(re.search(r"\b(polymorph|crystalline form|salt of|derivative of|ester of|ether of|enantiomer|pure form)\b", raw))
-    has_bioavail_claim = "bioavailability enhancement" in raw or "enhanced therapeutic efficacy" in raw
+    has_nano = bool(_first_positive_match(r"\b(?:nano\w*|liposom\w*|niosom\w*|dendrimer|vesic\w*)\b", text))
+    has_deriv = bool(_first_positive_match(r"\b(polymorph|crystalline form|salt of|derivative of|ester of|ether of|enantiomer|pure form)\b", text))
+    has_bioavail_claim = bool(_first_positive_match(r"\b(bioavailability enhancement|enhanced therapeutic efficacy)\b", text))
     has_psize = bool(features.particle_size and "nm" in features.particle_size.lower())
     return has_nano or has_deriv or has_bioavail_claim or has_psize
+
+
+def _summary_extraction_phrase(method: str) -> str:
+    """Remove a leading connective that is redundant after 'prepared using'."""
+    return re.sub(r"^(?:by|using|via)\s+", "", method.strip(), flags=re.IGNORECASE)
 
 
 # ── Routes ────────────────────────────────────────────────────────────────
@@ -718,17 +877,29 @@ async def prior_art(request: PriorArtRequest):
     Labels: "semantic_similarity" and "prior_art_relevance" — NEVER
     "% patent overlap" or infringement language.
     """
+    logger.info("[PRIOR-ART QUERY] formulation_description=%s top_k=%d", request.formulation_description, request.top_k)
     retrieved_chunks = await search_similar_chunks(
-        request.formulation_description, top_k=request.top_k, dedup_by_document=True
+        request.formulation_description, domain_filter="patent", top_k=request.top_k, log_prefix="[PRIOR-ART]"
     )
-    chunks = [chunk for chunk in retrieved_chunks if _is_prior_art_source(chunk)]
+    accepted = []
+    rejected = []
+    for chunk in retrieved_chunks:
+        if _is_prior_art_source(chunk):
+            accepted.append(chunk)
+        else:
+            rejected.append(chunk)
+    chunks = accepted
     logger.info(
-        "[PRIOR-ART FILTER] retrieved=%d verified_prior_art=%d",
+        "[PRIOR-ART FILTER] retrieved=%d verified_prior_art=%d rejected=%d",
         len(retrieved_chunks),
         len(chunks),
+        len(rejected),
     )
 
-    results = [SimilarityResult(**c) for c in chunks]
+    results = [
+        SimilarityResult(**{**chunk, "source_type_label": _source_type_label(chunk)})
+        for chunk in chunks
+    ]
     max_sim = max((r.semantic_similarity for r in results), default=0.0)
     overall = (
         "High" if max_sim >= 0.75
@@ -752,8 +923,20 @@ async def patentability(request: PatentabilityRequest):
     and returns cautious, non-hallucinated patentability intelligence.
     """
     # 1. Parse user's invention features strictly verbatim
+    logger.info("[PATENTABILITY QUERY] formulation_description=%s category=%s", request.formulation_description, request.category)
     features = parse_invention_features(
         request.formulation_description, category=request.category
+    )
+    retrieval_description = _patentability_search_description(
+        request.formulation_description
+    )
+    logger.info(
+        "[PATENTABILITY FEATURES] ingredients=%s plant_parts=%s ratios=%s extraction=%s delivery=%s",
+        features.ingredients,
+        features.plant_parts,
+        features.ratios_quantities,
+        features.extraction_methods,
+        features.delivery_system,
     )
     has_sec3d_trigger = _check_sec3d_trigger(request.formulation_description, features)
     is_multi_ingredient = len(features.ingredients) > 1
@@ -762,18 +945,33 @@ async def patentability(request: PatentabilityRequest):
     chunks: list[dict[str, Any]] = []
     try:
         retrieved_chunks = await search_similar_chunks(
-            request.formulation_description, top_k=10, dedup_by_document=True
+            retrieval_description, domain_filter="patent", top_k=10, log_prefix="[PATENTABILITY]"
         )
-        chunks = [chunk for chunk in retrieved_chunks if _is_prior_art_source(chunk)]
+        accepted = []
+        rejected = []
+        for chunk in retrieved_chunks:
+            if _is_prior_art_source(chunk):
+                accepted.append(chunk)
+            else:
+                rejected.append(chunk)
+        chunks = accepted
         logger.info(
-            "[PATENTABILITY PRIOR-ART FILTER] retrieved=%d verified_prior_art=%d",
+            "[PATENTABILITY RETRIEVAL] raw_count=%d source_types=%s accepted=%d rejected=%d similarity_scores=%s final_prior_art=%d",
             len(retrieved_chunks),
+            [c.get("source_type") for c in retrieved_chunks],
+            len(accepted),
+            len(rejected),
+            [c.get("semantic_similarity") for c in chunks],
             len(chunks),
         )
     except Exception as e:
         logger.warning("Prior-art search failed: %s", e)
 
-    results = [SimilarityResult(**c) for c in chunks]
+    # Preserve chunk-level retrieval above, but assess and present one entry per
+    # source document so five passages from one patent do not become five cards.
+    document_chunks = _deduplicate_prior_art_documents(chunks)
+
+    results = [SimilarityResult(**c) for c in document_chunks]
     max_sim = max((r.semantic_similarity for r in results), default=0.0)
     overall = (
         "High" if max_sim >= 0.75
@@ -786,8 +984,13 @@ async def patentability(request: PatentabilityRequest):
     anticipating_doc: str | None = None
     has_substantial_overlap = False
 
-    for chunk in chunks[:5]:
-        c_items, c_summary = _compare_features_to_chunk(features, chunk)
+    for chunk in document_chunks[:5]:
+        # The table must be grounded in exactly the same passage the UI shows.
+        # Do not use a later, hidden portion of the retrieved chunk to upgrade
+        # a feature status to EXACT.
+        evidence_excerpt = _comparison_evidence_excerpt(chunk)
+        comparison_chunk = {**chunk, "chunk_text": evidence_excerpt}
+        c_items, c_summary = _compare_features_to_chunk(features, comparison_chunk)
         sim_val = round(float(chunk.get("semantic_similarity", 0.0)), 4)
         doc_name = str(chunk.get("source_document", "Patent Prior-Art Reference"))
 
@@ -803,15 +1006,17 @@ async def patentability(request: PatentabilityRequest):
                 source=doc_name,
                 semantic_similarity=sim_val,
                 relevance=chunk.get("prior_art_relevance", "Moderate"),
-                excerpt=str(chunk.get("chunk_text", ""))[:320].strip() + "...",
+                excerpt=evidence_excerpt + "...",
                 comparisons=c_items,
                 overall_overlap_summary=c_summary,
+                source_type_label=chunk.get("source_type_label"),
+                relevant_chunk_count=chunk.get("relevant_chunk_count"),
             )
         )
 
     # 4. Build Prior-Art Evidence List (Never fabricate documents if none retrieved)
     prior_art_evidence: list[PriorArtEvidence] = []
-    for chunk in chunks[:4]:
+    for chunk in document_chunks[:4]:
         prior_art_evidence.append(
             PriorArtEvidence(
                 title=chunk.get("source_document", "Statutory Prior-Art Record"),
@@ -821,6 +1026,8 @@ async def patentability(request: PatentabilityRequest):
                 similarity_score=round(chunk.get("semantic_similarity", 0.0) * 100, 1),
                 excerpt=str(chunk.get("chunk_text", ""))[:320].strip() + "...",
                 why_it_matters="Relevant reference from the searched corpus for claim comparison and prior-art boundary analysis.",
+                source_type_label=chunk.get("source_type_label"),
+                relevant_chunk_count=chunk.get("relevant_chunk_count"),
             )
         )
 
@@ -833,33 +1040,39 @@ async def patentability(request: PatentabilityRequest):
             "Multiple claimed features appear to overlap with this single disclosure. "
             "A claim-by-claim analysis against the full specification of this document is required."
         )
-    elif len(chunks) == 0:
+    elif len(document_chunks) == 0:
         novelty_status = "insufficient_evidence"
         novelty_label = "Insufficient Evidence in Corpus"
         novelty_analysis = (
             "No supporting prior-art evidence was retrieved from the currently indexed corpus. "
-            "Absence of evidence in this local corpus does not confirm novelty. An exhaustive search across "
-            "the Indian Patent Advanced Search System (InPASS), WIPO PCT, and CSIR-TKDL is required."
+            "Absence of evidence in this local corpus does not confirm novelty. Further searching across relevant "
+            "Indian and international patent databases is recommended."
         )
     else:
         novelty_status = "no_anticipation_found"
         novelty_label = "No Single Anticipating Reference in Indexed Corpus"
+        disclosed_features = []
+        if features.ingredients:
+            disclosed_features.append(f"active ingredients ({', '.join(features.ingredients)})")
+        if features.ratios_quantities:
+            disclosed_features.append(f"composition values ({', '.join(features.ratios_quantities)})")
+        if features.delivery_system or features.formulation_type:
+            disclosed_features.append(
+                f"preparation format ({features.delivery_system or features.formulation_type})"
+            )
+        feature_phrase = ", ".join(disclosed_features) or "the supplied technical features"
         novelty_analysis = (
-            "No single retrieved prior-art document was found to disclose the specific combination of features "
-            f"including the active ingredients ({', '.join(features.ingredients) if features.ingredients else 'botanical components'}), "
-            f"the specific ratio ({', '.join(features.ratios_quantities) if features.ratios_quantities else 'ratio'}), "
-            f"and the preparation format ({features.delivery_system or features.formulation_type or 'formulation'}). "
-            "However, formal novelty clearance requires global patent database verification."
+            "No single anticipating reference was identified within the indexed corpus searched by this tool for "
+            f"{feature_phrase}. Further searching across relevant Indian and international patent databases is recommended."
         )
 
     # 6. Inventive Step Assessment (Grounded & Cautious; never invent synergy or combination index)
     if is_multi_ingredient:
         inventive_status = "needs_review"
-        inventive_label = "Section 3(e) Review May Be Relevant"
+        inventive_label = "Inventive Step Requires Comparative Analysis"
         inventive_analysis = (
-            "Section 3(e) may be relevant because the formulation combines known components. "
-            "Whether the claimed combination constitutes a mere admixture depends on the specific claimed features, "
-            "whether the components merely aggregate known properties, and the available comparative evidence."
+            "Inventive step under Section 2(1)(ja) requires assessing whether the claimed combination or process "
+            "shows technical advancement or is non-obvious over the relevant prior art. Section 3(e) is assessed separately."
         )
     else:
         inventive_status = "insufficient_evidence"
@@ -897,13 +1110,13 @@ async def patentability(request: PatentabilityRequest):
             "High semantic similarity was detected in the prior-art corpus. A detailed Freedom to Operate (FTO) review "
             "is necessary to establish distinct inventive boundaries."
         )
-    elif len(chunks) == 0 or (not features.ingredients and len(request.formulation_description.split()) < 8):
+    elif len(document_chunks) == 0 or (not features.ingredients and len(request.formulation_description.split()) < 8):
         status = "insufficient_evidence"
         status_label = "Limited Corpus Evidence — Further Search Required"
         posture = "further search required"
         primary_notice = (
-            "No direct prior-art matches were retrieved from the currently indexed database. "
-            "A comprehensive multi-database clearance search across global patent registries is essential."
+            "No direct prior-art matches were retrieved from the currently indexed corpus. "
+            "Further searching across relevant Indian and international patent databases is recommended."
         )
     else:
         status = "potentially_novel_further_review"
@@ -916,45 +1129,46 @@ async def patentability(request: PatentabilityRequest):
         )
 
     # 8. Qualitative Confidence (No arbitrary numbers like 78%)
-    confidence = "Moderate" if len(chunks) > 0 and len(features.ingredients) > 0 else "Low"
+    confidence = "Moderate" if len(document_chunks) > 0 and len(features.ingredients) > 0 else "Low"
     confidence_reason = (
-        "Preliminary assessment based on semantic retrieval against the local indexed patent corpus. "
-        "Exhaustive validation across InPASS, USPTO, EPO, WIPO, and the confidential CSIR-TKDL is necessary for legal certainty."
+        "Preliminary assessment based on semantic retrieval against the indexed corpus searched by this tool. "
+        "External database verification and qualified legal review are necessary for legal certainty."
     )
 
     # 9. Grounded Executive Summary
-    ing_str = ", ".join(features.ingredients) if features.ingredients else "botanical materials"
-    parts_str = ", ".join(features.plant_parts) if features.plant_parts else "unspecified parts"
-    ratio_str = ", ".join(features.ratios_quantities) if features.ratios_quantities else "unspecified proportions"
-    ext_str = ", ".join(features.extraction_methods) if features.extraction_methods else "unspecified extraction"
-    use_str = features.intended_use if features.intended_use else "unspecified therapeutic utility"
-
-    # Grounded description of formulation format without inventing conventional delivery
+    summary_parts = [
+        f"The evaluation analyzed {features.formulation_type or 'a formulation'}"
+    ]
+    ingredients_text = ", ".join(features.ingredients) if features.ingredients else "the supplied botanical materials"
+    if features.ingredients:
+        summary_parts.append(f"comprising {', '.join(features.ingredients)}")
+    if features.plant_parts:
+        summary_parts.append(f"using {', '.join(features.plant_parts)} parts")
+    if features.ratios_quantities:
+        summary_parts.append(f"with composition values of {', '.join(features.ratios_quantities)}")
+    if features.extraction_methods:
+        extraction_methods = [_summary_extraction_phrase(method) for method in features.extraction_methods]
+        summary_parts.append(f"prepared using {', '.join(extraction_methods)}")
+    if features.solvents:
+        summary_parts.append(f"with solvent parameters {', '.join(features.solvents)}")
     if features.delivery_system:
-        deliv_clause = f"formulated into a {features.delivery_system}"
-    elif features.formulation_type:
-        deliv_clause = f"formulated as a {features.formulation_type}"
-    else:
-        deliv_clause = "formulated as a botanical preparation"
+        summary_parts.append(f"using {features.delivery_system}")
+    if features.particle_size:
+        summary_parts.append(f"with particle size {features.particle_size}")
+    if features.intended_use:
+        summary_parts.append(f"intended for {features.intended_use}")
+    summary_para1 = ", ".join(summary_parts) + "."
 
-    summary_para1 = (
-        f"The evaluation analyzed a {features.formulation_type or 'formulation'} comprising {ing_str} "
-        f"(utilizing {parts_str}) specified in a {ratio_str}, prepared via {ext_str}, "
-        f"and {deliv_clause}"
-        + (f" with an average particle size of {features.particle_size}" if features.particle_size else "")
-        + f", intended for {use_str}."
-    )
-
-    if len(chunks) > 0:
+    if len(document_chunks) > 0:
         summary_para2 = (
-            f"Semantic retrieval against the indexed statutory and prior-art corpus identified {len(chunks)} relevant reference(s). "
+            f"Semantic retrieval against the indexed corpus identified {len(document_chunks)} relevant prior-art document(s). "
             f"{novelty_analysis}"
         )
     else:
         summary_para2 = (
             "No supporting prior-art evidence was retrieved from the currently indexed corpus. "
-            "Absence of direct matches in this system does not guarantee novelty — exhaustive cross-referencing against "
-            "the confidential CSIR-TKDL database and international patent offices is essential."
+            "Absence of direct matches in this system does not guarantee novelty — external database verification "
+            "and qualified legal review remain necessary."
         )
 
     sec3e_summary = (
@@ -972,7 +1186,7 @@ async def patentability(request: PatentabilityRequest):
     )
     summary_para3 = (
         f"Under Indian patent law, novelty over searched references is necessary but not sufficient. {sec3e_summary} "
-        f"{sec3d_summary} Formal clearance requires an exhaustive search across InPASS, WIPO, and TKDL."
+        f"{sec3d_summary} Further searching across relevant Indian and international patent databases is recommended."
     )
 
     summary = f"{summary_para1}\n\n{summary_para2}\n\n{summary_para3}"
@@ -1014,17 +1228,17 @@ async def patentability(request: PatentabilityRequest):
     criteria: list[CriterionAssessment] = [
         CriterionAssessment(
             name="Novelty (Section 2(1)(j))",
-            assessment="needs_review" if anticipating_doc else ("favourable" if len(chunks) > 0 else "neutral"),
-            assessment_label="Concern Identified" if anticipating_doc else ("Favourable in Indexed Corpus" if len(chunks) > 0 else "Further Search Required"),
+            assessment="needs_review" if anticipating_doc else ("favourable" if len(document_chunks) > 0 else "neutral"),
+            assessment_label="Concern Identified" if anticipating_doc else ("Favourable in Indexed Corpus" if len(document_chunks) > 0 else "Further Search Required"),
             explanation=(
                 f"Anticipating disclosure identified in {anticipating_doc}."
                 if anticipating_doc
-                else "No single prior-art document in the indexed corpus discloses the exact claimed combination. Full InPASS search required."
+                else "No single anticipating reference was identified within the indexed corpus searched by this tool. Further external database verification is recommended."
             ),
-            evidence=[c.get("source_document", "") for c in chunks[:2]],
+            evidence=[c.get("source_document", "") for c in document_chunks[:2]],
         ),
         CriterionAssessment(
-            name="Inventive Step / Non-Obviousness",
+            name="Inventive Step / Non-Obviousness (Section 2(1)(ja))",
             assessment="needs_review",
             assessment_label="Technical Advancement Required",
             explanation=(
@@ -1043,9 +1257,9 @@ async def patentability(request: PatentabilityRequest):
                     "Section 3(p) may be relevant because the formulation uses botanicals with established traditional-use contexts; "
                     "however, no specific supporting TK/prior-art document was retrieved from the currently indexed corpus."
                 )
-                if len(chunks) == 0
+                if len(document_chunks) == 0
                 else (
-                    f"The formulation incorporates botanicals ({ing_str}) that have established traditional-use contexts. "
+                    f"The formulation incorporates botanicals ({ingredients_text}) that have established traditional-use contexts. "
                     "Retrieved corpus references should be reviewed to determine whether the claimed subject matter constitutes "
                     "an aggregation of known traditional properties or a distinct technological preparation under Section 3(p)."
                 )
@@ -1078,6 +1292,12 @@ async def patentability(request: PatentabilityRequest):
     # 11. Applicable Legal Framework
     legal_framework: list[LegalProvision] = [
         LegalProvision(
+            section="Section 2(1)(ja)",
+            act="Indian Patents Act, 1970",
+            title="Inventive Step / Non-Obviousness",
+            relevance="Requires technical advancement, economic significance, or non-obviousness to a person skilled in the art over relevant prior art.",
+        ),
+        LegalProvision(
             section="Section 3(p)",
             act="Indian Patents Act, 1970",
             title="Traditional Knowledge Exclusion",
@@ -1093,7 +1313,7 @@ async def patentability(request: PatentabilityRequest):
             section="Section 3(d)",
             act="Indian Patents Act, 1970",
             title="Enhanced Therapeutic Efficacy Requirement",
-            relevance="Requires that any new form or delivery carrier of known substances show significant enhancement in therapeutic efficacy over known forms.",
+            relevance="May require proof of enhanced therapeutic efficacy when a claimed new form or relevant delivery carrier of a known substance brings Section 3(d) into issue.",
         ),
         LegalProvision(
             section="Section 6 / Biological Diversity Act",
@@ -1117,16 +1337,22 @@ async def patentability(request: PatentabilityRequest):
             "Focus independent claims on specific standardized extract fractions and quantitative bioactive profiles."
         )
     else:
-        recommendations.append(
-            "Structure claims specifically around the precise composition ratios and defined preparation methodology "
-            "to establish clear claim boundaries over general botanical knowledge."
-        )
+        if features.ratios_quantities:
+            recommendations.append(
+                f"Structure claims around the supplied composition values ({', '.join(features.ratios_quantities)}) "
+                "and defined preparation methodology to establish clear claim boundaries."
+            )
+        else:
+            recommendations.append(
+                "Consider defining precise composition ratios in the claim if ratios form part of the invention, "
+                "alongside the supplied preparation methodology."
+            )
 
     # Section 3(e) recommendation: only when multiple components combine
     if is_multi_ingredient:
         recommendations.append(
-            "If prior art discloses similar botanical combinations, evaluate whether comparative experimental data "
-            "demonstrating non-obvious synergistic interaction is needed to distinguish the claimed combination under Section 3(e)."
+            "Evaluate whether the claimed combination merely aggregates known properties or demonstrates a distinct combined effect under Section 3(e); "
+            "separately assess inventive step under Section 2(1)(ja)."
         )
 
     # Section 3(d) recommendation: only when genuinely triggered
@@ -1138,7 +1364,7 @@ async def patentability(request: PatentabilityRequest):
 
     # Prior art search & clearance
     recommendations.append(
-        "Conduct an exhaustive freedom-to-operate and prior-art search across Indian Patent Advanced Search System (InPASS), WIPO PCT, and CSIR-TKDL."
+        "Conduct further prior-art and freedom-to-operate searches across relevant Indian and international patent databases."
     )
 
     # NBA / Biodiversity Act
@@ -1167,8 +1393,8 @@ async def patentability(request: PatentabilityRequest):
 
     # 14. Limitations & Disclaimers
     limitations: list[str] = [
-        "This evaluation is an AI-assisted preliminary assessment based on semantic similarity matching against currently indexed statutory corpora.",
-        "Absence of direct matches in this system does not guarantee novelty — exhaustive cross-referencing against the confidential CSIR-TKDL database and international patent offices is essential.",
+        "This evaluation is an AI-assisted preliminary assessment based on semantic similarity matching against the currently indexed corpus.",
+        "Absence of direct matches in this system does not guarantee novelty — additional verification against relevant Indian and international patent databases and the CSIR-TKDL database is recommended.",
         "Under Section 3(p) of the Patents Act, 1970, Indian patent examiners routinely issue objections against Ayurvedic combinations; formal response drafting requires specialized legal counsel.",
         "This tool provides technical and regulatory intelligence and does not constitute formal legal advice or a binding patentability opinion.",
     ]
@@ -1177,6 +1403,7 @@ async def patentability(request: PatentabilityRequest):
     ip_map = build_ip_map(
         max_similarity=max_sim,
         overall_relevance=overall,
+        section_3d_triggered=has_sec3d_trigger,
         category=request.category,
         region_specific=request.region_specific,
         unique_packaging=request.unique_packaging,
