@@ -94,6 +94,7 @@ async def search_similar_chunks(
     top_k: int = 10,
     embedding_timeout_s: float = 6.0,
     log_prefix: str = "[RETRIEVAL]",
+    dedup_by_document: bool = False,
 ) -> list[dict[str, Any]]:
     """
     Embed *description*, run ``$vectorSearch`` on ``legal_chunks``,
@@ -155,6 +156,7 @@ async def search_similar_chunks(
     
     # 2. Try Atlas $vectorSearch if vector is available
     if query_vector:
+        vector_limit = max(top_k * 4, 30) if dedup_by_document else top_k
         pipeline: list[dict[str, Any]] = [
             {
                 "$vectorSearch": {
@@ -162,7 +164,7 @@ async def search_similar_chunks(
                     "path": "embedding",
                     "queryVector": query_vector,
                     "numCandidates": max(top_k * 10, 100),
-                    "limit": top_k,
+                    "limit": vector_limit,
                 }
             },
             {
@@ -187,9 +189,23 @@ async def search_similar_chunks(
 
         try:
             cursor = db.legal_chunks.aggregate(pipeline)
-            raw_chunks = await cursor.to_list(length=top_k)
+            raw_chunks = await cursor.to_list(length=vector_limit)
             if raw_chunks:
                 retrieval_mode = "vector"
+                if dedup_by_document:
+                    deduped_raw = []
+                    seen_doc_ids = set()
+                    for chunk in raw_chunks:
+                        pub_no = str(chunk.get("publication_number") or "").strip()
+                        doc_name = str(chunk.get("source_document") or "").strip()
+                        rel_path = str(chunk.get("source_relative_path") or chunk.get("original_filename") or chunk.get("_id", "")).strip()
+                        doc_id = pub_no if pub_no else (doc_name if doc_name else rel_path)
+                        if doc_id not in seen_doc_ids:
+                            seen_doc_ids.add(doc_id)
+                            deduped_raw.append(chunk)
+                            if len(deduped_raw) >= top_k:
+                                break
+                    raw_chunks = deduped_raw
         except Exception as e:
             logger.warning("%s $vectorSearch failed or not configured on Atlas: %s", log_prefix, e)
             raw_chunks = []
@@ -256,11 +272,27 @@ async def search_similar_chunks(
                 if valid_cands:
                     cand_embeddings = [c["embedding"] for c in valid_cands]
                     scores = compute_similarity(query_vector, cand_embeddings)
-                    sorted_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:top_k]
-                    raw_chunks = [
-                        {**valid_cands[i], "score": float(scores[i])}
-                        for i in sorted_indices
-                    ]
+                    sorted_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
+                    
+                    if dedup_by_document:
+                        raw_chunks = []
+                        seen_doc_ids = set()
+                        for i in sorted_indices:
+                            cand = valid_cands[i]
+                            pub_no = str(cand.get("publication_number") or "").strip()
+                            doc_name = str(cand.get("source_document") or "").strip()
+                            rel_path = str(cand.get("source_relative_path") or cand.get("original_filename") or cand.get("_id", "")).strip()
+                            doc_id = pub_no if pub_no else (doc_name if doc_name else rel_path)
+                            if doc_id not in seen_doc_ids:
+                                seen_doc_ids.add(doc_id)
+                                raw_chunks.append({**cand, "score": float(scores[i])})
+                                if len(raw_chunks) >= top_k:
+                                    break
+                    else:
+                        raw_chunks = [
+                            {**valid_cands[i], "score": float(scores[i])}
+                            for i in sorted_indices[:top_k]
+                        ]
         except Exception as e:
             logger.warning("Candidate retrieval failed: %s", e)
             raw_chunks = []

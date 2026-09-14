@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next";
 import { Leaf, BookOpen, ShieldAlert, CheckCircle2, FileText, Info } from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
 import EvidenceBlock from './EvidenceBlock';
+import { translatePassportData, translatePassportStatus } from '../../lib/passportI18n';
+
 export default function BiodiversitySection({
   isBiological = true,
   absApplicable = true,
@@ -22,10 +24,10 @@ export default function BiodiversitySection({
   onOpenWhy = null,
   className = ''
 }) {
-  const {
-    t
-  } = useTranslation();
-  return <section id="section-biodiversity" className={cn("bg-white border border-[#161412]/15 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6", className)}>
+  const { t } = useTranslation();
+
+  return (
+    <section id="section-biodiversity" className={cn("bg-white border border-[#161412]/15 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6", className)}>
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[#161412]/10 pb-3">
         <div>
@@ -35,7 +37,7 @@ export default function BiodiversitySection({
           </div>
           <p className="text-xs text-[#161412]/60 mt-0.5">{t("biodiversitysection.biologicalDiversityActcompliance", "Biological Diversity Act compliance, ABS benefit-sharing clearance, and classical corpus overlap")}</p>
         </div>
-        <span className="text-[10px] font-mono text-[#8C6D46] uppercase tracking-wider font-semibold">{t("biodiversitysection.section04", "Section 04")}</span>
+        <span className="text-[10px] font-mono text-[#8C6D46] uppercase tracking-wider font-semibold">{t("productPassport.ui.section04", "Section 04")}</span>
       </div>
 
       {/* Grid: ABS & Traditional Knowledge Overlap */}
@@ -45,21 +47,25 @@ export default function BiodiversitySection({
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8C6D46]">{t("biodiversitysection.aBSBiologicalDiversityClearance", "ABS / Biological Diversity Clearance")}</span>
             <span className={cn("px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase border", absApplicable ? "bg-amber-100 text-amber-900 border-amber-300" : "bg-green-100 text-green-900 border-green-300")}>
-              {absApplicable ? 'ABS Obligations Apply' : 'Screening Not Triggered'}
+              {translatePassportStatus(absApplicable ? 'ABS Obligations Apply' : 'Screening Not Triggered', t)}
             </span>
           </div>
 
           <p className="text-[#161412]/85 leading-relaxed">
-            {absSummary}
+            {translatePassportData(absSummary, t)}
           </p>
 
-          {absObligations.length > 0 && <div className="border-t border-[#161412]/10 pt-2.5 space-y-1.5">
+          {absObligations.length > 0 && (
+            <div className="border-t border-[#161412]/10 pt-2.5 space-y-1.5">
               <span className="text-[9.5px] font-mono uppercase tracking-wider text-[#161412]/50 font-semibold block">{t("biodiversitysection.statutoryObligations", "Statutory Obligations:")}</span>
-              {absObligations.map((ob, idx) => <div key={idx} className="flex items-start gap-2">
+              {absObligations.map((ob, idx) => (
+                <div key={idx} className="flex items-start gap-2">
                   <span className="text-emerald-700 font-bold">•</span>
-                  <span className="text-[#161412]/90 leading-snug">{ob}</span>
-                </div>)}
-            </div>}
+                  <span className="text-[#161412]/90 leading-snug">{translatePassportData(ob, t)}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Traditional Knowledge Corpus */}
@@ -67,21 +73,23 @@ export default function BiodiversitySection({
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#176B45]">{t("biodiversitysection.traditionalKnowledgeOverlap", "Traditional Knowledge Overlap")}</span>
             <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-[#176B45]/10 text-[#176B45] border border-[#176B45]/20">
-              {tkOverlapStatus}
+              {translatePassportStatus(tkOverlapStatus, t)}
             </span>
           </div>
 
           <p className="text-[#161412]/85 leading-relaxed">
-            {tkSummary}
+            {translatePassportData(tkSummary, t)}
           </p>
 
           <div className="border-t border-[#161412]/10 pt-2.5">
             <span className="text-[9.5px] font-mono uppercase tracking-wider text-[#161412]/50 font-semibold block mb-1.5">{t("biodiversitysection.indexedCanonicalTreatise", "Indexed Canonical Treatise:")}</span>
             <ul className="space-y-1 text-[#161412]/90 font-serif">
-              {classicalReferences.map((ref, idx) => <li key={idx} className="flex items-center gap-2">
+              {classicalReferences.map((ref, idx) => (
+                <li key={idx} className="flex items-center gap-2">
                   <BookOpen className="w-3.5 h-3.5 text-[#8C6D46] shrink-0" />
                   <span>{ref}</span>
-                </li>)}
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -90,14 +98,25 @@ export default function BiodiversitySection({
       {/* Traceable Biodiversity Evidence */}
       <div>
         <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#8C6D46] mb-2.5">{t("biodiversitysection.biologicalDiversityActEvidence", "Biological Diversity Act Evidence")}</h4>
-        <EvidenceBlock source={evidence.source} document={evidence.document} section={evidence.section} jurisdiction={evidence.jurisdiction} status={evidence.status} strength={evidence.strength} excerpt={evidence.excerpt} whyThisResult={{
-        title: 'Biodiversity & ABS Traceability',
-        signal: 'Product formulation utilizes biological resources originating from Indian jurisdiction.',
-        evidence: 'Biological Diversity Act, 2002 — Section 6',
-        interpretation: 'Requires mandatory prior approval of the National Biodiversity Authority (NBA) before filing or commercial grant of IPR.',
-        result: 'ABS statutory clearance and origin disclosure required.',
-        jurisdiction: 'India'
-      }} onOpenWhy={onOpenWhy} />
+        <EvidenceBlock
+          source={evidence.source}
+          document={evidence.document}
+          section={evidence.section}
+          jurisdiction={evidence.jurisdiction}
+          status={evidence.status}
+          strength={evidence.strength}
+          excerpt={evidence.excerpt}
+          whyThisResult={{
+            title: 'Biodiversity & ABS Traceability',
+            signal: 'Product formulation utilizes biological resources originating from Indian jurisdiction.',
+            evidence: 'Biological Diversity Act, 2002 — Section 6',
+            interpretation: 'Requires mandatory prior approval of the National Biodiversity Authority (NBA) before filing or commercial grant of IPR.',
+            result: 'ABS statutory clearance and origin disclosure required.',
+            jurisdiction: 'India'
+          }}
+          onOpenWhy={onOpenWhy}
+        />
       </div>
-    </section>;
+    </section>
+  );
 }

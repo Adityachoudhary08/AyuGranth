@@ -192,22 +192,75 @@ async def ask(
         elapsed = round(time.time() - req_start, 2)
         logger.error("[ASK ROUTE TIMEOUT] Pipeline timed out after %.2fs for query: '%s'", elapsed, clean_query[:50])
         from services.intent_router import classify_intent
-        from services.rag_pipeline import _get_intent_fallback
+        from services.rag_pipeline import _get_intent_fallback, _source_categories, _classify_evidence_type
+        from services.similarity_engine import search_similar_chunks
+        
         intent_info = classify_intent(clean_query)
-        fb = _get_intent_fallback(intent_info["intent"], [])
+        fallback_chunks = []
+        try:
+            is_patent_intent = intent_info.get("intent") in ("PRIOR_ART", "PATENTABILITY")
+            fallback_chunks = await asyncio.wait_for(
+                search_similar_chunks(clean_query, top_k=6, embedding_timeout_s=2.0, dedup_by_document=is_patent_intent),
+                timeout=3.0
+            )
+        except Exception:
+            fallback_chunks = []
+
+        fb = _get_intent_fallback(intent_info["intent"], fallback_chunks)
+        statutory_s, classical_s, patent_s = _source_categories(fallback_chunks)
+        sources_used = [
+            {
+                "chunk_id": str(c.get("chunk_id", "")),
+                "chunk_text": c.get("chunk_text", ""),
+                "source_document": c.get("source_document", "Statutory Document"),
+                "section": c.get("section", ""),
+                "law_type": c.get("law_type", ""),
+                "jurisdiction": c.get("jurisdiction", request.jurisdiction or "India"),
+                "source_type": c.get("source_type", "statute"),
+                "evidence_type": _classify_evidence_type(c),
+                "type": _classify_evidence_type(c),
+                "date": str(c.get("date") or c.get("filing_date") or c.get("publication_date") or ""),
+                "publication_number": str(c.get("publication_number") or ""),
+                "semantic_similarity": c.get("semantic_similarity", 0.0),
+                "verified": True,
+            }
+            for c in fallback_chunks
+        ]
+        evidence = [
+            {
+                "claim": f"Retrieved {c.get('source_document', 'Corpus Document')}",
+                "source": c.get("source_document", ""),
+                "source_document": c.get("source_document", ""),
+                "section": str(c.get("section") or ""),
+                "jurisdiction": c.get("jurisdiction", request.jurisdiction or "India"),
+                "excerpt": c.get("chunk_text", ""),
+                "relevance": "Retrieved for independent review.",
+                "source_chunk_id": str(c.get("chunk_id", "")),
+                "semantic_similarity": c.get("semantic_similarity", 0.0),
+                "evidence_type": _classify_evidence_type(c),
+                "type": _classify_evidence_type(c),
+                "date": str(c.get("date") or c.get("filing_date") or c.get("publication_date") or ""),
+                "publication_number": str(c.get("publication_number") or ""),
+                "verified": True,
+            }
+            for c in fallback_chunks
+        ]
 
         return AskResponse(
             answer=fb["assessment"],
             assessment=fb["assessment"],
-            why="The AI synthesis timed out. The knowledge retrieval could not finish within the window.",
+            why=fb["why"],
             summary=fb["why"],
             key_points=fb["key_points"],
             claims=[],
-            sources_used=[],
-            evidence=[],
+            sources_used=sources_used,
+            evidence=evidence,
+            statutory_sources=statutory_s,
+            classical_sources=classical_s,
+            patent_evidence=patent_s,
             jurisdiction=request.jurisdiction or "India",
-            confidence=0.5,
-            confidence_label="preliminary",
+            confidence=0.55 if fallback_chunks else 0.5,
+            confidence_label=fb.get("confidence_label", "preliminary"),
             abstained=False,
             intent=intent_info["intent"],
             intent_metadata=intent_info,
@@ -217,22 +270,75 @@ async def ask(
         elapsed = round(time.time() - req_start, 2)
         logger.error("[ASK ROUTE EXCEPTION] Pipeline failed after %.2fs: %s", elapsed, e, exc_info=True)
         from services.intent_router import classify_intent
-        from services.rag_pipeline import _get_intent_fallback
+        from services.rag_pipeline import _get_intent_fallback, _source_categories, _classify_evidence_type
+        from services.similarity_engine import search_similar_chunks
+        
         intent_info = classify_intent(clean_query)
-        fb = _get_intent_fallback(intent_info["intent"], [])
+        fallback_chunks = []
+        try:
+            is_patent_intent = intent_info.get("intent") in ("PRIOR_ART", "PATENTABILITY")
+            fallback_chunks = await asyncio.wait_for(
+                search_similar_chunks(clean_query, top_k=6, embedding_timeout_s=2.0, dedup_by_document=is_patent_intent),
+                timeout=3.0
+            )
+        except Exception:
+            fallback_chunks = []
+
+        fb = _get_intent_fallback(intent_info["intent"], fallback_chunks)
+        statutory_s, classical_s, patent_s = _source_categories(fallback_chunks)
+        sources_used = [
+            {
+                "chunk_id": str(c.get("chunk_id", "")),
+                "chunk_text": c.get("chunk_text", ""),
+                "source_document": c.get("source_document", "Statutory Document"),
+                "section": c.get("section", ""),
+                "law_type": c.get("law_type", ""),
+                "jurisdiction": c.get("jurisdiction", request.jurisdiction or "India"),
+                "source_type": c.get("source_type", "statute"),
+                "evidence_type": _classify_evidence_type(c),
+                "type": _classify_evidence_type(c),
+                "date": str(c.get("date") or c.get("filing_date") or c.get("publication_date") or ""),
+                "publication_number": str(c.get("publication_number") or ""),
+                "semantic_similarity": c.get("semantic_similarity", 0.0),
+                "verified": True,
+            }
+            for c in fallback_chunks
+        ]
+        evidence = [
+            {
+                "claim": f"Retrieved {c.get('source_document', 'Corpus Document')}",
+                "source": c.get("source_document", ""),
+                "source_document": c.get("source_document", ""),
+                "section": str(c.get("section") or ""),
+                "jurisdiction": c.get("jurisdiction", request.jurisdiction or "India"),
+                "excerpt": c.get("chunk_text", ""),
+                "relevance": "Retrieved for independent review.",
+                "source_chunk_id": str(c.get("chunk_id", "")),
+                "semantic_similarity": c.get("semantic_similarity", 0.0),
+                "evidence_type": _classify_evidence_type(c),
+                "type": _classify_evidence_type(c),
+                "date": str(c.get("date") or c.get("filing_date") or c.get("publication_date") or ""),
+                "publication_number": str(c.get("publication_number") or ""),
+                "verified": True,
+            }
+            for c in fallback_chunks
+        ]
 
         return AskResponse(
             answer=fb["assessment"],
             assessment=fb["assessment"],
-            why="An unexpected issue occurred during processing. Retrieved evidence is unavailable.",
+            why=fb["why"],
             summary=fb["why"],
             key_points=fb["key_points"],
             claims=[],
-            sources_used=[],
-            evidence=[],
+            sources_used=sources_used,
+            evidence=evidence,
+            statutory_sources=statutory_s,
+            classical_sources=classical_s,
+            patent_evidence=patent_s,
             jurisdiction=request.jurisdiction or "India",
-            confidence=0.5,
-            confidence_label="preliminary",
+            confidence=0.55 if fallback_chunks else 0.5,
+            confidence_label=fb.get("confidence_label", "preliminary"),
             abstained=False,
             intent=intent_info["intent"],
             intent_metadata=intent_info,

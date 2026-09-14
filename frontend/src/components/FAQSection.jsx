@@ -1,52 +1,14 @@
 import { useId, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-
-const FAQS = [
-  {
-    id: '01',
-    category: 'Archive Overview',
-    tag: 'FOUNDATIONAL REPOSITORY',
-    question: 'What is AayuGranth?',
-    answer:
-      'AayuGranth is a digital knowledge archive that brings together documented Indian traditional knowledge and intellectual property information. It helps users understand traditional knowledge, its documentation and its relationship with modern innovation and protection.',
-  },
-  {
-    id: '02',
-    category: 'Defensive Rights',
-    tag: 'SECTION 3(P) EXCLUSION',
-    question: 'Why does traditional knowledge need protection?',
-    answer:
-      'Traditional knowledge can be vulnerable to misuse, misappropriation and claims based on knowledge that has existed for generations. Proper documentation helps establish evidence of existing knowledge and supports defensive protection against inappropriate intellectual property claims.',
-  },
-  {
-    id: '03',
-    category: 'Search & Concordance',
-    tag: 'PRIOR-ART CLEARANCE',
-    question: 'How can AayuGranth help with patent research?',
-    answer:
-      'AayuGranth helps users understand existing traditional knowledge and identify relevant prior art sources before pursuing an innovation. This can provide useful context for researchers, innovators and applicants conducting preliminary patent research.',
-  },
-  {
-    id: '04',
-    category: 'Statutory Procedure',
-    tag: 'PATENTS ACT 1970',
-    question: 'What is the Indian patent process?',
-    answer:
-      'The Indian patent process generally involves preparing and filing a patent application, examination by the Indian Patent Office, responding to examination requirements and proceeding toward grant when the legal requirements are satisfied. AayuGranth provides educational information to help users understand this process.',
-  },
-  {
-    id: '05',
-    category: 'Legal Jurisprudence',
-    tag: 'NOVELTY ASSESSMENT',
-    question: 'Can traditional Ayurvedic knowledge be patented?',
-    answer:
-      'Traditional knowledge that is already publicly known generally cannot be claimed as a new invention simply by repackaging it. However, genuinely new and inventive developments involving traditional knowledge may raise separate intellectual property questions and should be evaluated under the applicable patent requirements.',
-  },
-]
+import { useTranslation } from 'react-i18next'
 
 export default function FAQSection() {
+  const { t } = useTranslation()
   const [openIndex, setOpenIndex] = useState(0)
   const sectionId = useId()
+
+  const rawFaqs = t('landing.faq.items', { returnObjects: true })
+  const faqs = Array.isArray(rawFaqs) ? rawFaqs : []
 
   return (
     <section
@@ -71,7 +33,7 @@ export default function FAQSection() {
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-[#176B45]/10 border border-[#176B45]/20">
               <span className="w-1.5 h-1.5 rounded-full bg-[#176B45]" />
               <span className="text-[10px] sm:text-[10.5px] font-mono font-semibold tracking-[0.22em] text-[#176B45] uppercase">
-                ARCHIVAL DISCLOSURE
+                {t('landing.faq.badge')}
               </span>
             </div>
 
@@ -79,24 +41,25 @@ export default function FAQSection() {
               id={`${sectionId}-heading`}
               className="font-serif text-[clamp(2.2rem,4vw,3.6rem)] font-normal text-[#161412] leading-[1.08] tracking-[-0.025em] mb-5"
             >
-              Questions Worth <span className="italic text-[#176B45]">Knowing.</span>
+              {t('landing.faq.heading1')}{' '}
+              <span className="italic text-[#176B45]">{t('landing.faq.heading2')}</span>
             </h2>
 
             <p className="text-sm sm:text-base text-[#524c44] leading-relaxed font-normal mb-8 max-w-md">
-              Essential principles governing traditional knowledge documentation, defensive publication, and Indian intellectual property rights.
+              {t('landing.faq.subtitle')}
             </p>
 
           </div>
 
           {/* Right Column: High-End Interactive Accordion */}
           <div className="lg:col-span-7 space-y-3.5">
-            {FAQS.map((faq, index) => {
+            {faqs.map((faq, index) => {
               const expanded = openIndex === index
               const answerId = `${sectionId}-answer-${index}`
 
               return (
                 <div
-                  key={faq.question}
+                  key={faq.id || index}
                   className={`group rounded-2xl transition-all duration-300 border ${
                     expanded
                       ? 'bg-white border-[#176B45]/40 shadow-[0_10px_32px_-8px_rgba(23,107,69,0.08)]'

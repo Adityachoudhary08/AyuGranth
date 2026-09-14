@@ -1,90 +1,86 @@
 import { useEffect, useRef } from 'react'
-
-const PROCESS_STEPS = [
-  {
-    step: '01',
-    stage: 'STAGE I · EVALUATION & PRIOR ART',
-    title: 'Prior Art & Clearance',
-    subtitle: 'Novelty Assessment & TKDL Defensive Search',
-    description:
-      'Assess statutory patentability under Section 2(1)(j) and Section 3. Conduct exhaustive clearance searches across global patent databases, IPO INPASS, and the Traditional Knowledge Digital Library (TKDL) to verify novelty and inventive step prior to filing.',
-    keyAction: 'Verify Section 3 eligibility & search TKDL prior art',
-    documentCode: 'INPASS & TKDL DEFENSIVE RECORD',
-    statuteRef: 'Act Sec. 2(1)(j) & Prior Art',
-    tag: 'Novelty & Clearance',
-    accentColor: '#176B45',
-  },
-  {
-    step: '02',
-    stage: 'STAGE II · SPECIFICATION DRAFTING',
-    title: 'Drafting Specification',
-    subtitle: 'Technical Claims & Biological Declarations',
-    description:
-      'Draft the Provisional or Complete Specification under Form 2. Formulate precise legal claims, detailed embodiments, and mandatory statutory disclosures declaring the geographical source of biological materials under Section 10(4)(d)(ii).',
-    keyAction: 'Formulate precise claims & declare biological origins',
-    documentCode: 'FORM 2 · PATENT SPECIFICATION',
-    statuteRef: 'Form 2 & Section 10',
-    tag: 'Claims & Drafting',
-    accentColor: '#8e682c',
-  },
-  {
-    step: '03',
-    stage: 'STAGE III · OFFICIAL SUBMISSION',
-    title: 'Filing the Application',
-    subtitle: 'Jurisdictional Submission & Priority Date',
-    description:
-      'Submit Form 1 alongside Form 3 (Foreign Filing Undertaking) and Form 5 (Inventorship) across the appropriate IPO jurisdiction (Delhi, Mumbai, Chennai, or Kolkata) to secure sovereign priority date and official CBR receipt.',
-    keyAction: 'Submit Forms 1, 3 & 5 to secure priority date',
-    documentCode: 'FORM 1 · OFFICIAL CBR RECEIPT',
-    statuteRef: 'Form 1, 3, 5 · Priority Date',
-    tag: 'Filing & Priority',
-    accentColor: '#1e4d36',
-  },
-  {
-    step: '04',
-    stage: 'STAGE IV · STATUTORY PUBLICATION',
-    title: 'Official Gazette Publication',
-    subtitle: '18-Month Disclosure & Early Publication Option',
-    description:
-      'The application is published in the official Patent Journal under Section 11A after 18 months, or expedited within 1 month via Form 9. Publication invites public scrutiny and opens the statutory window for pre-grant opposition under Section 25(1).',
-    keyAction: 'Mandatory 18-month Patent Office Journal publication',
-    documentCode: 'SECTION 11A · OFFICIAL GAZETTE',
-    statuteRef: 'Section 11A & Form 9',
-    tag: 'Journal Publication',
-    accentColor: '#7a4d28',
-  },
-  {
-    step: '05',
-    stage: 'STAGE V · SUBSTANTIVE EXAMINATION',
-    title: 'Substantive Review & FER',
-    subtitle: 'Form 18 Request & Technical Rebuttal',
-    description:
-      'Examination is initiated by filing Form 18 within 48 months. Patent examiners scrutinize statutory compliance and issue the First Examination Report (FER). The applicant must overcome all objections and cite rebuttals within 6 months.',
-    keyAction: 'File Form 18 & respond to First Examination Report',
-    documentCode: 'FORM 18 · FIRST EXAMINATION REPORT',
-    statuteRef: 'Section 11B & 12 · FER Review',
-    tag: 'FER & Rebuttal',
-    accentColor: '#8e2b24',
-  },
-  {
-    step: '06',
-    stage: 'STAGE VI · TITLE DEED & REGISTRATION',
-    title: 'Grant of Patent',
-    subtitle: 'Issuance of Certificate of Patent & 20-Year Term',
-    description:
-      'Upon overcoming all objections and pre-grant challenges, the patent is officially sealed under Section 43. Entered into the national Register of Patents, conferring 20 years of exclusive statutory protection and economic monopoly across India.',
-    keyAction: 'Official seal under Section 43 with 20-year exclusivity',
-    documentCode: 'CERTIFICATE OF GRANT · 20-YEAR TERM',
-    statuteRef: 'Section 43 · Letters Patent',
-    tag: 'Sovereign Patent Title',
-    accentColor: '#176B45',
-  },
-]
+import { useTranslation } from 'react-i18next'
 
 export default function PatentProcessSection() {
+  const { t } = useTranslation()
   const containerRef = useRef(null)
   const cardsRef = useRef([])
   const nodesRef = useRef([])
+
+  const PROCESS_STEPS = [
+    {
+      step: '01',
+      stage: t('landing.patentProcess.step1.stage'),
+      title: t('landing.patentProcess.step1.title'),
+      subtitle: t('landing.patentProcess.step1.subtitle'),
+      description: t('landing.patentProcess.step1.description'),
+      keyAction: t('landing.patentProcess.step1.keyAction'),
+      documentCode: t('landing.patentProcess.step1.documentCode'),
+      statuteRef: t('landing.patentProcess.step1.statuteRef'),
+      tag: t('landing.patentProcess.step1.tag'),
+      accentColor: '#176B45',
+    },
+    {
+      step: '02',
+      stage: t('landing.patentProcess.step2.stage'),
+      title: t('landing.patentProcess.step2.title'),
+      subtitle: t('landing.patentProcess.step2.subtitle'),
+      description: t('landing.patentProcess.step2.description'),
+      keyAction: t('landing.patentProcess.step2.keyAction'),
+      documentCode: t('landing.patentProcess.step2.documentCode'),
+      statuteRef: t('landing.patentProcess.step2.statuteRef'),
+      tag: t('landing.patentProcess.step2.tag'),
+      accentColor: '#8e682c',
+    },
+    {
+      step: '03',
+      stage: t('landing.patentProcess.step3.stage'),
+      title: t('landing.patentProcess.step3.title'),
+      subtitle: t('landing.patentProcess.step3.subtitle'),
+      description: t('landing.patentProcess.step3.description'),
+      keyAction: t('landing.patentProcess.step3.keyAction'),
+      documentCode: t('landing.patentProcess.step3.documentCode'),
+      statuteRef: t('landing.patentProcess.step3.statuteRef'),
+      tag: t('landing.patentProcess.step3.tag'),
+      accentColor: '#1e4d36',
+    },
+    {
+      step: '04',
+      stage: t('landing.patentProcess.step4.stage'),
+      title: t('landing.patentProcess.step4.title'),
+      subtitle: t('landing.patentProcess.step4.subtitle'),
+      description: t('landing.patentProcess.step4.description'),
+      keyAction: t('landing.patentProcess.step4.keyAction'),
+      documentCode: t('landing.patentProcess.step4.documentCode'),
+      statuteRef: t('landing.patentProcess.step4.statuteRef'),
+      tag: t('landing.patentProcess.step4.tag'),
+      accentColor: '#7a4d28',
+    },
+    {
+      step: '05',
+      stage: t('landing.patentProcess.step5.stage'),
+      title: t('landing.patentProcess.step5.title'),
+      subtitle: t('landing.patentProcess.step5.subtitle'),
+      description: t('landing.patentProcess.step5.description'),
+      keyAction: t('landing.patentProcess.step5.keyAction'),
+      documentCode: t('landing.patentProcess.step5.documentCode'),
+      statuteRef: t('landing.patentProcess.step5.statuteRef'),
+      tag: t('landing.patentProcess.step5.tag'),
+      accentColor: '#8e2b24',
+    },
+    {
+      step: '06',
+      stage: t('landing.patentProcess.step6.stage'),
+      title: t('landing.patentProcess.step6.title'),
+      subtitle: t('landing.patentProcess.step6.subtitle'),
+      description: t('landing.patentProcess.step6.description'),
+      keyAction: t('landing.patentProcess.step6.keyAction'),
+      documentCode: t('landing.patentProcess.step6.documentCode'),
+      statuteRef: t('landing.patentProcess.step6.statuteRef'),
+      tag: t('landing.patentProcess.step6.tag'),
+      accentColor: '#176B45',
+    },
+  ]
 
   useEffect(() => {
     let ticking = false
@@ -180,7 +176,7 @@ export default function PatentProcessSection() {
         <div className="flex items-center justify-between border-b border-[#ece4d4] pb-3 mb-3.5">
           <div className="flex items-center gap-2.5">
             <span className="font-mono font-bold text-xs sm:text-[13px] text-[#176B45] bg-[#176B45]/10 px-2.5 py-0.5 rounded-full border border-[#176B45]/20">
-              STEP {s.step}
+              {t('landing.patentProcess.stepPrefix')} {s.step}
             </span>
             <span className="font-sans text-[11px] sm:text-xs font-bold tracking-[0.14em] uppercase text-[#6f6452]">
               {s.stage}
@@ -190,7 +186,7 @@ export default function PatentProcessSection() {
           <div>
             {isGrant ? (
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#176B45]/10 border border-[#176B45]/30 text-[#176B45] text-[10px] font-mono font-bold uppercase tracking-wide">
-                ★ LETTERS PATENT
+                {t('landing.patentProcess.lettersPatent')}
               </span>
             ) : (
               <span className="font-mono text-[10px] sm:text-[10.5px] font-medium text-[#7d7363] tracking-wider uppercase">
@@ -230,7 +226,7 @@ export default function PatentProcessSection() {
           <div className="mt-3.5 pt-3 border-t border-[#f0eae0] flex items-center gap-2 bg-[#faf7f2] px-3 py-2 rounded-xl border">
             <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: s.accentColor }} />
             <span className="font-sans text-xs font-semibold text-[#2a241c]">
-              <strong className="text-[#176B45] font-bold mr-1">Key Action:</strong>
+              <strong className="text-[#176B45] font-bold mr-1">{t('landing.patentProcess.keyActionLabel')}</strong>
               {s.keyAction}
             </span>
           </div>
@@ -243,7 +239,7 @@ export default function PatentProcessSection() {
             {s.statuteRef}
           </span>
           <span className="text-[#176B45] font-bold">
-            PATENTS ACT, 1970 · INDIA
+            {t('landing.patentProcess.patentsActRef')}
           </span>
         </div>
       </div>
@@ -263,13 +259,13 @@ export default function PatentProcessSection() {
       {/* TOP EDITORIAL HEADER */}
       <div className="w-full max-w-4xl mx-auto px-6 sm:px-8 text-center mb-8 sm:mb-10">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#176B45]/10 border border-[#176B45]/25 mb-3.5 text-[#176B45] text-xs font-bold tracking-wider uppercase font-sans">
-          Statutory Patent Lifecycle
+          {t('landing.patentProcess.badge')}
         </div>
         <h2 className="font-sans text-[clamp(2.1rem,3.8vw,3.15rem)] font-extrabold text-[#161412] tracking-tight leading-tight">
-          The Indian Patent Process
+          {t('landing.patentProcess.heading')}
         </h2>
         <p className="font-sans text-sm sm:text-base text-[#524b3e] mt-3 font-normal max-w-2xl mx-auto leading-relaxed">
-          From preliminary novelty clearance to the sovereign Letters Patent grant under the Patents Act, 1970.
+          {t('landing.patentProcess.subtitle')}
         </p>
       </div>
 
@@ -323,10 +319,10 @@ export default function PatentProcessSection() {
         <div className="border-t border-[#ded7c7] pt-8 sm:pt-10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="text-center sm:text-left">
             <h4 className="font-sans text-lg sm:text-xl text-[#161412] font-bold leading-snug">
-              Ready to explore the official filing process?
+              {t('landing.patentProcess.ctaHeading')}
             </h4>
             <p className="font-sans text-xs sm:text-[13.5px] text-[#554d3f] leading-relaxed mt-1 max-w-lg font-normal">
-              Patent applications can be filed online through the official Intellectual Property India e-filing portal (IPO).
+              {t('landing.patentProcess.ctaDesc')}
             </p>
           </div>
 
@@ -337,20 +333,21 @@ export default function PatentProcessSection() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2.5 bg-[#176B45] hover:bg-[#1f8757] text-white text-xs sm:text-sm font-semibold px-6 py-3 rounded-full shadow-[0_4px_16px_rgba(23,107,69,0.22)] hover:shadow-[0_6px_20px_rgba(23,107,69,0.3)] transition-all duration-200 cursor-pointer border border-[#279d67]/30 font-sans"
             >
-              <span>Apply for a Patent</span>
+              <span>{t('landing.patentProcess.ctaButton')}</span>
               <span className="text-sm">→</span>
             </a>
             <span className="text-[10px] text-[#786e5e] uppercase tracking-widest mt-1.5 font-mono font-medium">
-              Official Government of India portal
+              {t('landing.patentProcess.ctaBadge')}
             </span>
           </div>
         </div>
 
         {/* Legal Disclaimer */}
         <div className="w-full text-center text-[10.5px] text-[#857b6d] pt-8 font-sans">
-          AayuGranth provides informational guidance on traditional knowledge & intellectual property and does not replace professional legal counsel.
+          {t('landing.patentProcess.disclaimer')}
         </div>
       </div>
     </section>
   )
 }
+

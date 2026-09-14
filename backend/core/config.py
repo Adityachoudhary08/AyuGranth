@@ -26,9 +26,9 @@ class Settings(BaseSettings):
 
     # ── Gemini (cloud LLM) ───────────────────────────────────────────────
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-3.6-flash"
-    GEMINI_TIMEOUT_S: float = 20.0
-    GEMINI_MAX_RETRIES: int = 2
+    GEMINI_MODEL: str = "gemini-3.5-flash-lite"
+    GEMINI_TIMEOUT_S: float = 14.0
+    GEMINI_MAX_RETRIES: int = 1
 
     # ── Anthropic (legacy / fallback) ────────────────────────────────────
     ANTHROPIC_API_KEY: str = ""

@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next";
 import { Globe, CheckCircle2, AlertTriangle, ShieldCheck, FileText } from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
 import EvidenceBlock from './EvidenceBlock';
+import { translatePassportData, translatePassportStatus } from '../../lib/passportI18n';
+
 export default function InternationalSection({
   origin = 'India',
   targetCountry = 'United States',
@@ -21,10 +23,10 @@ export default function InternationalSection({
   onOpenWhy = null,
   className = ''
 }) {
-  const {
-    t
-  } = useTranslation();
-  return <section id="section-international" className={cn("bg-white border border-[#161412]/15 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6", className)}>
+  const { t } = useTranslation();
+
+  return (
+    <section id="section-international" className={cn("bg-white border border-[#161412]/15 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6", className)}>
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[#161412]/10 pb-3">
         <div>
@@ -34,7 +36,7 @@ export default function InternationalSection({
           </div>
           <p className="text-xs text-[#161412]/60 mt-0.5">{t("internationalsection.crossborderregulatoryalignmentexport", "Cross-border regulatory alignment, export quality thresholds, and destination compliance")}</p>
         </div>
-        <span className="text-[10px] font-mono text-[#8C6D46] uppercase tracking-wider font-semibold">{t("internationalsection.section05", "Section 05")}</span>
+        <span className="text-[10px] font-mono text-[#8C6D46] uppercase tracking-wider font-semibold">{t("productPassport.ui.section05", "Section 05")}</span>
       </div>
 
       {/* Corridor Banner */}
@@ -51,50 +53,68 @@ export default function InternationalSection({
         <div className="sm:text-right">
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#161412]/50 block mb-1">{t("internationalsection.destinationStatus", "Destination Status")}</span>
           <span className="inline-block px-3 py-1 bg-amber-100 text-amber-900 border border-amber-300 rounded font-mono text-[11px] font-bold uppercase tracking-wider">
-            {status}
+            {translatePassportStatus(status, t)}
           </span>
         </div>
       </div>
 
       {/* Summary Narrative */}
       <p className="text-xs sm:text-sm text-[#161412]/80 leading-relaxed">
-        {summary}
+        {translatePassportData(summary, t)}
       </p>
 
       {/* Requirements Checklist */}
       <div>
-        <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#161412]/80 mb-3">{t("internationalsection.destinationMarketRequirements", "Destination Market Requirements (")}{targetCountry})
+        <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#161412]/80 mb-3">
+          {t("internationalsection.destinationMarketRequirements", "Destination Market Requirements (")}{targetCountry})
         </h4>
         <div className="space-y-2">
-          {requirements.map((req, idx) => <div key={idx} className="flex items-start gap-2.5 p-3 rounded-xl bg-[#FAF8F3]/80 border border-[#161412]/10 text-xs">
+          {requirements.map((req, idx) => (
+            <div key={idx} className="flex items-start gap-2.5 p-3 rounded-xl bg-[#FAF8F3]/80 border border-[#161412]/10 text-xs">
               <CheckCircle2 className="w-4 h-4 text-[#176B45] shrink-0 mt-0.5" />
-              <span className="text-[#161412]/90 leading-relaxed font-medium">{req}</span>
-            </div>)}
+              <span className="text-[#161412]/90 leading-relaxed font-medium">{translatePassportData(req, t)}</span>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Missing Information Items */}
-      {missingInfo && missingInfo.length > 0 && <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/60 text-xs">
+      {missingInfo && missingInfo.length > 0 && (
+        <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/60 text-xs">
           <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-900 block mb-1.5">{t("internationalsection.dossierGapsMissingDocumentation", "Dossier Gaps / Missing Documentation for Clearance:")}</span>
           <ul className="space-y-1 text-amber-950">
-            {missingInfo.map((item, idx) => <li key={idx} className="flex items-start gap-2">
+            {missingInfo.map((item, idx) => (
+              <li key={idx} className="flex items-start gap-2">
                 <span className="text-amber-700 font-bold">!</span>
-                <span>{item}</span>
-              </li>)}
+                <span>{translatePassportData(item, t)}</span>
+              </li>
+            ))}
           </ul>
-        </div>}
+        </div>
+      )}
 
       {/* Traceable International Evidence */}
       <div>
         <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#8C6D46] mb-2.5">{t("internationalsection.destinationRegulatorySource", "Destination Regulatory Source")}</h4>
-        <EvidenceBlock source={evidence.source} document={evidence.document} section={evidence.section} jurisdiction={evidence.jurisdiction} status={evidence.status} strength={evidence.strength} excerpt={evidence.excerpt} whyThisResult={{
-        title: 'International Export Pathway Traceability',
-        signal: `Product export intended for '${targetCountry}' market.`,
-        evidence: evidence.document,
-        interpretation: 'Under destination regulations, botanical formulations must adhere to mandatory facility registration, contaminant testing, and non-disease structure/function claim language.',
-        result: status,
-        jurisdiction: targetCountry
-      }} onOpenWhy={onOpenWhy} />
+        <EvidenceBlock
+          source={evidence.source}
+          document={evidence.document}
+          section={evidence.section}
+          jurisdiction={evidence.jurisdiction}
+          status={evidence.status}
+          strength={evidence.strength}
+          excerpt={evidence.excerpt}
+          whyThisResult={{
+            title: 'International Export Pathway Traceability',
+            signal: `Product export intended for '${targetCountry}' market.`,
+            evidence: evidence.document,
+            interpretation: 'Under destination regulations, botanical formulations must adhere to mandatory facility registration, contaminant testing, and non-disease structure/function claim language.',
+            result: status,
+            jurisdiction: targetCountry
+          }}
+          onOpenWhy={onOpenWhy}
+        />
       </div>
-    </section>;
+    </section>
+  );
 }

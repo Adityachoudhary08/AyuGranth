@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useTranslation } from 'react-i18next'
 
 export default function TraditionalKnowledgeSection() {
+  const { t } = useTranslation()
   const sectionRef = useRef(null)
   const headerContainerRef = useRef(null)
   const cardsContainerRef = useRef(null)
@@ -68,19 +70,17 @@ export default function TraditionalKnowledgeSection() {
             className="fly-header font-serif tracking-[-0.03em] leading-[1.05] text-[#161412] mb-8 sm:mb-10"
             style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)' }}
           >
-            Ancient Knowledge.
+            {t('landing.tkSection.titleLine1')}
             <br />
-            <span className="italic text-[#176B45]">Modern Protection.</span>
+            <span className="italic text-[#176B45]">{t('landing.tkSection.titleLine2')}</span>
           </h2>
 
           <div className="fly-header max-w-2xl">
             <p className="text-lg sm:text-xl text-[#4a4236] leading-[1.75] font-normal mb-5">
-              India carries centuries of documented knowledge in Ayurveda and traditional medicine.
-              But when traditional knowledge becomes the foundation for new research, products, or
-              innovations, understanding what is already known becomes essential.
+              {t('landing.tkSection.desc1')}
             </p>
             <p className="font-serif italic text-lg text-[#176B45] leading-relaxed">
-              AayuGranth helps bridge the gap between traditional knowledge and modern intellectual property.
+              {t('landing.tkSection.desc2')}
             </p>
           </div>
         </div>
@@ -102,8 +102,8 @@ export default function TraditionalKnowledgeSection() {
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#161412_1px,transparent_1px)] [background-size:20px_20px]" />
 
             <div className="relative z-10 flex items-center justify-between text-[8px] font-mono text-[#8a7f72] uppercase mb-4">
-              <span>FOLIO NO. 108 · SAMHITA</span>
-              <span className="text-[#942a22] font-semibold">BOTANICAL</span>
+              <span>{t('landing.tkSection.card1.folio')}</span>
+              <span className="text-[#942a22] font-semibold">{t('landing.tkSection.card1.type')}</span>
             </div>
 
             {/* Botanical SVG */}
@@ -141,19 +141,16 @@ export default function TraditionalKnowledgeSection() {
           {/* Content area */}
           <div className="flex flex-col flex-1 p-5 sm:p-6 pt-5">
             <span className="fly-frag text-[9px] font-mono font-bold tracking-[0.24em] text-[#942a22] uppercase block mb-2">
-              FOUNDATIONAL HERITAGE
+              {t('landing.tkSection.card1.eyebrow')}
             </span>
             <h3 className="font-serif text-2xl sm:text-[1.7rem] text-[#161412] tracking-[-0.02em] leading-[1.15] mb-4">
-              Traditional Knowledge
+              {t('landing.tkSection.card1.title')}
             </h3>
             <p className="text-sm sm:text-[15px] text-[#4a4236] leading-[1.75] mb-5 flex-1">
-              Ayurveda carries centuries of knowledge about medicinal plants, formulations,
-              therapeutic practices, and methods of preparation, forming a living archive passed down
-              through generations.
+              {t('landing.tkSection.card1.desc')}
             </p>
             <p className="fly-frag font-serif italic text-xs text-[#7d7162] leading-relaxed border-t border-[#eee5d6] pt-4">
-              Texts, practices and formulations form an important part of India's traditional
-              knowledge heritage.
+              {t('landing.tkSection.card1.footnote')}
             </p>
           </div>
         </div>
@@ -169,8 +166,8 @@ export default function TraditionalKnowledgeSection() {
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#161412_1px,transparent_1px)] [background-size:20px_20px]" />
 
             <div className="relative z-10 flex items-center justify-between text-[8px] font-mono text-[#8a7f72] uppercase mb-4">
-              <span>TKDL ARCHIVE</span>
-              <span className="text-[#942a22] font-semibold">PRIOR-ART</span>
+              <span>{t('landing.tkSection.card2.folio')}</span>
+              <span className="text-[#942a22] font-semibold">{t('landing.tkSection.card2.type')}</span>
             </div>
 
             {/* Concordance record */}
@@ -178,46 +175,43 @@ export default function TraditionalKnowledgeSection() {
               <div className="border border-[#ded5c2] bg-white p-4 rounded-xl shadow-sm">
                 <div className="flex items-center justify-between text-[8px] font-mono text-[#786c5e] border-b border-[#eee5d6] pb-1.5 mb-2.5">
                   <span className="font-semibold text-[#161412]">TKDL/AYU/824</span>
-                  <span className="text-[#942a22] font-bold">DOCUMENTED</span>
+                  <span className="text-[#942a22] font-bold">{t('landing.tkSection.card2.status')}</span>
                 </div>
                 <p className="font-devanagari text-[14px] text-[#161412] font-medium leading-snug mb-2.5">
                   कासश्वासहरं चैव हिक्काघ्नं दीपनं परम्।
                 </p>
                 <div className="grid grid-cols-2 gap-2 text-[8px] font-mono pt-2 border-t border-[#f2ece0]">
                   <div>
-                    <span className="text-[#8a7f72] block uppercase">IPC:</span>
+                    <span className="text-[#8a7f72] block uppercase">{t('landing.tkSection.card2.ipcLabel')}</span>
                     <span className="text-[#161412] font-bold">A61K 36/53</span>
                   </div>
                   <div>
-                    <span className="text-[#8a7f72] block uppercase">Status:</span>
-                    <span className="text-[#176B45] font-bold">Prior-Art Disclosed</span>
+                    <span className="text-[#8a7f72] block uppercase">{t('landing.tkSection.card2.statusLabel')}</span>
+                    <span className="text-[#176B45] font-bold">{t('landing.tkSection.card2.statusValue')}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="relative z-10 flex items-center justify-between text-[9px] font-mono text-[#786c5e] pt-3 border-t border-[#eee5d6] mt-4">
-              <span className="text-[#161412] font-semibold">DISCLOSED CITATION</span>
-              <span>DEFENSIVE</span>
+              <span className="text-[#161412] font-semibold">{t('landing.tkSection.card2.disclosedCitation')}</span>
+              <span>{t('landing.tkSection.card2.defensiveTag')}</span>
             </div>
           </div>
 
           {/* Content area */}
           <div className="flex flex-col flex-1 p-5 sm:p-6 pt-5">
             <span className="fly-frag text-[9px] font-mono font-bold tracking-[0.24em] text-[#3d362c] uppercase block mb-2">
-              SYSTEMATIC ARCHIVING
+              {t('landing.tkSection.card2.eyebrow')}
             </span>
             <h3 className="font-serif text-2xl sm:text-[1.7rem] text-[#161412] tracking-[-0.02em] leading-[1.15] mb-4">
-              Documentation &amp; Prior Art
+              {t('landing.tkSection.card2.title')}
             </h3>
             <p className="text-sm sm:text-[15px] text-[#4a4236] leading-[1.75] mb-5 flex-1">
-              Before pursuing intellectual property protection, it is important to understand
-              what knowledge has already been documented or disclosed, in ancient texts, global
-              databases, and modern research.
+              {t('landing.tkSection.card2.desc')}
             </p>
             <p className="fly-frag font-serif italic text-xs text-[#7d7162] leading-relaxed border-t border-[#eee5d6] pt-4">
-              Existing publications, patents, traditional texts and other records provide
-              important prior-art context.
+              {t('landing.tkSection.card2.footnote')}
             </p>
           </div>
         </div>
@@ -231,54 +225,51 @@ export default function TraditionalKnowledgeSection() {
           {/* Visual area */}
           <div className="relative p-5 sm:p-6 pb-4 border-b border-[#e5dcce]">
             <div className="relative z-10 flex items-center justify-between text-[8px] font-mono text-[#8a7f72] uppercase mb-4">
-              <span>PATENT SPECIFICATION</span>
-              <span className="text-[#176B45] font-semibold">LETTERS PATENT</span>
+              <span>{t('landing.tkSection.card3.folio')}</span>
+              <span className="text-[#176B45] font-semibold">{t('landing.tkSection.card3.type')}</span>
             </div>
 
             {/* Patent document */}
             <div className="fly-frag relative z-10">
               <div className="border border-[#ded5c2] bg-white p-4 rounded-xl shadow-sm">
                 <div className="text-[8px] font-mono text-[#8a7f72] uppercase mb-1.5">
-                  PATENTS ACT, 1970
+                  {t('landing.tkSection.card3.actName')}
                 </div>
                 <h4 className="font-serif text-sm font-medium text-[#161412] leading-tight mb-2.5">
-                  Novel Formulation Derived Beyond Documented Prior Art
+                  {t('landing.tkSection.card3.docTitle')}
                 </h4>
                 <div className="space-y-1.5 text-[8px] font-mono text-[#615749] pt-2 border-t border-[#f2ece0]">
                   <div className="flex justify-between">
-                    <span>Novelty:</span>
-                    <span className="text-[#176B45] font-bold">Inventive Step Confirmed</span>
+                    <span>{t('landing.tkSection.card3.noveltyLabel')}</span>
+                    <span className="text-[#176B45] font-bold">{t('landing.tkSection.card3.noveltyValue')}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Protection:</span>
-                    <span className="text-[#942a22] font-bold">20-Year Term</span>
+                    <span>{t('landing.tkSection.card3.protectionLabel')}</span>
+                    <span className="text-[#942a22] font-bold">{t('landing.tkSection.card3.protectionValue')}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="relative z-10 flex items-center justify-between text-[9px] font-mono text-[#786c5e] pt-3 border-t border-[#eee5d6] mt-4">
-              <span className="text-[#176B45] font-medium">STATUTORY</span>
-              <span>INNOVATION PROTECTED</span>
+              <span className="text-[#176B45] font-medium">{t('landing.tkSection.card3.statutoryTag')}</span>
+              <span>{t('landing.tkSection.card3.innovationTag')}</span>
             </div>
           </div>
 
           {/* Content area */}
           <div className="flex flex-col flex-1 p-5 sm:p-6 pt-5">
             <span className="fly-frag text-[9px] font-mono font-bold tracking-[0.24em] text-[#176B45] uppercase block mb-2">
-              SOVEREIGN PROTECTION
+              {t('landing.tkSection.card3.eyebrow')}
             </span>
             <h3 className="font-serif text-2xl sm:text-[1.7rem] text-[#161412] tracking-[-0.02em] leading-[1.15] mb-4">
-              Intellectual Property
+              {t('landing.tkSection.card3.title')}
             </h3>
             <p className="text-sm sm:text-[15px] text-[#4a4236] leading-[1.75] mb-5 flex-1">
-              When a new and eligible innovation goes beyond what is already known, intellectual
-              property can provide a framework for protecting it, securing the right to
-              benefit from original research.
+              {t('landing.tkSection.card3.desc')}
             </p>
             <p className="fly-frag font-serif italic text-xs text-[#7d7162] leading-relaxed border-t border-[#eee5d6] pt-4">
-              Patents, trademarks and other forms of IP protect different kinds of innovation
-              and identity.
+              {t('landing.tkSection.card3.footnote')}
             </p>
           </div>
         </div>

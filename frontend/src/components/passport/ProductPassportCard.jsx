@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next";
 import { Shield, Sparkles, CheckCircle2, AlertTriangle, AlertCircle, Clock, Globe, Download } from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
 import { getPassportQrUrl } from '../../api';
+import { translatePassportStatus, translatePassportData } from '../../lib/passportI18n';
+
 export default function ProductPassportCard({
   productName = 'AshwaBalance Capsules',
   productCategory = 'Ayurvedic Formulation',
@@ -103,7 +105,7 @@ export default function ProductPassportCard({
                 {productName.toUpperCase()}
               </h2>
               <p className="font-serif italic text-xs sm:text-sm text-[#161412]/70 mt-0.5">
-                {productCategory}
+                {translatePassportData(productCategory, t)}
               </p>
             </div>
 
@@ -145,15 +147,15 @@ export default function ProductPassportCard({
             <span className={cn("inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-mono text-[10.5px] font-bold uppercase tracking-wider border", statusInfo.bg)}>
               <span className={cn("w-1.5 h-1.5 rounded-full", statusInfo.dot)} />
               <StatusIcon className="w-3.5 h-3.5" />
-              <span>{statusInfo.label}</span>
+              <span>{translatePassportStatus(statusInfo.label, t)}</span>
             </span>
           </div>
 
           {/* Provenance Metadata */}
           <div className="flex items-center gap-4 text-[10px] font-mono text-[#161412]/60">
             {evidenceCount > 0 && <span className="flex items-center gap-1">
-                <span className="font-bold text-[#176B45]">{evidenceCount}</span>{t("productpassportcard.sourcesCited", "Sources Cited")}</span>}
-            <span>{t("productpassportcard.analyzed", "Analyzed:")}{lastAnalyzed}</span>
+                <span className="font-bold text-[#176B45]">{evidenceCount}</span> {t("productpassportcard.sourcesCited", "Sources Cited")}</span>}
+            <span>{t("productpassportcard.analyzed", "Analyzed:")} {lastAnalyzed}</span>
           </div>
         </div>
 
