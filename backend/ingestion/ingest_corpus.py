@@ -56,6 +56,74 @@ _INTERNATIONAL_FILENAME_MARKERS = (
     "nagoya",
 )
 
+# ============================================================================
+# LANGUAGE DETECTION
+# ============================================================================
+
+# Known Sanskrit classical text filename keywords — these are always Sanskrit (ISO 639: "sa")
+_SANSKRIT_FILENAME_MARKERS = (
+    "charaka", "charak", "sushruta", "susruta", "ashtanga",
+    "ashtangahridaya", "ashtanga_hridaya", "vagbhata", "vagbhatt",
+    "sharangadhara", "sharangadhar", "bhavaprakasha", "bhavaprakash",
+    "bhava_prakash", "dhanvantari", "nighantu", "vaidyajivan",
+    "yogaratnakara", "rasatarangini", "rasa_tarangini", "sahasrayoga",
+    "astanga", "ashtanga_samgraha", "madanpala", "raj_nighantu",
+    "madanapal", "kaiyadev", "kaiyadevanighantu",
+)
+
+# Known Hindi-language document filename keywords
+_HINDI_FILENAME_MARKERS = (
+    "hindi", "_hi_", "_hi.", "_hin_", "rajpatra", "raj_patra",
+    "gazette_hindi", "parishad", "adhiniyam", "niyamavali", "vigyapti",
+    "circular_hi", "notification_hi",
+)
+
+
+def _detect_document_language(
+    filename: str,
+    category_folder: str,
+    text_sample: str = "",
+) -> str:
+    """
+    Detect the primary language of a corpus document.
+
+    Detection strategy (in priority order):
+    1. Sanskrit classical texts — identified by filename keywords ("charaka", etc.)
+       Return "sa" (ISO 639-1 / BCP-47 for Sanskrit).
+    2. Hindi documents — identified by filename keywords OR langdetect on text sample.
+       Return "hi".
+    3. Everything else — assumed English.
+       Return "en".
+
+    This is intentionally conservative: if unsure, default to "en" so no chunk
+    is accidentally excluded from LLM context without translation.
+    """
+    name_lower = filename.lower()
+
+    # Priority 1: Sanskrit classical texts
+    if any(marker in name_lower for marker in _SANSKRIT_FILENAME_MARKERS):
+        return "sa"
+
+    # Priority 2: Hindi by filename
+    if any(marker in name_lower for marker in _HINDI_FILENAME_MARKERS):
+        return "hi"
+
+    # Priority 3: Try langdetect on a sample of the text (first 2000 chars)
+    if text_sample and text_sample.strip():
+        try:
+            from langdetect import detect  # type: ignore[import]
+            sample = text_sample.strip()[:2000]
+            detected = detect(sample)
+            # Map langdetect codes to BCP-47
+            if detected in ("hi", "mr", "bn", "gu", "pa", "ta", "te", "kn", "ml",
+                            "ur", "sa", "or", "as", "ne"):
+                return detected
+        except Exception:  # noqa: BLE001 — langdetect may fail on short/mixed text
+            pass
+
+    return "en"
+
+
 
 # ============================================================================
 # CHUNKING
@@ -590,10 +658,20 @@ async def ingest_corpus(
                         "filename"
                     ],
 
-                    # Current corpus assumptions
+                    # Language detection: Sanskrit classical texts, Hindi notifications,
+                    # or English statutes — detected from filename + text sample
+                    "language": _detect_document_language(
+                        filename,
+                        category_folder,
+                        text_sample=chunk_text[:2000] if chunk_text else "",
+                    ),
+
+                    # source_type: statute for legal docs; overridden per-document if needed
                     "source_type": "statute",
 
-                    "language": "en",
+                    # chunk_text_en: lazily populated on first retrieval by RAG pipeline
+                    # when the chunk's language != "en" (see services/bhashini_client.py)
+                    "chunk_text_en": None,
 
                     # Chunk ordering
                     "chunk_index": i,

@@ -37,6 +37,9 @@ class ExportRequest(BaseModel):
     target_country: str = Field(
         ..., description="Target export country: 'Germany' or 'USA'"
     )
+    language: str = Field(
+        "en", description="Target language for the generated assessment"
+    )
 
 
 class ExportChecklistItem(BaseModel):
@@ -519,7 +522,7 @@ async def export_navigate(
 
     confidence = "HIGH" if len(sources) >= 3 else "MODERATE"
 
-    return ExportResponse(
+    response = ExportResponse(
         product_id=request.product_id,
         product_name=product_name,
         target_country=country,
@@ -529,4 +532,48 @@ async def export_navigate(
         confidence=confidence,
         sources=sources,
     )
+
+    if request.language != "en":
+        import asyncio
+        from services.bhashini_client import translate_safe
+
+        async def translate_field(text: str) -> str:
+            if not text:
+                return text
+            translated, ok = await translate_safe(text, "en", request.language)
+            return translated if ok else text
+
+        tasks = []
+        
+        # Translate heavy metal warning
+        if response.heavy_metal_warning.triggered:
+            async def translate_hm():
+                response.heavy_metal_warning.message = await translate_field(response.heavy_metal_warning.message)
+            tasks.append(translate_hm())
+
+        # Translate checklist items
+        async def translate_item(item: ExportChecklistItem):
+            item.area, item.requirement, item.detail, item.reasoning, item.evidence_excerpt = await asyncio.gather(
+                translate_field(item.area),
+                translate_field(item.requirement),
+                translate_field(item.detail),
+                translate_field(item.reasoning),
+                translate_field(item.evidence_excerpt)
+            )
+        
+        for item in response.checklist:
+            tasks.append(translate_item(item))
+
+        # Translate reasoning and disclaimer
+        async def translate_rag_reasoning():
+            response.rag_reasoning = await translate_field(response.rag_reasoning)
+        
+        async def translate_disclaimer():
+            response.disclaimer = await translate_field(response.disclaimer)
+
+        tasks.extend([translate_rag_reasoning(), translate_disclaimer()])
+
+        await asyncio.gather(*tasks)
+
+    return response
 

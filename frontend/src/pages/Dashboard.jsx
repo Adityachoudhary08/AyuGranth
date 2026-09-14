@@ -2,8 +2,10 @@ import { useState, useRef, useEffect } from 'react';
 import { BookOpen, AlertTriangle, Scale, Leaf, FileText, CheckCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
+import { useTranslation } from 'react-i18next';
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const statCardsRef = useRef([]);
   const dashboardRef = useRef(null);
@@ -18,7 +20,6 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
-    // GSAP entrance animation for stat cards
     gsap.fromTo(
       statCardsRef.current,
       { opacity: 0, y: 20 },
@@ -29,8 +30,8 @@ export default function Dashboard() {
   return (
     <div ref={dashboardRef} className="max-w-6xl mx-auto space-y-8 pb-10">
       <div>
-        <h1 className="text-3xl font-serif text-[#176B45] mb-2">Welcome to AyuGranth</h1>
-        <p className="text-[#161412]/60">Your central hub for Ayurveda IP intelligence and regulatory compliance.</p>
+        <h1 className="text-3xl font-serif text-[#176B45] mb-2">{t('dashboard.welcome')}</h1>
+        <p className="text-[#161412]/60">{t('dashboard.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -43,7 +44,7 @@ export default function Dashboard() {
               <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
                 <FileText className="w-5 h-5" />
               </div>
-              <h3 className="font-medium">Documents Analyzed</h3>
+              <h3 className="font-medium">{t('dashboard.documentsAnalyzed')}</h3>
             </div>
             <div className="flex items-end gap-3">
               <p className="text-4xl font-serif font-bold text-[#161412] tracking-tight">{stats.documentsAnalyzed}</p>
@@ -64,7 +65,7 @@ export default function Dashboard() {
               <div className="p-2 bg-purple-50 rounded-xl text-purple-600">
                 <BookOpen className="w-5 h-5" />
               </div>
-              <h3 className="font-medium">Formulations Checked</h3>
+              <h3 className="font-medium">{t('dashboard.formulationsChecked')}</h3>
             </div>
             <div className="flex items-end gap-3">
               <p className="text-4xl font-serif font-bold text-[#161412] tracking-tight">{stats.noveltyChecks}</p>
@@ -85,7 +86,7 @@ export default function Dashboard() {
               <div className="p-2 bg-amber-50 rounded-xl text-amber-600">
                 <AlertTriangle className="w-5 h-5" />
               </div>
-              <h3 className="font-medium">Active TK Alerts</h3>
+              <h3 className="font-medium">{t('dashboard.activeTkAlerts')}</h3>
             </div>
             <div className="flex items-end gap-3">
               <p className="text-4xl font-serif font-bold text-[#161412] tracking-tight">{stats.activeAlerts}</p>
@@ -101,7 +102,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-white border border-[#161412]/10 rounded-xl shadow-sm overflow-hidden">
           <div className="px-6 py-5 border-b border-[#161412]/10 bg-[#f8f7f4]">
-            <h3 className="font-serif text-lg text-[#176B45]">Quick Actions</h3>
+            <h3 className="font-serif text-lg text-[#176B45]">{t('dashboard.quickActions')}</h3>
           </div>
           <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Link to="/assistant" className="flex flex-col gap-3 p-5 border border-[#161412]/10 rounded-xl hover:border-[#176B45]/50 hover:bg-[#176B45]/5 hover:scale-[1.02] transition-all shadow-sm">
@@ -109,8 +110,8 @@ export default function Dashboard() {
                 <BookOpen className="w-5 h-5" />
               </div>
               <div>
-                <span className="font-bold text-[#161412] block mb-1">Ask AI Assistant</span>
-                <span className="text-xs text-[#161412]/60 leading-relaxed block">Research classical texts and regulations</span>
+                <span className="font-bold text-[#161412] block mb-1">{t('dashboard.askAI')}</span>
+                <span className="text-xs text-[#161412]/60 leading-relaxed block">{t('dashboard.askAIDesc')}</span>
               </div>
             </Link>
             <Link to="/ip/novelty" className="flex flex-col gap-3 p-5 border border-[#161412]/10 rounded-xl hover:border-[#176B45]/50 hover:bg-[#176B45]/5 hover:scale-[1.02] transition-all shadow-sm">
@@ -118,8 +119,8 @@ export default function Dashboard() {
                 <Leaf className="w-5 h-5" />
               </div>
               <div>
-                <span className="font-bold text-[#161412] block mb-1">Check Novelty</span>
-                <span className="text-xs text-[#161412]/60 leading-relaxed block">Verify formulation patentability</span>
+                <span className="font-bold text-[#161412] block mb-1">{t('dashboard.checkNovelty')}</span>
+                <span className="text-xs text-[#161412]/60 leading-relaxed block">{t('dashboard.checkNoveltyDesc')}</span>
               </div>
             </Link>
             <Link to="/compliance/regulatory" className="flex flex-col gap-3 p-5 border border-[#161412]/10 rounded-xl hover:border-[#176B45]/50 hover:bg-[#176B45]/5 hover:scale-[1.02] transition-all shadow-sm">
@@ -127,8 +128,8 @@ export default function Dashboard() {
                 <Scale className="w-5 h-5" />
               </div>
               <div>
-                <span className="font-bold text-[#161412] block mb-1">Regulatory Pathway</span>
-                <span className="text-xs text-[#161412]/60 leading-relaxed block">Find Ayush licensing requirements</span>
+                <span className="font-bold text-[#161412] block mb-1">{t('dashboard.regulatoryPathway')}</span>
+                <span className="text-xs text-[#161412]/60 leading-relaxed block">{t('dashboard.regulatoryPathwayDesc')}</span>
               </div>
             </Link>
             <Link to="/documents" className="flex flex-col gap-3 p-5 border border-[#161412]/10 rounded-xl hover:border-[#176B45]/50 hover:bg-[#176B45]/5 hover:scale-[1.02] transition-all shadow-sm">
@@ -136,8 +137,8 @@ export default function Dashboard() {
                 <FileText className="w-5 h-5" />
               </div>
               <div>
-                <span className="font-bold text-[#161412] block mb-1">Upload Document</span>
-                <span className="text-xs text-[#161412]/60 leading-relaxed block">Analyze patents and claims</span>
+                <span className="font-bold text-[#161412] block mb-1">{t('dashboard.uploadDocument')}</span>
+                <span className="text-xs text-[#161412]/60 leading-relaxed block">{t('dashboard.uploadDocumentDesc')}</span>
               </div>
             </Link>
           </div>
@@ -145,7 +146,7 @@ export default function Dashboard() {
 
         <div className="bg-[#f8f7f4] border border-[#161412]/10 rounded-xl shadow-inner overflow-hidden">
           <div className="px-6 py-5 border-b border-[#161412]/10 bg-white shadow-sm">
-            <h3 className="font-serif text-lg text-[#161412]">Recent Activity</h3>
+            <h3 className="font-serif text-lg text-[#161412]">{t('dashboard.recentActivity')}</h3>
           </div>
           <div className="p-4 space-y-3">
             <button 
@@ -154,9 +155,9 @@ export default function Dashboard() {
             >
               <div className="mt-1"><CheckCircle className="w-5 h-5 text-green-600" /></div>
               <div>
-                <p className="font-bold text-[#161412] group-hover:text-[#176B45] transition-colors">Novelty Check Completed</p>
-                <p className="text-sm text-[#161412]/60 mt-0.5">"Ashwagandha & Turmeric extract" returned 82% novelty score.</p>
-                <p className="text-xs font-medium text-[#161412]/40 mt-2 uppercase tracking-wider">2 hours ago</p>
+                <p className="font-bold text-[#161412] group-hover:text-[#176B45] transition-colors">{t('dashboard.noveltyCheckCompleted')}</p>
+                <p className="text-sm text-[#161412]/60 mt-0.5">{t('dashboard.noveltyCheckDesc')}</p>
+                <p className="text-xs font-medium text-[#161412]/40 mt-2 uppercase tracking-wider">{t('dashboard.hoursAgo', { n: 2 })}</p>
               </div>
             </button>
 
@@ -166,9 +167,9 @@ export default function Dashboard() {
             >
               <div className="mt-1"><AlertTriangle className="w-5 h-5 text-amber-500" /></div>
               <div>
-                <p className="font-bold text-[#161412] group-hover:text-amber-600 transition-colors">TK Watch Alert</p>
-                <p className="text-sm text-[#161412]/60 mt-0.5">New WIPO filing detected containing "Neem Extract".</p>
-                <p className="text-xs font-medium text-[#161412]/40 mt-2 uppercase tracking-wider">5 hours ago</p>
+                <p className="font-bold text-[#161412] group-hover:text-amber-600 transition-colors">{t('dashboard.tkWatchAlert')}</p>
+                <p className="text-sm text-[#161412]/60 mt-0.5">{t('dashboard.tkWatchDesc')}</p>
+                <p className="text-xs font-medium text-[#161412]/40 mt-2 uppercase tracking-wider">{t('dashboard.hoursAgo', { n: 5 })}</p>
               </div>
             </button>
           </div>

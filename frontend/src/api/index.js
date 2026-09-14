@@ -17,6 +17,15 @@ export const ragApi = {
   askQuestion: async (data, config = {}) => apiClient.post('/ask', data, config),
 };
 
+export const multilingualApi = {
+  /** Translate → RAG → translate pipeline (used when language !== 'en') */
+  query: async (data, config = {}) => apiClient.post('/multilingual/query', data, config),
+  /** Speech-to-text: { audio_base64, language } → { transcript } */
+  asr: async (data, config = {}) => apiClient.post('/multilingual/asr', data, config),
+  /** Text-to-speech: { text, language } → { audio_base64 } */
+  tts: async (data, config = {}) => apiClient.post('/multilingual/tts', data, config),
+};
+
 export const documentsApi = {
   uploadDocument: async (file, config = {}) => {
     const formData = new FormData();

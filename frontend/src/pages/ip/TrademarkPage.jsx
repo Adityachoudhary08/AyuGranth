@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Search, ShieldAlert, CheckCircle2, AlertTriangle, ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils/cn';
 import Navbar from '../../components/Navbar';
 import { ipApi } from '../../api';
 
 export default function TrademarkPage() {
+  const { t } = useTranslation();
   const [brandName, setBrandName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -23,7 +25,7 @@ export default function TrademarkPage() {
       setResult(res);
     } catch (err) {
       console.error(err);
-      setError("Failed to connect to the Trademark analysis engine. Please try again.");
+      setError(t('trademark.scanner.error', "Failed to connect to the Trademark analysis engine. Please try again."));
     } finally {
       setIsLoading(false);
     }
@@ -63,17 +65,17 @@ export default function TrademarkPage() {
     <div className="min-h-screen bg-[#faf8f3] font-sans pb-20">
       <Navbar />
 
-      <main className="max-w-4xl mx-auto pt-28 px-4 sm:px-6 flex flex-col items-center">
+      <main className="max-w-4xl mx-auto pt-[140px] px-4 sm:px-6 flex flex-col items-center">
         
         {/* Header Section */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#176B45]/10 text-[#176B45] text-xs font-bold uppercase tracking-widest rounded-full mb-4">
             <Search className="w-3.5 h-3.5" />
-            Trademark Screening Radar
+            Conflict Radar
           </div>
-          <h1 className="text-4xl md:text-5xl font-serif text-[#161412] mb-4">Trademark Scanner</h1>
+          <h1 className="text-4xl md:text-5xl font-serif text-[#161412] mb-4">{t('trademark.scanner.title', 'Trademark Scanner')}</h1>
           <p className="text-[#161412]/60 max-w-xl mx-auto">
-            Preliminary candidate screening of your proposed brand name against an indexed dataset of traditional and herbal marks.
+            Perform a preliminary assessment of your proposed brand name against a database of known traditional and proprietary Ayurvedic trademarks.
           </p>
         </div>
 
@@ -84,7 +86,7 @@ export default function TrademarkPage() {
               type="text"
               value={brandName}
               onChange={(e) => setBrandName(e.target.value)}
-              placeholder="Enter proposed brand name (e.g., Dabur, Daboor, VAYORA)"
+              placeholder="Enter brand name to check (e.g., Dabur, Patanjali)"
               className="w-full bg-transparent border-none pl-4 pr-32 py-3 text-[#161412] focus:outline-none"
             />
             <button
@@ -95,10 +97,10 @@ export default function TrademarkPage() {
               {isLoading ? (
                 <span className="flex items-center gap-2">
                   <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
-                  Checking
+                  {t('common.checking', 'Checking...')}
                 </span>
               ) : (
-                "Scan Name"
+                t('trademark.scanner.scanBtn', 'Scan Name')
               )}
             </button>
           </div>
@@ -120,41 +122,24 @@ export default function TrademarkPage() {
             <div className="bg-white rounded-2xl border border-[#161412]/15 shadow-sm overflow-hidden">
               <div className="p-6 md:p-8 border-b border-[#161412]/10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                  <h2 className="text-[10px] font-bold text-[#176B45] uppercase tracking-widest mb-1">Brand Screening</h2>
+                  <h2 className="text-sm font-bold text-[#161412]/50 uppercase tracking-widest mb-1">Target Name</h2>
                   <p className="text-2xl font-serif text-[#161412]">{result.brand_name}</p>
                 </div>
                 
                 <div className={cn("px-4 py-3 rounded-xl border flex items-center gap-3", getPostureColor(result.clearance_posture || result.status, result.risk_level))}>
                   {getPostureIcon(result.clearance_posture || result.status, result.risk_level)}
                   <div>
-                    <div className="text-[10px] uppercase font-bold opacity-75 tracking-widest leading-none mb-1">Clearance Posture</div>
-                    <div className="text-sm md:text-base font-bold leading-tight">{result.clearance_posture || result.status}</div>
+                    <div className="text-[10px] uppercase font-bold opacity-70 tracking-widest leading-none mb-1">Risk Level</div>
+                    <div className="text-lg font-bold capitalize leading-none">{result.risk_level}</div>
                   </div>
                 </div>
               </div>
 
-              {/* Summary text */}
-              <div className="px-6 py-4 bg-[#faf8f3]/60 border-b border-[#161412]/10 text-xs sm:text-sm text-stone-700 leading-relaxed">
-                <p>{result.summary}</p>
-              </div>
-
-              {/* Descriptive / Generic Notice */}
-              {result.term_analysis && (
-                <div className="p-4 mx-6 my-4 bg-blue-50/80 border border-blue-200/80 rounded-xl text-xs sm:text-sm text-blue-900 leading-relaxed">
-                  <div className="font-bold text-[11px] uppercase tracking-wider text-blue-700 mb-1 flex items-center gap-1.5">
-                    <AlertTriangle className="w-3.5 h-3.5" /> Descriptive / Generic Term Flag
-                  </div>
-                  <p>{result.term_analysis}</p>
-                </div>
-              )}
-
-              {/* SIMILAR CANDIDATES SECTION */}
-              <div className="p-6 md:p-8">
-                <h3 className="text-xs font-bold text-[#176B45] uppercase tracking-widest mb-4 flex items-center justify-between">
-                  <span>Similar Candidates (Screening Signals)</span>
-                  <span className="text-[11px] font-normal text-[#161412]/50 lowercase">
-                    {result.matches?.length || 0} candidate(s)
-                  </span>
+              {/* Match Details */}
+              <div className="p-6 md:p-8 bg-[#faf8f3]/50">
+                <h3 className="text-sm font-bold text-[#161412] mb-4 flex items-center justify-between">
+                  Similarity Matches
+                  <span className="text-xs font-normal text-[#161412]/50">Top {result.matches?.length || 0} results</span>
                 </h3>
                 
                 {result.matches && result.matches.length > 0 ? (
@@ -175,11 +160,8 @@ export default function TrademarkPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-6 px-4 border border-dashed border-[#161412]/20 rounded-xl bg-stone-50/50">
-                    <p className="font-medium text-stone-800 text-sm">No Similar Candidate Found in Indexed Dataset</p>
-                    <p className="text-xs text-[#161412]/60 mt-1 max-w-md mx-auto">
-                      This does not establish trademark availability or registrability. Formal clearance requires searching official IP India registry records.
-                    </p>
+                  <div className="text-center py-6 text-[#161412]/50 text-sm border border-dashed border-[#161412]/20 rounded-lg bg-white">
+                    No significant matches found in the database.
                   </div>
                 )}
               </div>
@@ -220,9 +202,9 @@ export default function TrademarkPage() {
             )}
 
             {/* Disclaimer */}
-            <div className="p-4 bg-stone-100/70 border border-stone-200 rounded-xl text-[#161412]/60 text-xs leading-relaxed">
-              <strong className="text-stone-700">Screening Notice: </strong>
-              {result.disclaimer}
+            <div className="flex items-start gap-2 px-4 text-[#161412]/40 text-xs">
+              <span className="font-bold text-[10px] uppercase tracking-wider mt-0.5">Note:</span>
+              <p>{result.disclaimer}</p>
             </div>
             
             <div className="mt-8 text-center">
@@ -233,7 +215,7 @@ export default function TrademarkPage() {
                 }}
                 className="text-[#176B45] text-sm font-medium hover:underline inline-flex items-center gap-1"
               >
-                Scan another brand name <ArrowRight className="w-3.5 h-3.5" />
+                {t('trademark.scanner.scanAnother', 'Scan another brand name')} <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>

@@ -4,9 +4,11 @@ import asyncio
 import logging
 import time
 from typing import Optional, List, Dict, Any
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import BaseModel, Field
 
+from core.database import get_db
 from services.out_of_scope_filter import is_in_scope
 from services.rag_pipeline import run_rag_query
 
@@ -19,6 +21,7 @@ router = APIRouter(prefix="/ask", tags=["rag"])
 class AskRequest(BaseModel):
     query: str
     jurisdiction: Optional[str] = "India"
+    language: str = "en"  # BCP-47 language code; non-'en' triggers Bhashini translate→RAG→translate
 
 
 class ClaimItem(BaseModel):
@@ -65,15 +68,65 @@ class AskResponse(BaseModel):
         "Consult a qualified IP/regulatory professional."
     )
     stage_timings: Optional[Dict[str, float]] = None
+    # Multilingual fields
+    language: str = "en"
+    translation_available: bool = True
+    translation_notice: Optional[str] = None
+    english_answer: Optional[str] = None
 
 
 @router.post("/", response_model=AskResponse)
-async def ask(request: AskRequest):
+async def ask(
+    request: AskRequest,
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
     """General cited Q&A using RAG with programmatic verification."""
     req_start = time.time()
     clean_query = request.query.strip()
-    
-    logger.info("[ASK ROUTE] Received request: '%s' (Jurisdiction: %s)", clean_query[:60], request.jurisdiction)
+    lang = (request.language or "en").lower().strip()
+
+    logger.info(
+        "[ASK ROUTE] Received request: '%s' (Jurisdiction: %s, Language: %s)",
+        clean_query[:60], request.jurisdiction, lang,
+    )
+
+    # ── Multilingual proxy: non-English queries go through the full
+    #    translate→RAG→translate pipeline in multilingual.py ───────────────────
+    if lang != "en":
+        try:
+            from routes.multilingual import multilingual_query, MultilingualQueryRequest, DISCLAIMER_TRANSLATIONS
+            ml_req = MultilingualQueryRequest(
+                text=clean_query,
+                source_language=lang,
+                jurisdiction=request.jurisdiction or "India",
+            )
+            ml_resp = await multilingual_query(ml_req, db)
+            # Build a full AskResponse from the multilingual result
+            sources = ml_resp.sources or []
+            return AskResponse(
+                answer=ml_resp.translated_answer,
+                assessment=ml_resp.translated_answer,
+                why="",
+                summary="",
+                key_points=[],
+                claims=[],
+                sources_used=sources,
+                evidence=sources,
+                jurisdiction=request.jurisdiction or "India",
+                confidence=0.85,
+                confidence_label="high",
+                abstained=False,
+                intent="GENERAL_RESEARCH",
+                response_status="success",
+                disclaimer=ml_resp.disclaimer,
+                language=lang,
+                translation_available=ml_resp.translation_available,
+                translation_notice=ml_resp.translation_notice,
+                english_answer=ml_resp.english_answer,
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.error("[ASK ROUTE] Multilingual pipeline failed: %s — falling back to English", exc)
+            # Fall through to normal English pipeline below
 
     # 1. Out of scope check
     try:

@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Bell, Search, LayoutGrid, ChevronDown, Scale, ShieldCheck, Globe, BarChart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils/cn';
 
 export default function Topbar() {
+  const { t } = useTranslation();
   const [servicesOpen, setServicesOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -19,7 +21,7 @@ export default function Topbar() {
 
   const services = [
     { name: 'Regulatory Pathway', href: '/compliance/regulatory', icon: Scale, desc: 'Find Ayush licensing requirements' },
-    { name: 'ABS Compliance', href: '/abs', icon: ShieldCheck, desc: 'Biological Diversity Act checks' },
+    { name: 'ABS Compliance', href: '/compliance/abs', icon: ShieldCheck, desc: 'Biological Diversity Act checks' },
     { name: 'Evaluation Dashboard', href: '/analytics/evaluation', icon: BarChart, desc: 'System benchmark metrics' },
     { name: 'Export Navigator', href: '#', icon: Globe, desc: 'Cross-border compliance' },
   ];
@@ -30,7 +32,7 @@ export default function Topbar() {
         {/* Command Search Bar Trigger */}
         <button className="flex items-center gap-2 text-sm text-[#161412]/50 bg-white border border-[#161412]/10 rounded-xl px-4 py-2 w-72 hover:border-[#176B45]/50 hover:bg-white shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#176B45]/20">
           <Search className="w-4 h-4" />
-          <span>Search AyuGranth...</span>
+          <span>{t('nav.search')}</span>
           <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded bg-[#f8f7f4] px-1.5 font-mono text-[10px] font-medium text-[#161412]/50 border border-[#161412]/10">
             <span className="text-xs">⌘</span>K
           </kbd>
@@ -46,17 +48,17 @@ export default function Topbar() {
             )}
           >
             <LayoutGrid className="w-4 h-4" />
-            Services
+            {t('nav.services')}
             <ChevronDown className="w-4 h-4 opacity-50" />
           </button>
 
           {servicesOpen && (
             <div className="absolute top-full left-0 mt-2 w-80 bg-white border border-[#161412]/10 rounded-xl shadow-lg p-2 animate-in fade-in slide-in-from-top-2 duration-200">
-              <h4 className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#161412]/40">Explore Tools</h4>
+              <h4 className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#161412]/40">{t('nav.exploreTools')}</h4>
               <div className="flex flex-col gap-1">
                 {services.map((service) => (
                   <Link
-                    key={service.name}
+                    key={service.nameKey}
                     to={service.href}
                     onClick={() => setServicesOpen(false)}
                     className="flex items-start gap-3 p-3 rounded-lg hover:bg-[#161412]/5 transition-colors group"
@@ -65,8 +67,8 @@ export default function Topbar() {
                       <service.icon className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-[#161412] group-hover:text-[#176B45] transition-colors">{service.name}</p>
-                      <p className="text-xs text-[#161412]/50 mt-0.5">{service.desc}</p>
+                      <p className="text-sm font-medium text-[#161412] group-hover:text-[#176B45] transition-colors">{t(service.nameKey)}</p>
+                      <p className="text-xs text-[#161412]/50 mt-0.5">{t(service.descKey)}</p>
                     </div>
                   </Link>
                 ))}

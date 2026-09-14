@@ -44,8 +44,12 @@ class Settings(BaseSettings):
     # ── Public passport verification ────────────────────────────────────
     PUBLIC_APP_BASE_URL: str = "http://localhost:5173"
 
-    # ── Bhashini ─────────────────────────────────────────────────────────
+    # ── Bhashini ─────────────────────────────────────────────────────────────
+    # BHASHINI_USER_ID: your Bhashini user-id from bhashini.gov.in registration
+    BHASHINI_USER_ID: str = ""
+    # BHASHINI_API_KEY: ulcaApiKey (ULCA registration key) — used as Authorization header
     BHASHINI_API_KEY: str = ""
+    BHASHINI_API_URL: str = "https://dhruva-api.bhashini.gov.in/services/inference/pipeline"
 
     # ── Embeddings ───────────────────────────────────────────────────────
     EMBEDDING_MODEL: str = "BAAI/bge-m3"

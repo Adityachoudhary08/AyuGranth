@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BookOpen, Check, Copy, ChevronDown, ChevronUp, Scale, ShieldCheck, FileText, ExternalLink } from 'lucide-react';
+import { BookOpen, Check, Copy, ChevronDown, ChevronUp, Scale, ShieldCheck, FileText, ExternalLink, Globe } from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
 
 export default function ChatSourceCard({
@@ -20,6 +20,9 @@ export default function ChatSourceCard({
   const isVerified = source.verified !== false;
   const pubNumber = source.publication_number || "";
   const date = source.date || "";
+  // Multilingual provenance — citation source names/sections are NEVER translated
+  const originalLanguageNote = source.original_language_note || "";
+  const originalLanguageName = source.original_language_name || "";
   
   // Evidence type detection
   const evType = source.evidence_type || source.type || (
@@ -132,7 +135,7 @@ export default function ChatSourceCard({
         {docName}
       </div>
 
-      {/* Publication Number / Section info / Date */}
+      {/* Publication Number / Section info / Date / Original Language note */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-[11px] font-mono opacity-80">
         {pubNumber && (
           <span className="font-semibold text-blue-600 dark:text-blue-400">
@@ -149,6 +152,19 @@ export default function ChatSourceCard({
         )}
         {date && (
           <span>Date: {date}</span>
+        )}
+        {/* Original language note — shown when chunk was NOT originally in English.
+            Source document names and section references are never translated. */}
+        {originalLanguageNote && (
+          <span className={cn(
+            "inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-mono text-[10px] font-bold border",
+            isDarkMode
+              ? "bg-amber-950/40 text-amber-300 border-amber-800/40"
+              : "bg-amber-50 text-amber-700 border-amber-200"
+          )}>
+            <Globe className="w-2.5 h-2.5" />
+            {originalLanguageNote}
+          </span>
         )}
       </div>
 

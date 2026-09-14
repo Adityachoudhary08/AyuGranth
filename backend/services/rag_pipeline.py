@@ -2,6 +2,15 @@
 AayuGranth RAG Pipeline.
 Integrates Intent Routing, MongoDB Atlas vector retrieval, retry-enabled Gemini synthesis,
 evidence type isolation (TK vs Prior Art vs Regulatory vs Statutory), and intent-aware fallbacks.
+
+Multilingual Corpus Note
+------------------------
+The bge-m3 embedding model is multilingual — retrieval already works across languages
+(Hindi/Sanskrit queries can match English chunks and vice versa) via the shared vector space.
+At generation time, however, the LLM needs consistent English context. Any retrieved chunk
+whose `language` field is not "en" is translated to English (via services.bhashini_client)
+before being included in the LLM prompt. Translations are cached in MongoDB as `chunk_text_en`
+so the same chunk is only translated once.
 """
 
 import asyncio
@@ -480,7 +489,56 @@ async def run_rag_query(query: str, jurisdiction: Optional[str] = "India", inten
         chunks = []
         scores = []
 
-    # ── STAGE 1.5: EVIDENCE NORMALIZATION ────────────────────────────────────
+    # ── STAGE 1.5: CHUNK LANGUAGE NORMALIZATION ────────────────────────────
+    # Translate non-English chunks to English before LLM generation.
+    # bge-m3 retrieval works cross-language; the LLM needs consistent English context.
+    # Translations are lazy-cached in MongoDB (chunk_text_en) — only one Bhashini call
+    # per unique chunk ever.
+    if chunks:
+        norm_start = time.time()
+        try:
+            from services import bhashini_client as bhashini  # local import to avoid circular
+            db_ref = get_db()  # get DB handle for cache writes
+            normalized_chunks: List[Dict[str, Any]] = []
+            for chunk in chunks:
+                lang = (chunk.get("language") or "en").lower().strip()
+                chunk_copy = dict(chunk)
+                if lang != "en":
+                    chunk_copy["original_language"] = lang
+                    from services.bhashini_client import language_display_name
+                    chunk_copy["original_language_name"] = language_display_name(lang)
+                    cached_en = chunk.get("chunk_text_en", "")
+                    if cached_en and cached_en.strip():
+                        chunk_copy["chunk_text"] = cached_en
+                    else:
+                        original_text = chunk.get("chunk_text", "")
+                        translated, ok = await bhashini.translate_safe(
+                            original_text, source=lang, target="en"
+                        )
+                        chunk_copy["chunk_text"] = translated
+                        if ok and translated and translated != original_text:
+                            try:
+                                chunk_id = chunk.get("chunk_id") or chunk.get("_id")
+                                if chunk_id:
+                                    await db_ref["legal_chunks"].update_one(
+                                        {"_id": chunk_id} if not isinstance(chunk_id, str)
+                                        else {"chunk_id": chunk_id},
+                                        {"$set": {"chunk_text_en": translated}},
+                                    )
+                            except Exception as cache_exc:  # noqa: BLE001
+                                logger.warning("Failed to cache chunk_text_en: %s", cache_exc)
+                normalized_chunks.append(chunk_copy)
+            chunks = normalized_chunks
+            stage_timings["CHUNK_NORMALIZATION"] = round(time.time() - norm_start, 3)
+            logger.info(
+                "[CHUNK NORM] Normalized %d chunks in %.2fs",
+                len(chunks), stage_timings["CHUNK_NORMALIZATION"]
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("[CHUNK NORM] Normalization failed (proceeding with raw chunks): %s", exc)
+            stage_timings["CHUNK_NORMALIZATION"] = 0.0
+
+    # ── STAGE 1.6: EVIDENCE CATEGORIZATION ──────────────────────────────
     # Categorize and tag all retrieved chunks by exact evidence type
     statutory_sources, classical_sources, patent_evidence = _source_categories(chunks)
 
@@ -659,7 +717,10 @@ OUTPUT JSON:"""
 
     total_claims = len(verified_claims)
     verified_count = sum(1 for c in verified_claims if c["verified"])
-    verified_ratio = (verified_count / total_claims) if total_claims > 0 else (0.8 if chunks else 0.0)
+    verified_ratio = (verified_count / total_claims) if total_claims > 0 else (0.3 if chunks else 0.0)
+    # NOTE: 0.3 is a conservative honest fallback when Gemini returned no citation references.
+    # Previously this was 0.8 which fabricated a high verified_ratio and inflated confidence to "high".
+
 
     if chunks and total_claims > 0 and verified_count == 0:
         llm_confidence = "low" if llm_confidence == "low" else "moderate"
@@ -707,6 +768,7 @@ OUTPUT JSON:"""
     for c in chunks:
         cid = str(c.get("chunk_id", ""))
         ev_type = _classify_evidence_type(c)
+        orig_lang = c.get("original_language", "en")
         sources_used.append({
             "chunk_id": cid,
             "chunk_text": c.get("chunk_text", ""),
@@ -721,6 +783,14 @@ OUTPUT JSON:"""
             "publication_number": str(c.get("publication_number") or ""),
             "semantic_similarity": c.get("semantic_similarity", 0.0),
             "verified": cid in {str(evidence_map.get(vid, {}).get("chunk_id", "")) for vid in verified_ref_ids} if cid else True,
+            # Multilingual provenance: preserve original language for citation display
+            # Citation source names/sections are NEVER translated
+            "original_language": orig_lang,
+            "original_language_name": c.get("original_language_name", ""),
+            "original_language_note": (
+                f"(original: {c.get('original_language_name', orig_lang)})"
+                if orig_lang and orig_lang != "en" else ""
+            ),
         })
 
     # Build evidence list
@@ -793,6 +863,7 @@ OUTPUT JSON:"""
     return {
         "answer": final_answer,
         "assessment": final_answer,
+        "english_answer": llm_raw_answer,  # always English; used for audit/evaluation
         "why": llm_why,
         "summary": llm_why,
         "key_points": llm_key_points,

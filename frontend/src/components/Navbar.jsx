@@ -3,15 +3,21 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { User, LogOut, LogIn, ChevronDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { navContainerVariants, navItemVariants } from '../animations/heroAnimations'
 import { useAuth } from '../context/AuthContext'
+import i18n from '../i18n/index.js'
 
 const LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'hi', label: 'हिन्दी', isDevanagari: true },
+  { code: 'en', label: 'English', script: 'latin' },
+  { code: 'hi', label: 'हिन्दी', script: 'devanagari' },
+  { code: 'ta', label: 'தமிழ்', script: 'tamil' },
+  { code: 'te', label: 'తెలుగు', script: 'telugu' },
+  { code: 'mr', label: 'मराठी', script: 'devanagari' },
 ]
 
 export default function Navbar() {
+  const { t } = useTranslation()
   const [isVisible, setIsVisible] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedLang, setSelectedLang] = useState(() => {
@@ -25,10 +31,21 @@ export default function Navbar() {
   const lastScrollY = useRef(0)
   const isVisibleRef = useRef(true)
 
+  const changeLang = (code) => {
+    setSelectedLang(code)
+    localStorage.setItem('aayugranth_lang', code)
+    i18n.changeLanguage(code)
+    document.documentElement.lang = code
+  }
+
+  // Sync i18n on mount in case localStorage was set before i18n initialised
   useEffect(() => {
-    document.documentElement.lang = selectedLang
-    localStorage.setItem('aayugranth_lang', selectedLang)
-  }, [selectedLang])
+    const saved = localStorage.getItem('aayugranth_lang') || 'en'
+    if (i18n.language !== saved) {
+      i18n.changeLanguage(saved)
+    }
+    document.documentElement.lang = saved
+  }, [])
 
   const { user, isAuthenticated, logout } = useAuth()
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
@@ -95,12 +112,16 @@ export default function Navbar() {
     }
   }, [])
 
+  const selectedLangObj = LANGUAGES.find((l) => l.code === selectedLang) || LANGUAGES[0]
+
   const navLinks = [
-    { name: 'My Passports', href: '/passports', isHash: false },
-    { name: 'IP Intelligence', href: '/ip-intelligence', isHash: false },
-    { name: 'ABS Duties', href: '/abs', isHash: false },
-    { name: 'International', href: '/international', isHash: false },
+    { name: t('nav.myPassports'), href: '/passports', isHash: false },
+    { name: t('nav.ipIntelligence'), href: '/ip-intelligence', isHash: false },
+    { name: t('nav.absDuties'), href: '/abs', isHash: false },
+    { name: t('nav.regulatoryIntelligence'), href: '/regulatory', isHash: false },
+    { name: t('nav.international'), href: '/international', isHash: false },
   ]
+
 
   return (
     <motion.header
@@ -194,8 +215,8 @@ export default function Navbar() {
                   <path d="M2 12h20" />
                 </svg>
 
-                <span className={`text-[13px] font-bold ${selectedLang === 'hi' ? 'font-devanagari' : ''}`}>
-                  {selectedLang === 'hi' ? 'हिन्दी' : 'English'}
+                <span className={`text-[13px] font-bold`}>
+                  {selectedLangObj.label}
                 </span>
 
                 <motion.svg
@@ -224,7 +245,7 @@ export default function Navbar() {
                     transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
                     role="listbox"
                     aria-label="Language options"
-                    className="absolute right-0 top-full mt-2 w-[140px] rounded-2xl p-1.5 shadow-[0_12px_32px_rgba(0,0,0,0.12)] bg-white border border-[#161412]/15 text-[#161412] z-50 overflow-hidden"
+                    className="absolute right-0 top-full mt-2 w-[160px] rounded-2xl p-1.5 shadow-[0_12px_32px_rgba(0,0,0,0.12)] bg-white border border-[#161412]/15 text-[#161412] z-50 overflow-hidden"
                   >
                     {LANGUAGES.map((lang) => {
                       const isSelected = selectedLang === lang.code
@@ -235,7 +256,7 @@ export default function Navbar() {
                           role="option"
                           aria-selected={isSelected}
                           onClick={() => {
-                            setSelectedLang(lang.code)
+                            changeLang(lang.code)
                             setIsLangOpen(false)
                           }}
                           className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left text-xs font-bold transition-colors duration-150 cursor-pointer ${isSelected
@@ -243,7 +264,7 @@ export default function Navbar() {
                               : 'text-[#161412] hover:bg-stone-100'
                             }`}
                         >
-                          <span className={lang.isDevanagari ? 'font-devanagari text-[13px]' : 'text-[12.5px]'}>
+                          <span className={`${lang.script !== 'latin' ? 'text-[13px]' : 'text-[12.5px]'}`}>
                             {lang.label}
                           </span>
 
@@ -348,9 +369,9 @@ export default function Navbar() {
           <div className="flex items-center gap-2 md:hidden">
             <button
               type="button"
-              onClick={() => setSelectedLang((prev) => (prev === 'en' ? 'hi' : 'en'))}
+              onClick={() => setIsLangOpen((prev) => !prev)}
               className="px-3 py-1.5 rounded-full text-xs font-bold border border-[#161412]/20 bg-white text-[#161412] shadow-sm flex items-center gap-1.5 transition-all active:scale-95"
-              aria-label="Toggle language"
+              aria-label="Select language"
             >
               <svg className="w-3.5 h-3.5 text-[#176B45]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                 <circle cx="12" cy="12" r="10" />
@@ -358,7 +379,7 @@ export default function Navbar() {
                 <path d="M2 12h20" />
               </svg>
               <span className="font-bold text-[12px]">
-                {selectedLang === 'en' ? 'EN' : 'हि'}
+                {selectedLang.toUpperCase()}
               </span>
             </button>
 
@@ -428,35 +449,25 @@ export default function Navbar() {
             ))}
 
             {/* Mobile Language Switcher Inside Drawer */}
-            <div className="pt-3 mt-1 border-t border-white/10 flex items-center justify-between px-2">
-              <span className="text-xs font-medium text-white/60">Language / भाषा</span>
-              <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedLang('en')
-                    setMobileMenuOpen(false)
-                  }}
-                  className={`px-3 py-1 text-xs rounded-lg font-medium transition-all ${selectedLang === 'en'
-                      ? 'bg-[#176B45] text-white shadow-xs'
-                      : 'text-white/60 hover:text-white'
-                    }`}
-                >
-                  English
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedLang('hi')
-                    setMobileMenuOpen(false)
-                  }}
-                  className={`px-3 py-1 text-xs rounded-lg font-medium font-devanagari transition-all ${selectedLang === 'hi'
-                      ? 'bg-[#176B45] text-white shadow-xs'
-                      : 'text-white/60 hover:text-white'
-                    }`}
-                >
-                  हिन्दी
-                </button>
+            <div className="pt-3 mt-1 border-t border-white/10">
+              <span className="text-xs font-medium text-white/60 px-2 block mb-2">{t('nav.language', 'Language / भाषा')}</span>
+              <div className="grid grid-cols-3 gap-1">
+                {LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    type="button"
+                    onClick={() => {
+                      changeLang(lang.code)
+                      setMobileMenuOpen(false)
+                    }}
+                    className={`px-2 py-1.5 text-xs rounded-lg font-medium transition-all text-center ${selectedLang === lang.code
+                        ? 'bg-[#176B45] text-white shadow-xs'
+                        : 'text-white/60 hover:text-white hover:bg-white/5'
+                      }`}
+                  >
+                    {lang.label}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -477,7 +488,7 @@ export default function Navbar() {
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 transition-colors"
                   >
                     <LogOut className="w-3.5 h-3.5" />
-                    <span>Sign Out</span>
+                    <span>{t('nav.signOut', 'Sign Out')}</span>
                   </button>
                 </div>
               ) : (
@@ -488,14 +499,14 @@ export default function Navbar() {
                     className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold bg-[#176B45] text-white text-center shadow-xs"
                   >
                     <LogIn className="w-3.5 h-3.5" />
-                    <span>Sign In</span>
+                    <span>{t('nav.signIn', 'Sign In')}</span>
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/15 text-white text-center border border-white/10"
                   >
-                    Register
+                    {t('nav.register', 'Register')}
                   </Link>
                 </div>
               )}
