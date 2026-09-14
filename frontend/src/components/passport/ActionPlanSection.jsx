@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { CheckSquare, ArrowRight, AlertCircle, Sparkles, BookOpen } from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
+import { translatePassportData, translatePassportStatus } from '../../lib/passportI18n';
+
 export default function ActionPlanSection({
   actions = [{
     id: '01',
@@ -24,9 +26,8 @@ export default function ActionPlanSection({
   onOpenEvidence = null,
   className = ''
 }) {
-  const {
-    t
-  } = useTranslation();
+  const { t } = useTranslation();
+
   const getPriorityBadge = p => {
     const lower = String(p).toLowerCase();
     if (lower === 'high' || lower === 'critical') {
@@ -37,7 +38,9 @@ export default function ActionPlanSection({
     }
     return 'bg-blue-50 text-blue-800 border-blue-200';
   };
-  return <section className={cn("bg-white border border-[#161412]/15 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6", className)}>
+
+  return (
+    <section className={cn("bg-white border border-[#161412]/15 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6", className)}>
       <div className="flex items-center justify-between border-b border-[#161412]/10 pb-3">
         <div>
           <div className="flex items-center gap-2">
@@ -46,11 +49,15 @@ export default function ActionPlanSection({
           </div>
           <p className="text-xs text-[#161412]/60 mt-0.5">{t("actionplansection.prioritizedstrategicactionsgrounded", "Prioritized strategic actions grounded in legal and regulatory findings")}</p>
         </div>
-        <span className="text-[10px] font-mono text-[#8C6D46] uppercase tracking-wider font-semibold">{t("actionplansection.actionPlan", "Action Plan")}</span>
+        <span className="text-[10px] font-mono text-[#8C6D46] uppercase tracking-wider font-semibold">{t("productPassport.ui.actionPlan", "Action Plan")}</span>
       </div>
 
-      {actions.length === 0 ? <p className="text-xs text-[#161412]/60 italic py-4 text-center">{t("actionplansection.norecommendedactionsavailable", "No recommended actions available for this analysis.")}</p> : <div className="space-y-4">
-          {actions.map(act => <div key={act.id} className="bg-[#FAF8F3] border border-[#161412]/15 rounded-xl p-5 flex flex-col md:flex-row md:items-start justify-between gap-4 hover:border-[#176B45]/40 transition-all">
+      {actions.length === 0 ? (
+        <p className="text-xs text-[#161412]/60 italic py-4 text-center">{t("actionplansection.norecommendedactionsavailable", "No recommended actions available for this analysis.")}</p>
+      ) : (
+        <div className="space-y-4">
+          {actions.map(act => (
+            <div key={act.id} className="bg-[#FAF8F3] border border-[#161412]/15 rounded-xl p-5 flex flex-col md:flex-row md:items-start justify-between gap-4 hover:border-[#176B45]/40 transition-all">
               <div className="flex items-start gap-4">
                 <span className="font-mono text-xl font-bold text-[#8C6D46]/60 shrink-0">
                   {act.id}
@@ -59,25 +66,31 @@ export default function ActionPlanSection({
                 <div className="space-y-1.5">
                   <div className="flex flex-wrap items-center gap-2">
                     <h4 className="font-serif text-sm sm:text-base font-bold text-[#161412]">
-                      {act.title}
+                      {translatePassportData(act.title, t)}
                     </h4>
-                    <span className={cn("px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase border", getPriorityBadge(act.priority))}>{t("actionplansection.priority", "Priority:")}{act.priority}
+                    <span className={cn("px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase border", getPriorityBadge(act.priority))}>
+                      {t("productPassport.ui.priorityLabel", "Priority:")} {translatePassportStatus(act.priority, t)}
                     </span>
                   </div>
 
                   <p className="text-xs text-[#161412]/80 leading-relaxed max-w-2xl">
-                    {act.reason}
+                    {translatePassportData(act.reason, t)}
                   </p>
                 </div>
               </div>
 
-              {act.evidenceCount > 0 && <div className="shrink-0 self-end md:self-center">
+              {act.evidenceCount > 0 && (
+                <div className="shrink-0 self-end md:self-center">
                   <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-semibold text-[#176B45] bg-white border border-[#161412]/10 px-3 py-1.5 rounded-lg shadow-2xs">
                     <BookOpen className="w-3.5 h-3.5 text-[#176B45]" />
-                    <span>{act.evidenceCount}{t("actionplansection.sourcesCited", "Sources Cited")}</span>
+                    <span>{act.evidenceCount} {t("productPassport.ui.sourcesCited", "Sources Cited")}</span>
                   </span>
-                </div>}
-            </div>)}
-        </div>}
-    </section>;
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
 }

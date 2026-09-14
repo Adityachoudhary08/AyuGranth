@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { ShieldCheck, Scale, Globe, Leaf, ArrowDownRight, ChevronDown } from 'lucide-react';
+import { ShieldCheck, Scale, Globe, Leaf, ArrowDownRight } from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
+import { translatePassportStatus, translatePassportData } from '../../lib/passportI18n';
+
 export default function IntelligenceOverview({
   regulatoryStatus = 'Needs Review',
   regulatorySummary = 'Product classification requires further regulatory assessment under the Drugs & Cosmetics Act.',
@@ -18,12 +20,12 @@ export default function IntelligenceOverview({
   },
   className = ''
 }) {
-  const {
-    t
-  } = useTranslation();
+  const { t } = useTranslation();
+
   const cards = [{
     id: 'section-regulatory',
-    title: 'REGULATORY',
+    titleKey: 'productPassport.domain.regulatory',
+    titleFallback: 'REGULATORY',
     icon: ShieldCheck,
     status: regulatoryStatus,
     summary: regulatorySummary,
@@ -32,7 +34,8 @@ export default function IntelligenceOverview({
     badgeBg: 'bg-[#176B45]/10 text-[#176B45]'
   }, {
     id: 'section-ip',
-    title: 'IP & NOVELTY',
+    titleKey: 'productPassport.domain.ipNovelty',
+    titleFallback: 'IP & NOVELTY',
     icon: Scale,
     status: ipStatus,
     summary: ipSummary,
@@ -41,7 +44,8 @@ export default function IntelligenceOverview({
     badgeBg: 'bg-amber-50 text-amber-900 border-amber-200'
   }, {
     id: 'section-biodiversity',
-    title: 'BIODIVERSITY & TK',
+    titleKey: 'productPassport.domain.biodiversityTk',
+    titleFallback: 'BIODIVERSITY & TK',
     icon: Leaf,
     status: tkStatus,
     summary: tkSummary,
@@ -50,7 +54,8 @@ export default function IntelligenceOverview({
     badgeBg: 'bg-emerald-50 text-emerald-900 border-emerald-200'
   }, {
     id: 'section-international',
-    title: 'INTERNATIONAL',
+    titleKey: 'productPassport.domain.international',
+    titleFallback: 'INTERNATIONAL',
     icon: Globe,
     status: internationalStatus,
     summary: internationalSummary,
@@ -58,7 +63,9 @@ export default function IntelligenceOverview({
     border: 'border-[#176B45]/25',
     badgeBg: 'bg-[#176B45]/10 text-[#176B45]'
   }];
-  return <section className={cn("space-y-3", className)}>
+
+  return (
+    <section className={cn("space-y-3", className)}>
       <div className="flex items-center justify-between">
         <h3 className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-[#8C6D46]">{t("intelligenceoverview.iNTELLIGENCEOVERVIEW", "INTELLIGENCE OVERVIEW")}</h3>
         <span className="text-[10px] font-mono text-[#161412]/40">{t("intelligenceoverview.4LivingDomains", "4 Living Domains")}</span>
@@ -66,22 +73,23 @@ export default function IntelligenceOverview({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map(c => {
-        const Icon = c.icon;
-        return <div key={c.id} className="bg-white border border-[#161412]/15 rounded-xl p-5 shadow-xs flex flex-col justify-between hover:border-[#176B45]/40 transition-all group">
+          const Icon = c.icon;
+          return (
+            <div key={c.id} className="bg-white border border-[#161412]/15 rounded-xl p-5 shadow-xs flex flex-col justify-between hover:border-[#176B45]/40 transition-all group">
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-[#161412]/80">
                     <Icon className={cn("w-4 h-4", c.color)} />
-                    <span>{c.title}</span>
+                    <span>{t(c.titleKey, c.titleFallback)}</span>
                   </div>
                 </div>
 
                 <div className="mb-2">
                   <span className={cn("inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider border mb-2", c.badgeBg)}>
-                    {t(c.status, c.status)}
+                    {translatePassportStatus(c.status, t)}
                   </span>
                   <p className="text-xs text-[#161412]/80 leading-relaxed line-clamp-3">
-                    {t(c.summary, c.summary)}
+                    {translatePassportData(c.summary, t)}
                   </p>
                 </div>
               </div>
@@ -92,8 +100,10 @@ export default function IntelligenceOverview({
                   <ArrowDownRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:translate-y-0.5" />
                 </button>
               </div>
-            </div>;
-      })}
+            </div>
+          );
+        })}
       </div>
-    </section>;
+    </section>
+  );
 }

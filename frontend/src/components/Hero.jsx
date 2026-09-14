@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   heroContainerVariants,
   eyebrowVariants,
@@ -13,6 +14,7 @@ import {
 } from '../animations/heroAnimations'
 
 export default function Hero() {
+  const { t } = useTranslation()
   const heroRef = useRef(null)
   const bgRef = useRef(null)
   const contentRef = useRef(null)
@@ -65,7 +67,7 @@ export default function Hero() {
         >
           <img
             src="/hero-section-bg.png"
-            alt="AayuGranth Sovereign Ayurvedic Knowledge and Indian Patent Protection"
+            alt={t('landing.hero.bgAlt')}
             className="w-full h-full object-cover object-[82%_58%] lg:object-[80%_56%]"
             loading="eager"
             fetchPriority="high"
@@ -96,20 +98,20 @@ export default function Hero() {
                 className="mb-3.5 sm:mb-4 inline-flex items-center"
               >
                 <span className="text-[11px] sm:text-[11.5px] font-semibold tracking-[0.26em] text-[#7d705c] uppercase font-sans">
-                  BHARAT KI GYAAN PARAMPARA
+                  {t('landing.hero.eyebrow')}
                 </span>
               </motion.div>
 
               {/* Main Headline */}
               <h1 className="font-helvetica text-[clamp(2.35rem,4.4vw,3.95rem)] font-normal sm:font-medium leading-[1.08] text-[#161412] tracking-[-0.03em] mb-4 sm:mb-5">
                 <motion.span variants={headingLineVariants} className="block text-[#161412]">
-                  Preserve
+                  {t('landing.hero.titleLine1')}
                 </motion.span>
                 <motion.span variants={headingLineVariants} className="block text-[#176B45]">
-                  Ayurvedic Knowledge.
+                  {t('landing.hero.titleLine2')}
                 </motion.span>
                 <motion.span variants={headingLineVariants} className="block text-[#161412]">
-                  Enable a Safer Tomorrow.
+                  {t('landing.hero.titleLine3')}
                 </motion.span>
               </h1>
 
@@ -118,7 +120,7 @@ export default function Hero() {
                 variants={descriptionVariants}
                 className="text-[#4e483e] text-xs sm:text-sm lg:text-[0.98rem] leading-relaxed max-w-[490px] font-normal mb-7 sm:mb-8"
               >
-                Explore India&apos;s traditional knowledge, understand patents, and get the guidance you need to protect what matters.
+                {t('landing.hero.description')}
               </motion.p>
 
               {/* Action Buttons */}
@@ -131,7 +133,9 @@ export default function Hero() {
                   to="/ask-aayugranth"
                   className="group inline-flex items-center justify-center gap-2.5 bg-[#176B45] hover:bg-[#1f8757] text-white text-xs sm:text-sm font-medium px-6 sm:px-7 py-3 rounded-full shadow-[0_4px_18px_rgba(23,107,69,0.25)] transition-all duration-200 cursor-pointer"
                 >
-                  <motion.span whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>Ask AayuGranth</motion.span>
+                  <motion.span whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    {t('landing.hero.askAayuGranth')}
+                  </motion.span>
                   <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5">
                     →
                   </span>
@@ -144,7 +148,7 @@ export default function Hero() {
                   whileTap={{ scale: 0.98 }}
                   className="inline-flex items-center justify-center gap-2.5 bg-white/70 hover:bg-white text-[#161412] text-xs sm:text-sm font-medium px-6 sm:px-7 py-3 rounded-full border border-[#161412]/20 hover:border-[#161412]/35 shadow-xs transition-all duration-200 cursor-pointer"
                 >
-                  <span>Learn More</span>
+                  <span>{t('landing.hero.learnMore')}</span>
                 </motion.a>
               </motion.div>
 
@@ -170,8 +174,8 @@ export default function Hero() {
                     </svg>
                   </div>
                   <div className="text-[9.5px] sm:text-[10px] font-bold tracking-[0.16em] text-[#161412] uppercase leading-tight font-sans">
-                    <div>TRADITIONAL</div>
-                    <div>KNOWLEDGE</div>
+                    <div>{t('landing.hero.badge1Line1')}</div>
+                    <div>{t('landing.hero.badge1Line2')}</div>
                   </div>
                 </div>
 
@@ -191,8 +195,8 @@ export default function Hero() {
                     </svg>
                   </div>
                   <div className="text-[9.5px] sm:text-[10px] font-bold tracking-[0.16em] text-[#161412] uppercase leading-tight font-sans">
-                    <div>INTELLECTUAL</div>
-                    <div>PROPERTY</div>
+                    <div>{t('landing.hero.badge2Line1')}</div>
+                    <div>{t('landing.hero.badge2Line2')}</div>
                   </div>
                 </div>
 
@@ -215,8 +219,8 @@ export default function Hero() {
                     </svg>
                   </div>
                   <div className="text-[9.5px] sm:text-[10px] font-bold tracking-[0.16em] text-[#161412] uppercase leading-tight font-sans">
-                    <div>A HEALTHIER</div>
-                    <div>TOMORROW</div>
+                    <div>{t('landing.hero.badge3Line1')}</div>
+                    <div>{t('landing.hero.badge3Line2')}</div>
                   </div>
                 </div>
               </motion.div>
@@ -233,7 +237,7 @@ export default function Hero() {
                 <span className="w-4 sm:w-5 h-1 rounded-full bg-[#138808]" />
               </div>
               <span className="text-[9px] sm:text-[10px] font-medium tracking-[0.2em] text-[#7d705c] uppercase font-sans">
-                ROOTED IN INDIA <span className="mx-1.5 opacity-40">|</span> GUIDED BY AYURVEDA <span className="mx-1.5 opacity-40">|</span> FOR A HEALTHIER TOMORROW
+                {t('landing.hero.taglineRooted')} <span className="mx-1.5 opacity-40">|</span> {t('landing.hero.taglineGuided')} <span className="mx-1.5 opacity-40">|</span> {t('landing.hero.taglineHealthier')}
               </span>
             </div>
 
@@ -251,7 +255,7 @@ export default function Hero() {
                   ease: 'easeInOut',
                 }}
                 className="w-6 h-6 rounded-full border border-[#161412]/20 hover:border-[#161412]/50 bg-white/70 flex items-center justify-center text-[#161412]/60 hover:text-[#161412] transition-colors cursor-pointer shadow-xs"
-                aria-label="Scroll down"
+                aria-label={t('landing.hero.scrollDown')}
               >
                 <svg
                   className="w-3 h-3"
@@ -272,3 +276,4 @@ export default function Hero() {
     </section>
   )
 }
+

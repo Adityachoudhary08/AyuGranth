@@ -39,6 +39,7 @@ def get_llm(mode: str | None = None) -> BaseChatModel:
                 model=settings.GEMINI_MODEL,
                 google_api_key=settings.GEMINI_API_KEY,
                 temperature=0,
+                max_retries=0,
             )
         elif settings.ANTHROPIC_API_KEY:
             from langchain_anthropic import ChatAnthropic
@@ -53,4 +54,5 @@ def get_llm(mode: str | None = None) -> BaseChatModel:
                 model=settings.GEMINI_MODEL,
                 google_api_key=settings.GEMINI_API_KEY,
                 temperature=0,
+                max_retries=0,
             )

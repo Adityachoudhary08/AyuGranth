@@ -486,7 +486,7 @@ export default function PatentabilityTool() {
                 </div>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
+                    <table className="patent-intelligence-table w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-[#161412]/10 bg-[#faf8f3]/50 text-[10px] font-bold uppercase tracking-wider text-[#161412]/55">
                         <th className="py-3.5 px-6 w-1/4">{t("patentabilitytool.criterion", "Criterion")}</th>

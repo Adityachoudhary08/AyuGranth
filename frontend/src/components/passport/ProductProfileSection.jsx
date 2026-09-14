@@ -1,19 +1,20 @@
 import { useTranslation } from "react-i18next";
 import { Info, Tag, Package, MapPin, Globe, Compass, Activity } from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
+import { translatePassportData } from '../../lib/passportI18n';
+
 export default function ProductProfileSection({
   product = {},
   className = ''
 }) {
-  const {
-    t
-  } = useTranslation();
-  const notAvailable = t("productprofilesection.notAvailable", "Not available in current analysis");
+  const { t } = useTranslation();
+  const notAvailable = t('productPassport.ui.notAvailable', 'Not available in current analysis');
   const name = product.name || notAvailable;
-  const category = product.category || notAvailable;
+  const rawCategory = product.category || notAvailable;
+  const category = translatePassportData(rawCategory, t);
   const dosage = product.dosageForm || product.dosage_form || notAvailable;
   const ingredients = Array.isArray(product.ingredients) && product.ingredients.length > 0 ? product.ingredients.join(', ') : product.ingredients || notAvailable;
-  const botanicalNames = Array.isArray(product.botanicalNames) && product.botanicalNames.length > 0 ? product.botanicalNames.join(', ') : product.botanicalNames || t("productprofilesection.taxonomicalIdentificationPending", "Taxonomical identification pending");
+  const botanicalNames = Array.isArray(product.botanicalNames) && product.botanicalNames.length > 0 ? product.botanicalNames.join(', ') : product.botanicalNames || t('productPassport.ui.taxonomicalPending', 'Taxonomical identification pending');
   const origin = product.ingredientOrigin || product.countryOfOrigin || product.source_region || notAvailable;
   const intendedUse = product.intendedUse || product.intended_use || notAvailable;
   const manufacturing = product.manufacturingMethod || product.manufacturing_process || notAvailable;

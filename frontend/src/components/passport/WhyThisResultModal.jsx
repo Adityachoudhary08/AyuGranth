@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { X, ArrowDown, Sparkles, Scale, BookOpen, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
+import { translatePassportData } from '../../lib/passportI18n';
+
 export default function WhyThisResultModal({
   isOpen,
   onClose,
@@ -42,7 +44,7 @@ export default function WhyThisResultModal({
               <span className="text-[10px] font-mono text-[#161412]/40">{t("whythisresultmodal.inputCharacteristic", "Input Characteristic")}</span>
             </div>
             <p className="font-semibold text-sm text-[#161412] leading-snug">
-              {signal}
+              {translatePassportData(signal, t)}
             </p>
           </div>
 
@@ -54,7 +56,7 @@ export default function WhyThisResultModal({
           <div className="bg-white border border-[#161412]/15 rounded-xl p-4 shadow-xs">
             <div className="flex items-center justify-between mb-1">
               <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#176B45]">{t("whythisresultmodal.2RetrievedEvidence", "2. Retrieved Evidence")}</span>
-              <span className="text-[10px] font-mono text-[#161412]/40">{jurisdiction}{t("whythisresultmodal.jurisdiction", "Jurisdiction")}</span>
+              <span className="text-[10px] font-mono text-[#161412]/40">{jurisdiction} {t("whythisresultmodal.jurisdiction", "Jurisdiction")}</span>
             </div>
             <p className="font-medium text-xs text-[#161412] leading-relaxed">
               {evidence}
@@ -72,7 +74,7 @@ export default function WhyThisResultModal({
               <span className="text-[10px] font-mono text-[#161412]/40">{t("whythisresultmodal.reasoning", "Reasoning")}</span>
             </div>
             <p className="text-xs text-[#161412]/80 leading-relaxed">
-              {interpretation}
+              {translatePassportData(interpretation, t)}
             </p>
           </div>
 
@@ -87,7 +89,7 @@ export default function WhyThisResultModal({
               <span className="text-[10px] font-mono text-[#176B45] font-bold">{t("whythisresultmodal.conclusion", "Conclusion")}</span>
             </div>
             <p className="font-serif text-sm font-semibold text-[#161412] leading-snug">
-              {result}
+              {translatePassportData(result, t)}
             </p>
           </div>
         </div>

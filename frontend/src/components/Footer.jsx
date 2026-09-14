@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 export default function Footer() {
+  const { t } = useTranslation()
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -25,12 +28,12 @@ export default function Footer() {
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#176B45]/15 border border-[#176B45]/30">
               <span className="w-1.5 h-1.5 rounded-full bg-[#5dbb84] shadow-[0_0_8px_#5dbb84]" />
               <span className="text-[10px] font-mono font-semibold tracking-[0.2em] text-[#78d09e] uppercase">
-                SOVEREIGN KNOWLEDGE COMMONS
+                {t('landing.footer.bannerTag')}
               </span>
             </div>
             <h3 className="font-serif text-[clamp(1.75rem,3vw,2.5rem)] font-normal text-white leading-tight tracking-[-0.015em]">
-              Preserving Ancient Wisdom. <br />
-              <span className="text-white/40">Defending Irrevocable Heritage.</span>
+              {t('landing.footer.bannerHeadline1')} <br />
+              <span className="text-white/40">{t('landing.footer.bannerHeadline2')}</span>
             </h3>
           </div>
 
@@ -50,7 +53,7 @@ export default function Footer() {
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#5dbb84] shadow-[0_0_10px_#5dbb84]" />
               </a>
               <p className="text-sm text-white/60 leading-relaxed font-normal max-w-sm">
-                A sovereign digital knowledge archive synthesizing classical Ayurvedic science with modern intellectual property documentation. Dedicated to defensive protection, statutory clearance, and preventing illicit biopiracy.
+                {t('landing.footer.brandDesc')}
               </p>
             </div>
 
@@ -60,7 +63,7 @@ export default function Footer() {
           {/* Directory Column 1: Archival Jurisprudence */}
           <div className="md:col-span-4 space-y-4">
             <h4 className="text-[11px] font-mono font-semibold tracking-[0.2em] text-white/40 uppercase">
-              STATUTORY CLEARANCE &amp; ARCHIVE
+              {t('landing.footer.col1Title')}
             </h4>
             <ul className="space-y-3 text-sm font-normal text-white/70">
               <li>
@@ -69,7 +72,7 @@ export default function Footer() {
                   className="group inline-flex items-center gap-2 hover:text-white transition-colors"
                 >
                   <span className="text-white/30 group-hover:text-[#5dbb84] group-hover:translate-x-0.5 transition-all">→</span>
-                  <span>Section 3(p) Traditional Knowledge Exclusions</span>
+                  <span>{t('landing.footer.linkSec3p')}</span>
                 </a>
               </li>
               <li>
@@ -78,7 +81,7 @@ export default function Footer() {
                   className="group inline-flex items-center gap-2 hover:text-white transition-colors"
                 >
                   <span className="text-white/30 group-hover:text-[#5dbb84] group-hover:translate-x-0.5 transition-all">→</span>
-                  <span>Form 1 &amp; Form 2 Patent Specification</span>
+                  <span>{t('landing.footer.linkForms')}</span>
                 </a>
               </li>
               <li>
@@ -87,7 +90,7 @@ export default function Footer() {
                   className="group inline-flex items-center gap-2 hover:text-white transition-colors"
                 >
                   <span className="text-white/30 group-hover:text-[#5dbb84] group-hover:translate-x-0.5 transition-all">→</span>
-                  <span>TKDL Prior-Art Concordance</span>
+                  <span>{t('landing.footer.linkTkdl')}</span>
                 </a>
               </li>
               <li>
@@ -96,7 +99,7 @@ export default function Footer() {
                   className="group inline-flex items-center gap-2 hover:text-white transition-colors"
                 >
                   <span className="text-white/30 group-hover:text-[#5dbb84] group-hover:translate-x-0.5 transition-all">→</span>
-                  <span>Biological Material Source Declarations</span>
+                  <span>{t('landing.footer.linkBioSource')}</span>
                 </a>
               </li>
               <li>
@@ -105,7 +108,7 @@ export default function Footer() {
                   className="group inline-flex items-center gap-2 hover:text-white transition-colors"
                 >
                   <span className="text-white/30 group-hover:text-[#5dbb84] group-hover:translate-x-0.5 transition-all">→</span>
-                  <span>Letters Patent &amp; 20-Year Grant Terms</span>
+                  <span>{t('landing.footer.linkGrantTerms')}</span>
                 </a>
               </li>
             </ul>
@@ -114,7 +117,7 @@ export default function Footer() {
           {/* Directory Column 2: Navigation & Quick Jump */}
           <div className="md:col-span-3 space-y-4">
             <h4 className="text-[11px] font-mono font-semibold tracking-[0.2em] text-white/40 uppercase">
-              DIRECTORY
+              {t('landing.footer.col2Title')}
             </h4>
             <ul className="space-y-3 text-sm font-normal text-white/70">
               <li>
@@ -123,7 +126,7 @@ export default function Footer() {
                   className="group inline-flex items-center gap-2 hover:text-white transition-colors"
                 >
                   <span className="text-white/30 group-hover:text-[#5dbb84] group-hover:translate-x-0.5 transition-all">→</span>
-                  <span>Home</span>
+                  <span>{t('landing.footer.dirHome')}</span>
                 </a>
               </li>
               <li>
@@ -132,7 +135,7 @@ export default function Footer() {
                   className="group inline-flex items-center gap-2 hover:text-white transition-colors"
                 >
                   <span className="text-white/30 group-hover:text-[#5dbb84] group-hover:translate-x-0.5 transition-all">→</span>
-                  <span>Why It Matters</span>
+                  <span>{t('landing.footer.dirWhyItMatters')}</span>
                 </a>
               </li>
               <li>
@@ -141,7 +144,7 @@ export default function Footer() {
                   className="group inline-flex items-center gap-2 hover:text-white transition-colors"
                 >
                   <span className="text-white/30 group-hover:text-[#5dbb84] group-hover:translate-x-0.5 transition-all">→</span>
-                  <span>Patent Process</span>
+                  <span>{t('landing.footer.dirPatentProcess')}</span>
                 </a>
               </li>
               <li>
@@ -150,7 +153,7 @@ export default function Footer() {
                   className="group inline-flex items-center gap-2 hover:text-white transition-colors"
                 >
                   <span className="text-white/30 group-hover:text-[#5dbb84] group-hover:translate-x-0.5 transition-all">→</span>
-                  <span>Traditional Knowledge</span>
+                  <span>{t('landing.footer.dirTk')}</span>
                 </a>
               </li>
               <li>
@@ -159,7 +162,7 @@ export default function Footer() {
                   className="group inline-flex items-center gap-2 hover:text-white transition-colors"
                 >
                   <span className="text-white/30 group-hover:text-[#5dbb84] group-hover:translate-x-0.5 transition-all">→</span>
-                  <span>FAQ &amp; Inquiries</span>
+                  <span>{t('landing.footer.dirFaq')}</span>
                 </a>
               </li>
             </ul>
@@ -170,16 +173,16 @@ export default function Footer() {
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs font-normal text-white/50">
           <div className="text-center sm:text-left space-y-1">
             <div>
-              © {new Date().getFullYear()} AayuGranth. Preserving ancient Indian heritage through modern intellectual property.
+              {t('landing.footer.copyright', { year: new Date().getFullYear() })}
             </div>
             <div className="text-[11px] text-white/35 font-mono">
-              28°36'50"N 77°12'32"E · NEW DELHI, BHARAT · PUBLIC DOMAIN CONCORDANCE
+              {t('landing.footer.location')}
             </div>
           </div>
 
           <div className="flex items-center gap-6">
             <span className="font-mono text-[10px] uppercase tracking-wider text-white/40">
-              ARCHIVE STATUS · ACTIVE
+              {t('landing.footer.archiveStatus')}
             </span>
             <motion.button
               type="button"
@@ -188,7 +191,7 @@ export default function Footer() {
               onClick={scrollToTop}
               className="inline-flex items-center gap-2 bg-white/[0.06] hover:bg-white/[0.12] text-white/80 hover:text-white text-xs px-4 py-2 rounded-full border border-white/10 transition-colors cursor-pointer"
             >
-              <span>Back to Top</span>
+              <span>{t('landing.footer.backToTop')}</span>
               <span className="text-sm leading-none">↑</span>
             </motion.button>
           </div>
