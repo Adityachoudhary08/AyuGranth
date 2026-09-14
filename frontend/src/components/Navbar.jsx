@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
@@ -289,7 +290,7 @@ export default function Navbar() {
             </div>
 
             {/* Desktop Auth State */}
-            {isAuthenticated ? (
+            {isAuthenticated ? (<>
               <div ref={userMenuRef} className="relative">
                 <motion.button
                   type="button"
@@ -349,7 +350,7 @@ export default function Navbar() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </div></>
             ) : (
               <motion.div variants={navItemVariants}>
                 <Link
@@ -361,6 +362,7 @@ export default function Navbar() {
                 </Link>
               </motion.div>
             )}
+          </div>
           </div>
 
           {/* Mobile Quick Toggle & Hamburger */}
@@ -412,7 +414,7 @@ export default function Navbar() {
             </button>
           </div>
         </div>
-      </div>
+      
 
       {/* Mobile Drawer Dropdown */}
       <AnimatePresence>

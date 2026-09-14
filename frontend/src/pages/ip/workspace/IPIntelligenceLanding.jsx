@@ -23,7 +23,7 @@ export default function IPIntelligenceLanding() {
       title: t('ip.intelligence.tools.patentability.title', 'Patentability'),
       description: t('ip.intelligence.tools.patentability.desc', 'Assess whether your formulation may be patentable under Sections 3(p) and 3(d).'),
       icon: ShieldCheck,
-      href: '/ip-intelligence/patentability',
+      href: '/ip-intelligence/patent-intelligence',
       color: 'bg-emerald-50 text-emerald-700',
     },
     {

@@ -240,3 +240,16 @@ body[data-surface='functional'] .app-main button[type='submit'] {
   font-size: 0.8125rem;
   line-height: 1.6;
 }
+
+/* Patent Intelligence only: make comparison and criteria grids unambiguous
+   without changing tables elsewhere in the application. */
+.patent-intelligence-table {
+  width: 100%;
+  border: 1px solid #1f2937;
+  border-collapse: collapse;
+}
+
+.patent-intelligence-table th,
+.patent-intelligence-table td {
+  border: 1px solid #1f2937;
+}
